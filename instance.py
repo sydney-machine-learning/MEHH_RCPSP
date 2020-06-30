@@ -13,6 +13,7 @@ def read_param(filepath,dest,n_lines=48):
     for i in range(n_lines):
         line=list(map(float,list(lines[i].strip().split())))
         dest.append(line[1:])
+    file.close()
 read_param('./j30/param.txt',j30_params,48)
 read_param('./j60/param.txt',j60_params,48)
 read_param('./j90/param.txt',j90_params,48)
