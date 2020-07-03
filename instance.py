@@ -114,7 +114,8 @@ class instance(object):
         nx.draw(self.G, pos=nx.nx_agraph.graphviz_layout(self.G),node_color=node_colors, edge_color='b',node_size=node_sizes)
         plt.show()
     def calculate_lt(self):
-        #Calculates LFT and LST and updates corresponding class variable
+        #Calculates LFT and LST and updates corresponding class variable 
+        # Schedule in the same way as serial SGS without considering the resource constraints
         scheduled=[0]*(self.n_jobs+1)
         graph=self.G_T
         start_vertex=self.n_jobs        
@@ -129,17 +130,20 @@ class instance(object):
             for i in range(1,self.n_jobs+1):
                 if(scheduled[i]==0):
                     pred_lis=list(graph.predecessors(i))
-                    
+                    #Consider only precedence relations
                     if(set(pred_lis)<=set(scheduled_list)):
                         eligible.append(i)
+            #Pick any job from the eligible set (Here always the first)
             choice=eligible[0]
             pred_lis=list(graph.predecessors(choice))
             max_pred_finish_time=0
             for i in pred_lis:
                 max_pred_finish_time=max(self.latest_finish_times[i],max_pred_finish_time)
+            #Find the precedence feasible start time and schedule it
             self.latest_start_times[choice]=max_pred_finish_time+1
             self.latest_finish_times[choice]=self.latest_start_times[choice]+self.durations[choice]-1
             scheduled[choice]=1
+        #Since we are scheduling in reverse we need to invert times i.e subtract it from makespan
         makespan=max(self.latest_finish_times)
         for i in range(1,len(self.latest_finish_times)):
             self.latest_finish_times[i]=makespan-self.latest_start_times[i]
@@ -161,13 +165,16 @@ class instance(object):
             for i in range(1,self.n_jobs+1):
                 if(scheduled[i]==0):
                     pred_lis=list(graph.predecessors(i))
+                    #Consider only precedence relations
                     if(set(pred_lis)<=set(scheduled_list)):
                         eligible.append(i)
+            #Pick any job from the eligible set (Here always the first)
             choice=eligible[0]
             pred_lis=list(graph.predecessors(choice))
             max_pred_finish_time=0
             for i in pred_lis:
                 max_pred_finish_time=max(finish_times[i],max_pred_finish_time)
+            #Find the precedence feasible start time and schedule it
             self.earliest_start_times[choice]=max_pred_finish_time+1
             self.earliest_finish_times[choice]=self.earliest_start_times[choice]+self.durations[choice]-1
             finish_times[choice]=self.earliest_start_times[choice]+self.durations[choice]-1
@@ -238,8 +245,10 @@ class instance(object):
             for i in range(possible_start,possible_start+self.durations[activity]):
                 consumed=[0]*self.k
                 for j in range(self.k):
+                    #Find the resource consumed if scheduled now
                     consumed[j]=resource_consumption[i][j]+self.job_resources[activity][j]
                     if(consumed[j]>self.total_resources[j]):
+                        #If it exceeds consider next possible time
                         possible=False
                         break
                 if(not possible):
