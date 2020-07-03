@@ -18,3 +18,4 @@ Finally the networkx and pygraphviz library are used to draw the graph for visua
 matplotlib, networkx, pygraphviz are the only dependencies and all are required for visualisation purposes
 They can be installed with `pip3 install <module_name>`
 
+![demo](img/demo.png?raw=true "Demo image")
