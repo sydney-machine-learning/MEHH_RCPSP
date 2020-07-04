@@ -24,9 +24,9 @@ def find_index(index_list,value_list,stat='min'):
                 pos=i
     else: # stat='max'
         pos=0
-        maxv=value_list[index[list[0]]]
+        maxv=value_list[index_list[0]]
         for i in range(len(index_list)):
-            if(value_list[index_list[i]]<maxv or (value_list[index_list[i]]==maxv and index_list[i]<index_list[pos])):
+            if(value_list[index_list[i]]>maxv or (value_list[index_list[i]]==maxv and index_list[i]<index_list[pos])):
                 maxv=value_list[index_list[i]]
                 pos=i            
 
@@ -80,7 +80,16 @@ class instance(object):
         self.earliest_finish_times=[0]*(self.n_jobs+1)
         self.latest_start_times=[0]*(self.n_jobs+1)
         self.latest_finish_times=[0]*(self.n_jobs+1)
-
+        self.num_successors=[0]*(self.n_jobs+1)
+        self.mts=[0]*(self.n_jobs+1)
+        self.grpw=[0]*(self.n_jobs+1)
+        self.grd=[0]*(self.n_jobs+1)
+        #Calculate LFT,LST,EFT,EST
+        self.calculate_lt()
+        self.calculate_et()                 
+        self.calculate_mts()
+        self.calculate_grpw()
+        self.calculate_grd()
     def read_data(self):
         #Hardcoded function to read data in the given format
         file=open(self.filepath,"r")
@@ -179,11 +188,22 @@ class instance(object):
             self.earliest_finish_times[choice]=self.earliest_start_times[choice]+self.durations[choice]-1
             finish_times[choice]=self.earliest_start_times[choice]+self.durations[choice]-1
             scheduled[choice]=1
+    def calculate_mts(self):
+        for i in range(1,self.n_jobs+1):
+            self.mts[i]=len(nx.descendants(self.G,i))
+    def calculate_grpw(self):
+        
+        for i in range(1,self.n_jobs+1):
+            self.grpw[i]=self.durations[i]
+            for j in list(self.G_T.predecessors(i)):
+                self.grpw[i]+=self.durations[j]
+    def calculate_grd(self):
+        for i in range(1,self.n_jobs+1):
+            for j in range(self.k):
+                self.grd[i]+=self.durations[i]*self.job_resources[i][j]
 
-    def serial_sgs(self,option='forward',priority_rule='LST'):
-        #Calculate LFT,LST,EFT,EST
-        self.calculate_lt()
-        self.calculate_et()
+    def serial_sgs(self,option='forward',priority_rule='LFT'):
+
         #Initialize arrays to store computed values
         start_times=[0]*(self.n_jobs+1) #Start times of schedule
         finish_times=[0]*(self.n_jobs+1) #Finish times of schedule
@@ -235,9 +255,81 @@ class instance(object):
         if(option!='forward'):
             for i in range(1,len(finish_times)):
                 finish_times[i]=makespan-finish_times[i]
-
+        print(finish_times)
         return (makespan-self.mpm_time)/self.mpm_time,makespan
+    def parallel_sgs(self,option='forward',priority_rule='LFT'):
+        #Initialize arrays to store computed values
+        start_times=[0]*(self.n_jobs+1) #Start times of schedule
+        finish_times=[0]*(self.n_jobs+1) #Finish times of schedule
+        
+        scheduled=[0]*(self.n_jobs+1) #Boolean array to indicate if job is scheduled
+        
+        if(option =='forward'): 
+            #If forward scheduling use graph as it is
+            graph=self.G
+            start_vertex=1
+        else:#option = reverse 
+            #If reverse scheduling use transpose of grapj
+            graph=self.G_T
+            start_vertex=self.n_jobs
+        #Schedule the first dummy job
+        start_times[start_vertex]=0
+        finish_times[start_vertex]=0
+        scheduled[start_vertex]=1
+        
+        active_list=[start_vertex]
+        completed_list=[]
+        current_time=0
+        current_consumption=[0]*self.k
+        
+        while(len(active_list)+len(completed_list)<self.n_jobs):
             
+            current_time=finish_times[active_list[find_index(active_list,finish_times,'min')]]+1
+            
+            # print(current_time)
+            for i in active_list:
+                if(finish_times[i]<current_time):
+                    completed_list.append(i)
+                    for j in range(self.k):
+                        current_consumption[j]-=self.job_resources[i][j]
+            for i in completed_list:
+                if i in active_list:
+                    active_list.remove(i)
+            
+            #update resources
+            precedence_eligible=[]
+            eligible=[]
+            for i in range(1, self.n_jobs+1):
+                if(scheduled[i]==0):
+                    pred_list=list(graph.predecessors(i))
+                    if(set(pred_list)<=set(completed_list)):
+                        precedence_eligible.append(i)
+            for i in precedence_eligible:
+                if(self.current_feasible(i,current_consumption)):
+                    eligible.append(i)
+            while(len(eligible)>0):
+                choice=self.choose(eligible,priority_rule=priority_rule)
+                eligible.remove(choice)
+                if(not self.current_feasible(choice,current_consumption)):
+                    continue
+                
+                active_list.append(choice)
+                scheduled[choice]=1
+                start_times[choice]=current_time
+                finish_times[choice]=current_time+self.durations[choice]-1
+                #update resources,eligible?
+            
+                for j in range(self.k):
+                    current_consumption[j]+=self.job_resources[choice][j] #Update resource consumption
+                # print(current_consumption)
+                
+        makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
+
+        if(option!='forward'):
+            for i in range(1,len(finish_times)):
+                finish_times[i]=makespan-finish_times[i]
+        # print(finish_times)
+        return (makespan-self.mpm_time)/self.mpm_time,makespan
     def time_resource_available(self,activity,resource_consumption,start_time):
         possible_start=start_time #Iterate through all possible start times until one is found
         while(True):
@@ -259,7 +351,30 @@ class instance(object):
             else:
                 possible_start+=1
 
-
+    def time_feasible(self,activity,resource_consumption,time):
+        possible=True
+        for i in range(time,time+self.durations[activity]):
+            consumed=[0]*self.k
+            for j in range(self.k):
+                #Find the resource consumed if scheduled now
+                consumed[j]=resource_consumption[i][j]+self.job_resources[activity][j]
+                if(consumed[j]>self.total_resources[j]):
+                    #If it exceeds consider next possible time
+                    possible=False
+                    break
+            if(not possible):
+                break
+        return possible
+    def current_feasible(self,activity,current):
+        possible=True
+        consumed=[0]*self.k
+        for i in range(self.k):
+            consumed[i]=current[i]+self.job_resources[activity][i]
+            if(consumed[i]>self.total_resources[i]):
+                #If it exceeds consider next possible time
+                possible=False
+                break
+        return possible
             
     def choose(self,eligible,priority_rule='LFT'):
         if(priority_rule=='LFT'):
@@ -274,6 +389,14 @@ class instance(object):
             return sorted(eligible)[0]
         elif(priority_rule=='RAND'):
             return random.choice(eligible)
+        elif(priority_rule=='SPT'):
+            return eligible[find_index(eligible,self.durations,'min')]
+        elif(priority_rule=='MTS'):
+            return eligible[find_index(eligible,self.mts,'max')]
+        elif(priority_rule=='GRPW'):
+            return eligible[find_index(eligible,self.grpw,'max')]
+        elif(priority_rule=='GRD'):
+            return eligible[find_index(eligible,self.grd,'max')]
         else:
             print("Invalid priority rule")
 
@@ -294,22 +417,29 @@ read_param('./j90/param.txt',j90_params,48)
 read_param('./j120/param.txt',j120_params,60)
 
 
-priority_rules=['EST','EFT','LST','LFT','FIFO','RAND']
+#IRSM,ACS,WCS
+priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND']
 types=['j30','j60','j90','j120']
+
+x=instance('./j30/j3048_5.sm')
+
+print(x.parallel_sgs(priority_rule='GRPW'))
+print(x.grpw)
 
 
 if __name__ == '__main__':
     start=time.time()
     ans={'j30':{},'j60':{},'j90':{},'j120':{}}
     for typ in types:
-        all_files=j120_all=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
+        all_files=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
         for rule in priority_rules:
             total_dev=0;
             total_makespan=0
             
             for i in all_files:
+                
                 x=instance(i)
-                y=x.serial_sgs(option='forward',priority_rule=rule)
+                y=x.parallel_sgs(option='forward',priority_rule=rule)
                 print(i,y)
                 total_dev+=y[0]
                 total_makespan+=y[1]
