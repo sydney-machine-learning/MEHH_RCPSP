@@ -491,6 +491,6 @@ types=['j30','j60','j90','j120']
 # types=['j120']
 
 if __name__ == '__main__':
-    statistics.get_stats(parallel_priority_rules,types,'parallel','forward')
+    statistics.get_stats(series_priority_rules,types,'serial','forward')
     
 
