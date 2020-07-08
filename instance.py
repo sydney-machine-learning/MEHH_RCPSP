@@ -5,6 +5,7 @@ import random
 from os import listdir
 import pickle
 import time
+#Utility functions
 def read_param(filepath,dest,n_lines=48):
 
     file=open(filepath,"r")
@@ -13,8 +14,27 @@ def read_param(filepath,dest,n_lines=48):
         line=list(map(float,list(lines[i].strip().split())))
         dest.append(line[1:])
     file.close()
+def add_lists(l1,l2):
+    return [sum(x) for x in zip(l1, l2)]
 
+def sub_lists(l1,l2):
+    return [a - b for a, b in zip(l1, l2)]
+    
+def less_than(l1,l2):
+    for i in range(len(l1)):
+        if(l1[i]>l2[i]):
+            return False
+    return True
+def min_finish_time(ref_time,finish_times):
+    mft=10**8+10
+    for i in range(len(finish_times)):
+        if(finish_times[i]>ref_time):
+            mft=min(mft,finish_times[i])
+    if(mft==10**8+10):
+        mft=ref_time
+    return mft
 def find_index(index_list,value_list,stat='min'):
+    #Function to find the index from index list whose value in value list is minimum or maximum
     if(stat=='min'):
         pos=0
         minv=value_list[index_list[0]]
@@ -31,6 +51,7 @@ def find_index(index_list,value_list,stat='min'):
                 pos=i            
 
     return pos
+#Instance definition
 class instance(object):
     def __init__(self,filepath=""):
         #NOTE: All arrays are converted to 1 type indexing i.e arr[0] is dummy value
@@ -84,6 +105,11 @@ class instance(object):
         self.mts=[0]*(self.n_jobs+1)
         self.grpw=[0]*(self.n_jobs+1)
         self.grd=[0]*(self.n_jobs+1)
+        self.irsm=[0]*(self.n_jobs+1)
+        self.irsm[1]=0
+        self.wcs=[0]*(self.n_jobs+1)
+        self.acs=[0]*(self.n_jobs+1)
+        
         #Calculate LFT,LST,EFT,EST
         self.calculate_lt()
         self.calculate_et()                 
@@ -154,9 +180,12 @@ class instance(object):
             scheduled[choice]=1
         #Since we are scheduling in reverse we need to invert times i.e subtract it from makespan
         makespan=max(self.latest_finish_times)
+        
         for i in range(1,len(self.latest_finish_times)):
             self.latest_finish_times[i]=makespan-self.latest_start_times[i]
-            self.latest_start_times[i]=self.latest_finish_times[i]-self.durations[i]
+            self.latest_start_times[i]=self.latest_finish_times[i]-self.durations[i]+1
+        self.latest_finish_times[1]=0
+        self.latest_start_times[self.n_jobs]=self.latest_finish_times[self.n_jobs]
     def calculate_et(self):
         #Calculates EFT and EST and updates corresponding class variable
         scheduled=[0]*(self.n_jobs+1)
@@ -281,22 +310,21 @@ class instance(object):
         completed_list=[]
         current_time=0
         current_consumption=[0]*self.k
-        
+        #Maintain an active and completed disjoint lists and schedule till all jobs are in one of these lists
         while(len(active_list)+len(completed_list)<self.n_jobs):
-            
+            #Update the current time to the minimum of the finish times in the active list + 1
             current_time=finish_times[active_list[find_index(active_list,finish_times,'min')]]+1
             
-            # print(current_time)
+            #Remove completed jobs from active list add them to completed list and update resource consumption
             for i in active_list:
                 if(finish_times[i]<current_time):
                     completed_list.append(i)
-                    for j in range(self.k):
-                        current_consumption[j]-=self.job_resources[i][j]
+                    current_consumption=sub_lists(current_consumption,self.job_resources[i])
             for i in completed_list:
                 if i in active_list:
                     active_list.remove(i)
             
-            #update resources
+            #Find the eligible list by considering both precedence and resource feasibility
             precedence_eligible=[]
             eligible=[]
             for i in range(1, self.n_jobs+1):
@@ -305,31 +333,81 @@ class instance(object):
                     if(set(pred_list)<=set(completed_list)):
                         precedence_eligible.append(i)
             for i in precedence_eligible:
-                if(self.current_feasible(i,current_consumption)):
+                if(less_than(self.job_resources[i],sub_lists(self.total_resources,current_consumption))):
                     eligible.append(i)
+            #Schedule as many jobs as possible from the eligible list
             while(len(eligible)>0):
+                #Calculate the values for irsm,wcs,acs
+                if(len(eligible)>1):
+                    self.calculate_irsm(eligible,current_time,current_consumption,active_list,finish_times) 
+                #choose a job based on priority values
                 choice=self.choose(eligible,priority_rule=priority_rule)
-                eligible.remove(choice)
-                if(not self.current_feasible(choice,current_consumption)):
-                    continue
                 
+                #Schedule it set start/finish times and remove from eligible set
+                eligible.remove(choice)
                 active_list.append(choice)
                 scheduled[choice]=1
                 start_times[choice]=current_time
                 finish_times[choice]=current_time+self.durations[choice]-1
-                #update resources,eligible?
-            
-                for j in range(self.k):
-                    current_consumption[j]+=self.job_resources[choice][j] #Update resource consumption
-                # print(current_consumption)
-                
+                #Update current consumption
+                current_consumption=add_lists(current_consumption,self.job_resources[choice]) #Update resource consumption
+                #Remove jobs no longer eligible due to resource constraints
+                for i in eligible:
+                    if(not less_than(self.job_resources[i],sub_lists(self.total_resources,current_consumption))):
+                        continue
+        
         makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
 
-        if(option!='forward'):
+        if(option!='forward'):#If reverse scheduling invert times
             for i in range(1,len(finish_times)):
                 finish_times[i]=makespan-finish_times[i]
-        # print(finish_times)
         return (makespan-self.mpm_time)/self.mpm_time,makespan
+    def calculate_irsm(self,eligible,current_time,current_consumption, active_list,finish_times):
+        #Function that calculates the irsm/wcs/acs values
+        for j in eligible:
+            sum_e_vals=0
+            max_e_val=0
+            irsm_val=0
+            for i in eligible:
+                if(i==j):
+                    continue
+                irsm_val=max(self.E(j,i,current_time,current_consumption,active_list,finish_times)-self.latest_start_times[i],irsm_val)
+                max_e_val=max(self.E(i,j,current_time,current_consumption,active_list,finish_times),max_e_val)              
+                sum_e_vals+=max_e_val
+            self.irsm[j]=irsm_val
+            self.wcs[j]=self.latest_start_times[j]-max_e_val
+            self.acs[j]=self.latest_start_times[j]-(1/(len(eligible)-1))*sum_e_vals
+
+    def E(self,i,j,current_time,current_consumption, active_list, finish_times):
+        starts=[current_time+self.durations[i]]
+        if self.isGFP(i,j):
+            pass
+        elif self.isCSP(i,j,current_consumption):
+            starts.append(current_time)
+            
+        else:
+            new_consumption=[elem for elem in current_consumption]
+
+            new_time=current_time
+            finished=[0]*(len(active_list))
+            while (not self.isCSP(i,j,new_consumption)):
+                for act in active_list:
+                    if finish_times[act]==new_time and finished[active_list.index(act)]==0:
+                        finished[active_list.index(act)]=1
+                        new_consumption=sub_lists(new_consumption,self.job_resources[act])
+                new_time+=1
+            starts.append(new_time)
+        return min(starts)
+
+    def isGFP(self,i,j):
+        return not less_than(add_lists(self.job_resources[i],self.job_resources[j]),self.total_resources)
+ 
+    def isCSP(self,i,j,current_consumption):
+        new_consumption=add_lists(self.job_resources[i],self.job_resources[j])
+        new_consumption=add_lists(new_consumption,current_consumption)
+        return less_than(new_consumption,self.total_resources) 
+       
+    
     def time_resource_available(self,activity,resource_consumption,start_time):
         possible_start=start_time #Iterate through all possible start times until one is found
         while(True):
@@ -365,16 +443,7 @@ class instance(object):
             if(not possible):
                 break
         return possible
-    def current_feasible(self,activity,current):
-        possible=True
-        consumed=[0]*self.k
-        for i in range(self.k):
-            consumed[i]=current[i]+self.job_resources[activity][i]
-            if(consumed[i]>self.total_resources[i]):
-                #If it exceeds consider next possible time
-                possible=False
-                break
-        return possible
+
             
     def choose(self,eligible,priority_rule='LFT'):
         if(priority_rule=='LFT'):
@@ -397,6 +466,12 @@ class instance(object):
             return eligible[find_index(eligible,self.grpw,'max')]
         elif(priority_rule=='GRD'):
             return eligible[find_index(eligible,self.grd,'max')]
+        elif(priority_rule=='IRSM'):
+            return eligible[find_index(eligible,self.irsm,'min')]
+        elif(priority_rule=='WCS'):
+            return eligible[find_index(eligible,self.wcs,'min')]
+        elif(priority_rule=='ACS'):
+            return eligible[find_index(eligible,self.acs,'min')]
         else:
             print("Invalid priority rule")
 
@@ -417,15 +492,16 @@ read_param('./j90/param.txt',j90_params,48)
 read_param('./j120/param.txt',j120_params,60)
 
 
-#IRSM,ACS,WCS
-priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND']
-types=['j30','j60','j90','j120']
 
-x=instance('./j30/j3048_5.sm')
+# priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND']
+# types=['j30','j60','j90','j120']
 
-print(x.parallel_sgs(priority_rule='GRPW'))
-print(x.grpw)
+priority_rules=['ACS']
+types=['j120']
+x=instance('./j3048_10.sm')
 
+print(x.parallel_sgs(priority_rule='IRSM')) 
+print(x.irsm)
 
 if __name__ == '__main__':
     start=time.time()
@@ -435,14 +511,16 @@ if __name__ == '__main__':
         for rule in priority_rules:
             total_dev=0;
             total_makespan=0
-            
+            count=0
             for i in all_files:
-                
+                count+=1
                 x=instance(i)
                 y=x.parallel_sgs(option='forward',priority_rule=rule)
-                print(i,y)
+                
                 total_dev+=y[0]
                 total_makespan+=y[1]
+                print(i,y,(100*total_dev)/count)
+
             total_dev_percent=(100*total_dev)/len(all_files)
             print(typ,rule,total_dev_percent,total_makespan)
             ans[typ][rule]=[total_dev_percent,total_makespan]
@@ -472,3 +550,4 @@ if __name__ == '__main__':
     pickle.dump(ans,file)
     file.close()
     print("Time taken : ",time.time()-start)
+
