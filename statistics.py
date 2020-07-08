@@ -1,6 +1,7 @@
 import time
 from os import listdir
 from instance import instance
+import pickle
 def get_stats(priority_rules,types,mode='serial',option='forward'):
     start=time.time()
     ans={'j30':{},'j60':{},'j90':{},'j120':{}}
