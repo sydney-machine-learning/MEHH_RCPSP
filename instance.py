@@ -6,57 +6,23 @@ from os import listdir
 import pickle
 import time
 import statistics
-#Utility functions
-def read_param(filepath,dest,n_lines=48):
+from utils import read_param,add_lists,sub_lists, less_than, min_finish_time, find_index #Utility functions
 
-    file=open(filepath,"r")
-    lines=file.readlines()
-    for i in range(n_lines):
-        line=list(map(float,list(lines[i].strip().split())))
-        dest.append(line[1:])
-    file.close()
-def add_lists(l1,l2):
-    return [sum(x) for x in zip(l1, l2)]
-
-def sub_lists(l1,l2):
-    return [a - b for a, b in zip(l1, l2)]
-    
-def less_than(l1,l2):
-    for i in range(len(l1)):
-        if(l1[i]>l2[i]):
-            return False
-    return True
-def min_finish_time(ref_time,finish_times):
-    mft=10**8+10
-    for i in range(len(finish_times)):
-        if(finish_times[i]>ref_time):
-            mft=min(mft,finish_times[i])
-    if(mft==10**8+10):
-        mft=ref_time
-    return mft
-def find_index(index_list,value_list,stat='min'):
-    #Function to find the index from index list whose value in value list is minimum or maximum
-    if(stat=='min'):
-        pos=0
-        minv=value_list[index_list[0]]
-        for i in range(len(index_list)):
-            if(value_list[index_list[i]]<minv or (value_list[index_list[i]]==minv and index_list[i]<index_list[pos])):
-                minv=value_list[index_list[i]]
-                pos=i
-    else: # stat='max'
-        pos=0
-        maxv=value_list[index_list[0]]
-        for i in range(len(index_list)):
-            if(value_list[index_list[i]]>maxv or (value_list[index_list[i]]==maxv and index_list[i]<index_list[pos])):
-                maxv=value_list[index_list[i]]
-                pos=i            
-
-    return pos
 #Instance definition
 class instance(object):
+    """
+        This is a class for a problem instance and contains all the necessary information and methods for scheduling
+    """
     def __init__(self,filepath=""):
-        #NOTE: All arrays are converted to 1 type indexing i.e arr[0] is dummy value
-        #Therefore arr[job_no] will give the value corresponding to the job_no
+        """
+        The constructor for instance class
+        
+        Should be initialised with the filepath to input file
+        NOTE: All arrays are converted to 1 type indexing i.e arr[0] is a dummy value, therefore arr[job_no] will give the value corresponding to the job_no
+        arr[1] corresponds to the dummy job which is part of the rcpsp and has 0 duration
+        """
+        
+        
         self.filepath=filepath
         self.n_jobs=0 #Including supersource and sink
         self.horizon=0 #Sum of all durations
@@ -74,7 +40,7 @@ class instance(object):
         self.rs=0.0 #Resource strength
         self.parameter_number=0 #Parameter combination number as indicated in param.txt 
         self.instance_number=0#Instance number for a particular parameter combination
-        self.instance_type=''#'j30'/'j60'/'j90'/'j120'
+        self.instance_type=''#'j30' / 'j60' / 'j90' / 'j120'
         if(filepath):
             filename=list(filepath.split('/'))[-1]
             filename=list(filename.split('_'))
@@ -89,6 +55,9 @@ class instance(object):
                 self.instance_number=int(list(filename[1].split('.'))[0])
                 self.instance_type=filename[0][0:4] #j120 type
             else:
+                self.parameter_number=0
+                self.instance_number=0
+                self.instance_type=''
                 print("Invalid file name")
             
             self.read_data()
@@ -107,18 +76,17 @@ class instance(object):
         self.grpw=[0]*(self.n_jobs+1)
         self.grd=[0]*(self.n_jobs+1)
         self.irsm=[0]*(self.n_jobs+1)
-        self.irsm[1]=0
         self.wcs=[0]*(self.n_jobs+1)
         self.acs=[0]*(self.n_jobs+1)
         
         #Calculate LFT,LST,EFT,EST
-        self.calculate_lt()
-        self.calculate_et()                 
+        self.calculate_lt() # Calculates both LFT and LST
+        self.calculate_et() # Calculates both EST and EFT
         self.calculate_mts()
         self.calculate_grpw()
         self.calculate_grd()
     def read_data(self):
-        #Hardcoded function to read data in the given format
+        """Function for reading data and updating attributes from a fixed format .sm file"""
         file=open(self.filepath,"r")
         lines=file.readlines()
         self.n_jobs=int(list(lines[5].strip().split(':'))[1].strip())
@@ -139,19 +107,20 @@ class instance(object):
         file.close()
 
     def draw(self):
-        #Draws graph of instance
-        node_colors=['green']
-        node_sizes=[250]
+        """
+        Function to draw the precedence relations in the form of a DAG for visualisation purposes
+        """
+        node_colors=['green'] # Start node is green
+        node_sizes=[250] #Start node is bigger
         for i in range(len(self.adj)-3):
             node_colors.append('red')
             node_sizes.append(100)
-        node_sizes.append(250)
-        node_colors.append('green')
+        node_sizes.append(250) #End node is bigger
+        node_colors.append('green') #End node is green
         nx.draw(self.G, pos=nx.nx_agraph.graphviz_layout(self.G),node_color=node_colors, edge_color='b',node_size=node_sizes)
         plt.show()
     def calculate_lt(self):
-        #Calculates LFT and LST and updates corresponding class variable 
-        # Schedule in the same way as serial SGS without considering the resource constraints
+        """ Calculates values of LFT and LST for each job (Does a serial SGS without considering resource constraints)"""
         scheduled=[0]*(self.n_jobs+1)
         graph=self.G_T
         start_vertex=self.n_jobs        
@@ -181,14 +150,13 @@ class instance(object):
             scheduled[choice]=1
         #Since we are scheduling in reverse we need to invert times i.e subtract it from makespan
         makespan=max(self.latest_finish_times)
-        
         for i in range(1,len(self.latest_finish_times)):
             self.latest_finish_times[i]=makespan-self.latest_start_times[i]
             self.latest_start_times[i]=self.latest_finish_times[i]-self.durations[i]+1
         self.latest_finish_times[1]=0
         self.latest_start_times[self.n_jobs]=self.latest_finish_times[self.n_jobs]
     def calculate_et(self):
-        #Calculates EFT and EST and updates corresponding class variable
+        """ Calculates values of EFT and EST for each job (Does a serial SGS without considering resource constraints)"""
         scheduled=[0]*(self.n_jobs+1)
         finish_times=[0]*(self.n_jobs+1)
         graph=self.G
@@ -219,43 +187,48 @@ class instance(object):
             finish_times[choice]=self.earliest_start_times[choice]+self.durations[choice]-1
             scheduled[choice]=1
     def calculate_mts(self):
+        """Calculates Most total succesors(MTS) for each job"""
         for i in range(1,self.n_jobs+1):
             self.mts[i]=len(nx.descendants(self.G,i))
     def calculate_grpw(self):
-        
+        """Calculates Greatest Rank Position Wight(GRPW) for each job"""
         for i in range(1,self.n_jobs+1):
             self.grpw[i]=self.durations[i]
             for j in list(self.G_T.predecessors(i)):
                 self.grpw[i]+=self.durations[j]
     def calculate_grd(self):
+        """Calculates Greatest Resource Demand(GRD) for each job"""
         for i in range(1,self.n_jobs+1):
             for j in range(self.k):
                 self.grd[i]+=self.durations[i]*self.job_resources[i][j]
-
     def serial_sgs(self,option='forward',priority_rule='LFT'):
+        """
+            Implements the Serial Schedule Generation Scheme
 
+            Parameters:
+                option : Forward or reverse scheduling
+                priority _rule : Priority rule used. One of ['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD']
+            
+            Returns:
+                Tuple of (Fractional deviation , makespan)
+                Fractional deviation = (makespan-self.mpm_time)/self.mpm_time,makespan
+        """
         #Initialize arrays to store computed values
         start_times=[0]*(self.n_jobs+1) #Start times of schedule
         finish_times=[0]*(self.n_jobs+1) #Finish times of schedule
         earliest_start=[0]*(self.n_jobs+1) #Earliest precedence feasible start times(Different from EST)
         resource_consumption=[[0 for col in range(self.k)] for row in range(self.horizon+1)] #2D array of resource consumption of size n x k
         scheduled=[0]*(self.n_jobs+1) #Boolean array to indicate if job is scheduled
-        
-        
         if(option =='forward'): 
-            #If forward scheduling use graph as it is
-            graph=self.G
+            graph=self.G #If forward scheduling use graph as it is
             start_vertex=1
         else:#option = reverse 
-            #If reverse scheduling use transpose of grapj
-            graph=self.G_T
+            graph=self.G_T #If reverse scheduling use transpose of grapj
             start_vertex=self.n_jobs
-        #Schedule the first dummy job
-        start_times[start_vertex]=0
+        start_times[start_vertex]=0 #Schedule the first dummy job
         finish_times[start_vertex]=0
         scheduled[start_vertex]=1
-        #Perform n-1 iterations (Dummy job already scheduled)
-        for g in range(1,self.n_jobs):
+        for g in range(1,self.n_jobs): #Perform n-1 iterations (Dummy job already scheduled)
             eligible=[] #List of eligible jobs based on precedence only
             scheduled_list=[] #List of jobs already scheduled
             for i in range(1,self.n_jobs+1):
@@ -272,50 +245,50 @@ class instance(object):
             max_pred_finish_time=0 #Find the maximum precedence feasible start time for chosen job
             for i in pred_lis:
                 max_pred_finish_time=max(finish_times[i],max_pred_finish_time)
-
             earliest_start[choice]=max_pred_finish_time+1 #Update the found value in array
+            scheduled[choice]=1
             feasible_start_time=self.time_resource_available(choice,resource_consumption,earliest_start[choice]) #Find the earliest resource feasible time
             finish_times[choice]=feasible_start_time+self.durations[choice]-1 #Update finish time
             for i in range(feasible_start_time,finish_times[choice]+1):
-                for j in range(self.k):
-                    resource_consumption[i][j]+=self.job_resources[choice][j] #Update resource consumption
-            scheduled[choice]=1
+                resource_consumption[i]=add_lists(resource_consumption[i],self.job_resources[choice]) #Update resource consumption
         makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
-
         if(option!='forward'):
             for i in range(1,len(finish_times)):
-                finish_times[i]=makespan-finish_times[i]
-        print(finish_times)
+                finish_times[i]=makespan-start_times[i]
+                start_times[i]=finish_times[i]-durations[i]+1
         return (makespan-self.mpm_time)/self.mpm_time,makespan
     def parallel_sgs(self,option='forward',priority_rule='LFT'):
+        """
+            Implements the Parallel Schedule Generation Scheme
+
+            Parameters:
+                option : Forward or reverse scheduling
+                priority _rule : Priority rule used. One of ['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD','IRSM','ACS','WCS']
+            
+            Returns:
+                Tuple of (Fractional deviation , makespan)
+                Fractional deviation = (makespan-self.mpm_time)/self.mpm_time,makespan
+        """
         #Initialize arrays to store computed values
         start_times=[0]*(self.n_jobs+1) #Start times of schedule
         finish_times=[0]*(self.n_jobs+1) #Finish times of schedule
-        
         scheduled=[0]*(self.n_jobs+1) #Boolean array to indicate if job is scheduled
-        
         if(option =='forward'): 
-            #If forward scheduling use graph as it is
-            graph=self.G
+            graph=self.G #If forward scheduling use graph as it is
             start_vertex=1
         else:#option = reverse 
-            #If reverse scheduling use transpose of grapj
-            graph=self.G_T
+            graph=self.G_T #If reverse scheduling use transpose of grapj
             start_vertex=self.n_jobs
-        #Schedule the first dummy job
-        start_times[start_vertex]=0
+        start_times[start_vertex]=0 #Schedule the first dummy job
         finish_times[start_vertex]=0
         scheduled[start_vertex]=1
-        
         active_list=[start_vertex]
         completed_list=[]
         current_time=0
         current_consumption=[0]*self.k
         #Maintain an active and completed disjoint lists and schedule till all jobs are in one of these lists
         while(len(active_list)+len(completed_list)<self.n_jobs):
-            #Update the current time to the minimum of the finish times in the active list + 1
-            current_time=finish_times[active_list[find_index(active_list,finish_times,'min')]]+1
-            
+            current_time=finish_times[active_list[find_index(active_list,finish_times,'min')]]+1 #Update the current time to the minimum of the finish times in the active list + 1
             #Remove completed jobs from active list add them to completed list and update resource consumption
             for i in active_list:
                 if(finish_times[i]<current_time):
@@ -338,48 +311,63 @@ class instance(object):
                     eligible.append(i)
             #Schedule as many jobs as possible from the eligible list
             while(len(eligible)>0):
-                #Calculate the values for irsm,wcs,acs
-                if(len(eligible)>1):
-                    self.calculate_irsm(eligible,current_time,current_consumption,active_list,finish_times) 
-                #choose a job based on priority values
-                choice=self.choose(eligible,priority_rule=priority_rule)
-                
-                #Schedule it set start/finish times and remove from eligible set
-                eligible.remove(choice)
+                if(len(eligible)>1 and priority_rule in ['IRSM','WCS','ACS']):
+                    self.calculate_dynamic_priority_rules(eligible,current_time,current_consumption,active_list,finish_times)  #Calculate the values for irsm,wcs,acs
+                choice=self.choose(eligible,priority_rule=priority_rule) #choose a job based on priority values
+                eligible.remove(choice) #Schedule it, set start/finish times, and remove from eligible set
+                if(not less_than(add_lists(current_consumption,self.job_resources[choice]),self.total_resources)):
+                    continue
                 active_list.append(choice)
                 scheduled[choice]=1
                 start_times[choice]=current_time
                 finish_times[choice]=current_time+self.durations[choice]-1
-                #Update current consumption
                 current_consumption=add_lists(current_consumption,self.job_resources[choice]) #Update resource consumption
-                #Remove jobs no longer eligible due to resource constraints
-                for i in eligible:
-                    if(not less_than(self.job_resources[i],sub_lists(self.total_resources,current_consumption))):
-                        continue
+
         
         makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
-
         if(option!='forward'):#If reverse scheduling invert times
             for i in range(1,len(finish_times)):
-                finish_times[i]=makespan-finish_times[i]
+                finish_times[i]=makespan-start_times[i]
+                start_times[i]=finish_times[i]-durations[i]+1
         return (makespan-self.mpm_time)/self.mpm_time,makespan
-    def calculate_irsm(self,eligible,current_time,current_consumption, active_list,finish_times):
-        #Function that calculates the irsm/wcs/acs values
+    def calculate_dynamic_priority_rules(self,eligible,current_time,current_consumption, active_list,finish_times):
+        """
+            Calculates IRSM, WCS, ACS priority values
+
+            Parameters: 
+                eligible: eligible set of jobs based on both precedence and resource constraints
+                current_time: Current time when priorities are being calculated
+                current_consumption: Amount of resources being consumed currently
+                active_list: List of jobs which are scheduled and currently active
+                finish_times: Finish times of each job
+        """
         for j in eligible:
-            sum_e_vals=0
-            max_e_val=0
-            irsm_val=0
+            sum_e_vals=0 #Sum of E(i,j) over all i
+            max_e_val=0 #Max of E(i,j) over all i
+            irsm_val=0 # Max of max(0,E(j,i) -LS_i) over all i
             for i in eligible:
-                if(i==j):
-                    continue
-                irsm_val=max(self.E(j,i,current_time,current_consumption,active_list,finish_times)-self.latest_start_times[i],irsm_val)
-                max_e_val=max(self.E(i,j,current_time,current_consumption,active_list,finish_times),max_e_val)              
-                sum_e_vals+=max_e_val
+                if(i!=j):
+                    irsm_val=max(self.earliest_start(j,i,current_time,current_consumption,active_list,finish_times)-self.latest_start_times[i],irsm_val)
+                    curr_e_val=self.earliest_start(i,j,current_time,current_consumption,active_list,finish_times)
+                    max_e_val=max(curr_e_val,max_e_val)              
+                    sum_e_vals+=curr_e_val
             self.irsm[j]=irsm_val
             self.wcs[j]=self.latest_start_times[j]-max_e_val
             self.acs[j]=self.latest_start_times[j]-(1/(len(eligible)-1))*sum_e_vals
 
-    def E(self,i,j,current_time,current_consumption, active_list, finish_times):
+    def earliest_start(self,i,j,current_time,current_consumption, active_list, finish_times):
+        """
+            Find's the earliest time j can be scheduled if i is scheduled at current_time
+
+            Parameters: 
+                i,j : Jobs
+                current_time: Current time when priorities are being calculated
+                current_consumption: Amount of resources being consumed currently
+                active_list: List of jobs which are scheduled and currently active
+                finish_times: Finish times of each job
+            Returns:
+                E(i,j)
+        """
         starts=[current_time+self.durations[i]]
         if self.isGFP(i,j):
             pass
@@ -401,9 +389,11 @@ class instance(object):
         return min(starts)
 
     def isGFP(self,i,j):
+        """Checks if (i,j) is a Generally forbidden pair"""
         return not less_than(add_lists(self.job_resources[i],self.job_resources[j]),self.total_resources)
  
     def isCSP(self,i,j,current_consumption):
+        "Checks if (i,j) is a currently schedulable pair(simultaneously)"
         new_consumption=add_lists(self.job_resources[i],self.job_resources[j])
         new_consumption=add_lists(new_consumption,current_consumption)
         return less_than(new_consumption,self.total_resources) 
@@ -444,8 +434,7 @@ class instance(object):
             if(not possible):
                 break
         return possible
-
-            
+   
     def choose(self,eligible,priority_rule='LFT'):
         if(priority_rule=='LFT'):
             return eligible[find_index(eligible,self.latest_finish_times,'min')]
@@ -494,12 +483,14 @@ read_param('./j120/param.txt',j120_params,60)
 
 
 
-# priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND']
-# types=['j30','j60','j90','j120']
+series_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD']
+parallel_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD','IRSM','ACS','WCS']
+types=['j30','j60','j90','j120']
 
-priority_rules=['ACS']
-types=['j120']
+# priority_rules=['IRSM']
+# types=['j120']
 
 if __name__ == '__main__':
-    statistics.get_stats(priority_rules,types,'parallel','forward')
+    statistics.get_stats(series_priority_rules,types,'serial','forward')
+    
 
