@@ -41,7 +41,9 @@ Calculate_activity_attributes(): Normalises and calculates activity attributes w
 
 Earliest_start(): Calculates E(i,j). The first time j can be scheduled if i is scheduled at the current time
 
-Serial SGS
+## Results
+### Priority rules
+### Serial SGS
 % Deviation
      j30    j60    j90    j120    
 EST  24.63  23.82  23.24  60.55  
@@ -68,9 +70,11 @@ RAND  32280  44542  52953  95521
 GRPW  31438  43626  51971 93693  
 GRD  31865  44243  52765  95515
 
-Parallel SGS
+### Parallel SGS
 % Deviation
+
      j30    j60    j90    j120    
+     
 EST  23.11  21.68  21.45  55.78  
 EFT  23.66  22.46  21.82  55.77  
 LST  19.31  17.12  15.80  44.04  
@@ -86,7 +90,9 @@ ACS  18.77  16.92  15.78  43.71
 WCS  18.44  16.88  15.37  43.53    
 
 Makespan
-       j30     j60     j90     j120     
+
+       j30     j60     j90     j120 
+       
 EST  30696  42199  50554  88471  
 EFT  30844  42480  50720  88472  
 LST  29757  40596  48191  81753  
