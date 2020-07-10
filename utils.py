@@ -43,3 +43,9 @@ def find_index(index_list,value_list,stat='min'):
                 pos=i            
 
     return pos
+def normalised(arr,norm=0):
+    if(norm==0):
+        newarr=[i/max(arr) for i in arr]
+    else:
+        newarr=[i/norm for i in arr]
+    return newarr

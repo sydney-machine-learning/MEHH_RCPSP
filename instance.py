@@ -6,7 +6,7 @@ from os import listdir
 import pickle
 import time
 import statistics
-from utils import read_param,add_lists,sub_lists, less_than, min_finish_time, find_index #Utility functions
+from utils import read_param,add_lists,sub_lists, less_than, min_finish_time, find_index,normalised #Utility functions
 
 #Instance definition
 class instance(object):
@@ -73,6 +73,7 @@ class instance(object):
         self.latest_finish_times=[0]*(self.n_jobs+1)
         self.num_successors=[0]*(self.n_jobs+1)
         self.mts=[0]*(self.n_jobs+1)
+        self.mtp=[0]*(self.n_jobs+1)
         self.grpw=[0]*(self.n_jobs+1)
         self.grd=[0]*(self.n_jobs+1)
         self.irsm=[0]*(self.n_jobs+1)
@@ -83,8 +84,7 @@ class instance(object):
         self.calculate_lt() # Calculates both LFT and LST
         self.calculate_et() # Calculates both EST and EFT
         self.calculate_mts()
-        self.calculate_grpw()
-        self.calculate_grd()
+        self.calulate_activity_attributes()
     def read_data(self):
         """Function for reading data and updating attributes from a fixed format .sm file"""
         file=open(self.filepath,"r")
@@ -187,9 +187,11 @@ class instance(object):
             finish_times[choice]=self.earliest_start_times[choice]+self.durations[choice]-1
             scheduled[choice]=1
     def calculate_mts(self):
-        """Calculates Most total succesors(MTS) for each job"""
+        """Calculates Total succesors and Total predecessors for each job"""
         for i in range(1,self.n_jobs+1):
             self.mts[i]=len(nx.descendants(self.G,i))
+        for i in range(1,self.n_jobs+1):
+            self.mtp[i]=len(nx.descendants(self.G_T,i))
     def calculate_grpw(self):
         """Calculates Greatest Rank Position Wight(GRPW) for each job"""
         for i in range(1,self.n_jobs+1):
@@ -201,7 +203,7 @@ class instance(object):
         for i in range(1,self.n_jobs+1):
             for j in range(self.k):
                 self.grd[i]+=self.durations[i]*self.job_resources[i][j]
-    def serial_sgs(self,option='forward',priority_rule='LFT'):
+    def serial_sgs(self,option='forward',priority_rule='LFT',priorities=[]):
         """
             Implements the Serial Schedule Generation Scheme
 
@@ -213,6 +215,10 @@ class instance(object):
                 Tuple of (Fractional deviation , makespan)
                 Fractional deviation = (makespan-self.mpm_time)/self.mpm_time,makespan
         """
+        if(priority_rule=='GRPW'):
+            self.calculate_grpw()
+        elif(priority_rule=='GRD'):
+            self.calculate_grd()
         #Initialize arrays to store computed values
         start_times=[0]*(self.n_jobs+1) #Start times of schedule
         finish_times=[0]*(self.n_jobs+1) #Finish times of schedule
@@ -240,7 +246,7 @@ class instance(object):
                     pred_lis=list(graph.predecessors(i))
                     if(set(pred_lis)<=set(scheduled_list)): #Job is eligible if its predecossors are a subset of scheduled jobs
                         eligible.append(i)
-            choice=self.choose(eligible,priority_rule=priority_rule) #Choose a job according to some priority rule
+            choice=self.choose(eligible,priority_rule=priority_rule,priorities=priorities) #Choose a job according to some priority rule
             pred_lis=list(graph.predecessors(choice)) #find predecessors of chosen job
             max_pred_finish_time=0 #Find the maximum precedence feasible start time for chosen job
             for i in pred_lis:
@@ -257,7 +263,8 @@ class instance(object):
                 finish_times[i]=makespan-start_times[i]
                 start_times[i]=finish_times[i]-durations[i]+1
         return (makespan-self.mpm_time)/self.mpm_time,makespan
-    def parallel_sgs(self,option='forward',priority_rule='LFT'):
+    def parallel_sgs(self,option='forward',priority_rule='LFT',priorities=[]):
+
         """
             Implements the Parallel Schedule Generation Scheme
 
@@ -269,6 +276,10 @@ class instance(object):
                 Tuple of (Fractional deviation , makespan)
                 Fractional deviation = (makespan-self.mpm_time)/self.mpm_time,makespan
         """
+        if(priority_rule=='GRPW'):
+            self.calculate_grpw()
+        elif(priority_rule=='GRD'):
+            self.calculate_grd()
         #Initialize arrays to store computed values
         start_times=[0]*(self.n_jobs+1) #Start times of schedule
         finish_times=[0]*(self.n_jobs+1) #Finish times of schedule
@@ -313,7 +324,7 @@ class instance(object):
             while(len(eligible)>0):
                 if(len(eligible)>1 and priority_rule in ['IRSM','WCS','ACS']):
                     self.calculate_dynamic_priority_rules(eligible,current_time,current_consumption,active_list,finish_times)  #Calculate the values for irsm,wcs,acs
-                choice=self.choose(eligible,priority_rule=priority_rule) #choose a job based on priority values
+                choice=self.choose(eligible,priority_rule=priority_rule,priorities=priorities) #choose a job based on priority values
                 eligible.remove(choice) #Schedule it, set start/finish times, and remove from eligible set
                 if(not less_than(add_lists(current_consumption,self.job_resources[choice]),self.total_resources)):
                     continue
@@ -435,35 +446,67 @@ class instance(object):
                 break
         return possible
    
-    def choose(self,eligible,priority_rule='LFT'):
-        if(priority_rule=='LFT'):
-            return eligible[find_index(eligible,self.latest_finish_times,'min')]
-        elif(priority_rule=='LST'):
-            return eligible[find_index(eligible,self.latest_start_times,'min')]
-        elif(priority_rule=='EST'):
-            return eligible[find_index(eligible,self.earliest_start_times,'min')]
-        elif(priority_rule=='EFT'):
-            return eligible[find_index(eligible,self.earliest_finish_times,'min')]
-        elif(priority_rule=='FIFO'):
-            return sorted(eligible)[0]
-        elif(priority_rule=='RAND'):
-            return random.choice(eligible)
-        elif(priority_rule=='SPT'):
-            return eligible[find_index(eligible,self.durations,'min')]
-        elif(priority_rule=='MTS'):
-            return eligible[find_index(eligible,self.mts,'max')]
-        elif(priority_rule=='GRPW'):
-            return eligible[find_index(eligible,self.grpw,'max')]
-        elif(priority_rule=='GRD'):
-            return eligible[find_index(eligible,self.grd,'max')]
-        elif(priority_rule=='IRSM'):
-            return eligible[find_index(eligible,self.irsm,'min')]
-        elif(priority_rule=='WCS'):
-            return eligible[find_index(eligible,self.wcs,'min')]
-        elif(priority_rule=='ACS'):
-            return eligible[find_index(eligible,self.acs,'min')]
+    def choose(self,eligible,priority_rule='LFT',priorities=[]):
+
+        if(priorities==[]):
+            if(priority_rule=='LFT'):
+                return eligible[find_index(eligible,self.latest_finish_times,'min')]
+            elif(priority_rule=='LST'):
+                return eligible[find_index(eligible,self.latest_start_times,'min')]
+            elif(priority_rule=='EST'):
+                return eligible[find_index(eligible,self.earliest_start_times,'min')]
+            elif(priority_rule=='EFT'):
+                return eligible[find_index(eligible,self.earliest_finish_times,'min')]
+            elif(priority_rule=='FIFO'):
+                return sorted(eligible)[0]
+            elif(priority_rule=='RAND'):
+                return random.choice(eligible)
+            elif(priority_rule=='SPT'):
+                return eligible[find_index(eligible,self.durations,'min')]
+            elif(priority_rule=='MTS'):
+                return eligible[find_index(eligible,self.mts,'max')]
+            elif(priority_rule=='GRPW'):
+                return eligible[find_index(eligible,self.grpw,'max')]
+            elif(priority_rule=='GRD'):
+                return eligible[find_index(eligible,self.grd,'max')]
+            elif(priority_rule=='IRSM'):
+                return eligible[find_index(eligible,self.irsm,'min')]
+            elif(priority_rule=='WCS'):
+                return eligible[find_index(eligible,self.wcs,'min')]
+            elif(priority_rule=='ACS'):
+                return eligible[find_index(eligible,self.acs,'min')]
+            else:
+                print("Invalid priority rule")
         else:
-            print("Invalid priority rule")
+            return eligible[find_index(eligible,priorities,'min')]
+    
+    def calulate_activity_attributes(self):
+        self.earliest_start_times=normalised(self.earliest_start_times)
+        self.earliest_finish_times=normalised(self.earliest_finish_times)
+        self.latest_start_times=normalised(self.latest_start_times)
+        self.latest_finish_times=normalised(self.latest_finish_times)
+        self.mts=normalised(self.mts,self.n_jobs-1)
+        self.mtp=normalised(self.mtp,self.n_jobs-1)
+        self.rr=[0]*(self.n_jobs+1)
+        self.avg_rreq=[0]*(self.n_jobs+1)
+        self.min_rreq=[0]*(self.n_jobs+1)
+        self.max_rreq=[0]*(self.n_jobs+1)
+        for i in range(1,self.n_jobs+1):
+            count=0
+            sumv=0
+            minv=self.job_resources[i][0]/self.total_resources[0]
+            maxv=self.job_resources[i][0]/self.total_resources[0]
+            for j in range(self.k):
+                val=self.job_resources[i][j]
+                sumv+=(val/self.total_resources[j])
+                minv=min(minv,val/self.total_resources[j])
+                maxv=max(maxv,val/self.total_resources[j])
+                if(val>0):
+                    count+=1
+            self.rr[i]=count/self.k
+            self.avg_rreq[i]=sumv/self.k
+            self.min_rreq[i]=minv
+            self.max_rreq[i]=maxv
 
     def __str__(self):
         info="Instance Type : " + self.instance_type+"\nParameter number : "+str(self.parameter_number)+"\nInstance number : "+str(self.instance_number)+"\n"
@@ -487,10 +530,12 @@ series_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW',
 parallel_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD','IRSM','ACS','WCS']
 types=['j30','j60','j90','j120']
 
-# priority_rules=['IRSM']
-# types=['j120']
+series_priority_rules=['']
+types=['j30']
+x=instance('./j30/j3048_10.sm')
+
 
 if __name__ == '__main__':
-    statistics.get_stats(series_priority_rules,types,'serial','forward')
-    
+    statistics.get_stats(instance,series_priority_rules,types,'serial','forward')
+    pass
 
