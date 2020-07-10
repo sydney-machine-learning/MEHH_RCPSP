@@ -1,0 +1,31 @@
+Function | Type | Sample_Size | Generations | Mate_prob | Mutate_prob| % Deviation | Makespan |
+
+
+
+min(min(MaxRReq, TSC), MaxRReq) : 
+          j30         1               1          0.5           0.1         37.59        34188       
+
+max(TPC, LS) : 
+          j30         10               20          0.5           0.1         19.96        29906       
+
+max(LS, max(LF, LF)) : 
+          j60         10               20          0.5           0.1         18.13        40931       
+
+add(MaxRReq, EF) : 
+          j90         10               20          0.5           0.1         29.11        53754       
+
+add(LF, protectedDiv(neg(RR), max(ES, LS))) : 
+          j90         40               30          0.5           0.3         17.8        49016       
+
+max(LS, mul(max(min(AvgRReq, TPC), mul(TSC, TPC)), AvgRReq)) : 
+          j120         40               30          0.5           0.3         46.73        83268       
+
+max(LS, AvgRReq) : 
+          j60         40               30          0.5           0.3         17.99        40889       
+
+min(LF, add(RR, max(ES, MaxRReq))) : 
+          j30         40               30          0.5           0.3         20.83        30081       
+
+max(LS, min(mul(max(mul(TSC, AvgRReq), add(AvgRReq, AvgRReq)), sub(protectedDiv(ES, RR), EF)), min(LS, AvgRReq))) : 
+          j60         40               30          0.5           0.3         17.45        40699       
+
