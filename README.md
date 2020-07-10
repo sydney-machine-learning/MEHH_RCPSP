@@ -19,3 +19,14 @@ matplotlib, networkx, pygraphviz are the only dependencies and all are required 
 They can be installed with `pip3 install <module_name>`
 
 ![demo](img/demo.png?raw=true "Demo image")
+
+Member functions:
+init(): The constructor for instance class. Should be initialised with filepath to .sm file
+read_data() : Reads data from file and updates all attributes
+draw(): visualise precedence relations
+calculate_et,lt,mts,grpw,grd(): Calculates the priority values for each rule
+Serial_sgs(): implements the serial schedule generation scheme
+Parallel_sgs(): implements the parallel schedule generation scheme
+calculate _dynamic_priority_rules(): calculates the priority functions such as irsm,wcs,acs which can not be precomputed and computed at schedule time
+Calculate_activity_attributes(): Normalises and calculates activity attributes which will be used as attributes in the GP 
+Earliest_start(): Calculates E(i,j). The first time j can be scheduled if i is scheduled at the current time
