@@ -3,7 +3,7 @@ from os import listdir
 # from instance import instance
 import sys
 import pickle
-def get_stats(instance,priority_rules,types,mode='serial',option='forward'):
+def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_precomputed=True):
     start=time.time()
     ans={'j30':{},'j60':{},'j90':{},'j120':{}}
     for typ in types:
@@ -14,7 +14,7 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward'):
             count=0
             for i in all_files:
                 count+=1
-                x=instance(i)
+                x=instance(i,use_precomputed=use_precomputed)
                 if(mode=='parallel'):
                     y=x.parallel_sgs(option=option,priority_rule=rule)
                 elif mode=='serial':
@@ -56,7 +56,7 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward'):
     file.close()
     print("Time taken : ",time.time()-start) 
 
-def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',option='forward'):
+def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',option='forward',use_precomputed=True):
     
     all_files=["./"+inst_type+'/'+i for i in listdir('./'+inst_type) if i!='param.txt']
     
@@ -65,7 +65,7 @@ def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',o
     count=0
     for file in all_files:
         count+=1
-        x=instance(file)
+        x=instance(file,use_precomputed=use_precomputed)
         priorities=[]
         priorities=[0]*(x.n_jobs+1)
         for job in range(1,x.n_jobs+1):
