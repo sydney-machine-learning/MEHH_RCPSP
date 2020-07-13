@@ -107,3 +107,20 @@ IRSM  29708  40880  48446  83087
 ACS  29626  40540  48188  81569  
 WCS  29551  40523  48015  81465  
 Time taken :  1901.825050354004
+
+
+
+### GP
+Using GP to evolve the priority rules we get a lower makespan than any of the priority rules
+
+j30 18.33
+
+j60 17.12
+
+j90 15.37
+
+j120 42.89
+
+Evolved function tree 
+
+![tree](gp_trees/42.88__2.png?raw=true "GP tree")

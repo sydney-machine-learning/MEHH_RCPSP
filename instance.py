@@ -13,7 +13,7 @@ class instance(object):
     """
         This is a class for a problem instance and contains all the necessary information and methods for scheduling
     """
-    def __init__(self,filepath=""):
+    def __init__(self,filepath="",use_precomputed=True):
         """
         The constructor for instance class
         
@@ -41,8 +41,10 @@ class instance(object):
         self.parameter_number=0 #Parameter combination number as indicated in param.txt 
         self.instance_number=0#Instance number for a particular parameter combination
         self.instance_type=''#'j30' / 'j60' / 'j90' / 'j120'
+        self.filename_comp=''
         if(filepath):
             filename=list(filepath.split('/'))[-1]
+            self.filename_comp=filename[:-3]
             filename=list(filename.split('_'))
             
             if(filename[0][1] in ['3','6','9']):#j30,j60,j90 type
@@ -62,29 +64,34 @@ class instance(object):
             
             self.read_data()
             self.G=nx.DiGraph()#Create a networkx graph object
+            self.G_T=nx.DiGraph()#Create a networkx graph object
             for i in range(1,len(self.adj)):
                 for j in self.adj[i]:
                     self.G.add_edge(i,j)
-            self.G_T=nx.reverse(self.G)#Reverse edges to get transpose of graph for reverse scheduling
-        #initialize empty arrays for storing values
-        self.earliest_start_times=[0]*(self.n_jobs+1)
-        self.earliest_finish_times=[0]*(self.n_jobs+1)
-        self.latest_start_times=[0]*(self.n_jobs+1)
-        self.latest_finish_times=[0]*(self.n_jobs+1)
-        self.num_successors=[0]*(self.n_jobs+1)
-        self.mts=[0]*(self.n_jobs+1)
-        self.mtp=[0]*(self.n_jobs+1)
-        self.grpw=[0]*(self.n_jobs+1)
-        self.grd=[0]*(self.n_jobs+1)
-        self.irsm=[0]*(self.n_jobs+1)
-        self.wcs=[0]*(self.n_jobs+1)
-        self.acs=[0]*(self.n_jobs+1)
-        
-        #Calculate LFT,LST,EFT,EST
-        self.calculate_lt() # Calculates both LFT and LST
-        self.calculate_et() # Calculates both EST and EFT
-        self.calculate_mts()
-        self.calulate_activity_attributes()
+                    self.G_T.add_edge(j,i)
+        else:
+            print("Path not provided")
+        if(use_precomputed):
+            data_file=open("./precomputes/"+self.instance_type+"/"+self.filename_comp,"rb")
+            (self.earliest_start_times,self.earliest_finish_times,self.latest_start_times,self.latest_finish_times,self.mts,self.mtp,self.rr,self.avg_rreq,self.min_rreq,self.max_rreq)=pickle.load(data_file)
+        else:
+                
+            #initialize empty arrays for storing values
+            self.earliest_start_times=[0]*(self.n_jobs+1)
+            self.earliest_finish_times=[0]*(self.n_jobs+1)
+            self.latest_start_times=[0]*(self.n_jobs+1)
+            self.latest_finish_times=[0]*(self.n_jobs+1)
+            self.num_successors=[0]*(self.n_jobs+1)
+            self.mts=[0]*(self.n_jobs+1)
+            self.mtp=[0]*(self.n_jobs+1)
+            
+            
+            
+            #Calculate LFT,LST,EFT,EST
+            self.calculate_lt() # Calculates both LFT and LST
+            self.calculate_et() # Calculates both EST and EFT
+            self.calculate_mts()
+            self.calulate_activity_attributes()
     def read_data(self):
         """Function for reading data and updating attributes from a fixed format .sm file"""
         file=open(self.filepath,"r")
@@ -194,11 +201,13 @@ class instance(object):
             self.mtp[i]=len(nx.descendants(self.G_T,i))
     def calculate_grpw(self):
         """Calculates Greatest Rank Position Wight(GRPW) for each job"""
+        self.grpw=[0]*(self.n_jobs+1)
         for i in range(1,self.n_jobs+1):
             self.grpw[i]=self.durations[i]
             for j in list(self.G_T.predecessors(i)):
                 self.grpw[i]+=self.durations[j]
     def calculate_grd(self):
+        self.grd=[0]*(self.n_jobs+1)
         """Calculates Greatest Resource Demand(GRD) for each job"""
         for i in range(1,self.n_jobs+1):
             for j in range(self.k):
@@ -280,6 +289,10 @@ class instance(object):
             self.calculate_grpw()
         elif(priority_rule=='GRD'):
             self.calculate_grd()
+        elif priority_rule in ['IRSM','WCS','ACS']:
+            self.irsm=[0]*(self.n_jobs+1)
+            self.wcs=[0]*(self.n_jobs+1)
+            self.acs=[0]*(self.n_jobs+1)
         #Initialize arrays to store computed values
         start_times=[0]*(self.n_jobs+1) #Start times of schedule
         finish_times=[0]*(self.n_jobs+1) #Finish times of schedule
@@ -481,6 +494,9 @@ class instance(object):
             return eligible[find_index(eligible,priorities,'min')]
     
     def calulate_activity_attributes(self):
+        """
+            Normalises and calculates the activity attributes required for GP
+        """
         self.earliest_start_times=normalised(self.earliest_start_times)
         self.earliest_finish_times=normalised(self.earliest_finish_times)
         self.latest_start_times=normalised(self.latest_start_times)
@@ -530,12 +546,12 @@ series_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW',
 parallel_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD','IRSM','ACS','WCS']
 types=['j30','j60','j90','j120']
 
-series_priority_rules=['']
-types=['j30']
-x=instance('./j30/j3048_10.sm')
+# series_priority_rules=['LST']
+# types=['j120']
+# x=instance('./j30/j3048_10.sm')
 
 
 if __name__ == '__main__':
-    statistics.get_stats(instance,series_priority_rules,types,'serial','forward')
+    statistics.get_stats(instance,series_priority_rules,types,'parallel','forward',use_precomputed=True)
     pass
 
