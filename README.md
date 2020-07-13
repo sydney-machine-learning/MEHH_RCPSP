@@ -23,9 +23,13 @@ They can be installed with `pip3 install <module_name>`
 
 ### GP
 Using GP to evolve the priority rules we get a lower makespan than any of the priority rules
+
 j30 18.33
+
 j60 17.12
+
 j90 15.37
+
 j120 42.89
 
 Evolved function tree 
