@@ -111,7 +111,7 @@ Time taken :  1901.825050354004
 
 
 ### GP
-Using GP to evolve the priority rules we get a lower makespan than any of the priority rules
+Using GP to evolve the priority rules we get a lower % deviation than any of the priority rules
 
 j30 18.33
 
