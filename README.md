@@ -19,3 +19,15 @@ matplotlib, networkx, pygraphviz are the only dependencies and all are required 
 They can be installed with `pip3 install <module_name>`
 
 ![demo](img/demo.png?raw=true "Demo image")
+
+
+### GP
+Using GP to evolve the priority rules we get a lower makespan than any of the priority rules
+j30 18.33
+j60 17.12
+j90 15.37
+j120 42.89
+
+Evolved function tree 
+
+![tree](gp_trees/42.88__2.png?raw=true "GP tree")
