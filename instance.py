@@ -494,6 +494,9 @@ class instance(object):
             return eligible[find_index(eligible,priorities,'min')]
     
     def calulate_activity_attributes(self):
+        """
+            Normalises and calculates the activity attributes required for GP
+        """
         self.earliest_start_times=normalised(self.earliest_start_times)
         self.earliest_finish_times=normalised(self.earliest_finish_times)
         self.latest_start_times=normalised(self.latest_start_times)

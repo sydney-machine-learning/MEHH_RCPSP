@@ -21,6 +21,7 @@ for typ in types:
     train_set.append("./"+typ+'/'+typ+str(i)+"_1.sm")
     train_set.append("./"+typ+'/'+typ+str(i)+"_2.sm")
 
+
 POP_SIZE=1024
 NUM_GENERATIONS=25
 INST_TYPE='j60'
@@ -62,8 +63,7 @@ creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin)
 counts=0
 def evalSymbReg(individual):
-    """Evaluation function which calculates fitness of an individual"""
-    
+    """Evaluation function which calculates fitness"""    
     func = toolbox.compile(expr=individual)
     sumv=0
     for i in range(len(train_set)):
@@ -103,10 +103,9 @@ mstats.register("min", np.min)
 mstats.register("max", np.max)
 pop = toolbox.population(n=POP_SIZE)
 hof = tools.HallOfFame(HOF_SIZE)
-pop, log = algorithms.eaMuPlusLambda(pop, toolbox,MU,LAMBDA, MATING_PROB, MUTATION_PROB, NUM_GENERATIONS, stats=mstats,halloffame=hof, verbose=True)
 
-file=open('./evolved_funcs/best_funcs3','wb')
-hof=pickle.dump(hof,file)
+file=open('./evolved_funcs/best_funcs2','rb')
+hof=pickle.load(file)
 file.close()
 for hof_index in range(HOF_SIZE):
     nodes, edges, labels = gp.graph(hof[hof_index])
@@ -122,7 +121,7 @@ for hof_index in range(HOF_SIZE):
         log_file.close()
         sum_total_dev+=total_dev
         sum_counts+=count
-    print("Aggregate % ",(sum_total_dev*100)/sum_counts)
+    print("Aggregate %",(100*sum_total_dev)/sum_counts)
 
 
     g = pgv.AGraph()
@@ -134,4 +133,4 @@ for hof_index in range(HOF_SIZE):
         n = g.get_node(i)
         n.attr["label"] = labels[i]
 
-    g.draw("./gp_trees/"+str(round(total_dev_percent,2))+"__3.png")
+    g.draw("./gp_trees/"+str(round(total_dev_percent,2))+"__2.png")

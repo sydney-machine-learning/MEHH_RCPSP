@@ -1,9 +1,15 @@
 import time
 from os import listdir
-# from instance import instance
 import sys
 import pickle
 def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_precomputed=True):
+    """
+        Prints the percentage deviation and makespan for all priority rules and instance types specified
+        Parameters:
+            instance : instance class
+            priority_rules : All priority rules for which stats to be calculated
+            types : All types for which stats to be calculated
+    """
     start=time.time()
     ans={'j30':{},'j60':{},'j90':{},'j120':{}}
     for typ in types:
@@ -57,13 +63,21 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
     print("Time taken : ",time.time()-start) 
 
 def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',option='forward',use_precomputed=True):
-    
+    """
+        Evaluates custom priority rule which is given by priority_func
+        Parameters:
+            instance : instance class
+            priority_func : Function which evaluates priority value from activity attributes
+            types : All types for which stats to be calculated
+    """
     all_files=["./"+inst_type+'/'+i for i in listdir('./'+inst_type) if i!='param.txt']
-    
+    all_files.sort()
     total_dev=0;
     total_makespan=0
     count=0
     for file in all_files:
+        if file[-4] in ['1','2','3']: #Ignore train set and validation set i.e all instances with j30xx_1,j30xx_2,j30xx_3,j60xx_1,j60xx_2,j60xx_3
+            continue
         count+=1
         x=instance(file,use_precomputed=use_precomputed)
         priorities=[]
@@ -79,9 +93,10 @@ def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',o
         total_dev+=y[0]
         total_makespan+=y[1]
         
-        print(file,y,(100*total_dev)/count,"                  ", end='\r')
+        print(file,y,(100*total_dev)/count,"                   ", end='\r')
         sys.stdout.flush()
     print()
-    total_dev_percent=(100*total_dev)/len(all_files)
-    return (total_dev_percent,total_makespan)
+    print(count, inst_type, "files read")
+    total_dev_percent=(100*total_dev)/count
+    return (total_dev_percent,total_makespan,total_dev,count)
 
