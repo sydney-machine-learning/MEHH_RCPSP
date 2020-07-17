@@ -1,16 +1,20 @@
-Function | TrainType | TestType | Sample_Size | Generations | Mate_prob | Mutate_prob| % Deviation | Makespan |
+Function |  TestType | Sample_Size | Generations | Mate_prob | Mutate_prob| % Deviation | Makespan |
 
 -----------------
 
 add(add(LS, LF), min(div(add(LS, LF), sub(div(neg(LF), mul(MaxRReq, TSC)), min(mul(MaxRReq, EF), mul(LS, LS)))), neg(AvgRReq))) : 
-              j60         j30         192               25          0.5           0.3         18.33        23710       
+               j30         192               25          0.5           0.3         18.33        23710       
 
 add(add(LS, LF), min(div(add(LS, LF), sub(div(neg(LF), mul(MaxRReq, TSC)), min(mul(MaxRReq, EF), mul(LS, LS)))), neg(AvgRReq))) : 
-              j60         j60         192               25          0.5           0.3         17.12        32367       
+               j60         192               25          0.5           0.3         17.12        32367       
 
 add(add(LS, LF), min(div(add(LS, LF), sub(div(neg(LF), mul(MaxRReq, TSC)), min(mul(MaxRReq, EF), mul(LS, LS)))), neg(AvgRReq))) : 
-              j60         j90         192               25          0.5           0.3         15.37        48014       
+               j90         192               25          0.5           0.3         15.37        48014       
 
 add(add(LS, LF), min(div(add(LS, LF), sub(div(neg(LF), mul(MaxRReq, TSC)), min(mul(MaxRReq, EF), mul(LS, LS)))), neg(AvgRReq))) : 
-              j60         j120         192               25          0.5           0.3         42.89        81110       
+               j120         192               25          0.5           0.3         42.89        81110       
 ---------------
+                
+max(neg(neg(LS)), neg(mul(add(LS, max(LF, LF)), mul(TPC, div(AvgRReq, EF))))) : 
+               j120         192               1          0.5           0.3         44.04        81753       
+

@@ -13,6 +13,8 @@ class instance(object):
     """
         This is a class for a problem instance and contains all the necessary information and methods for scheduling
     """
+ 
+ 
     def __init__(self,filepath="",use_precomputed=True):
         """
         The constructor for instance class
@@ -61,7 +63,7 @@ class instance(object):
                 self.instance_number=0
                 self.instance_type=''
                 print("Invalid file name")
-            
+            self.nc,self.rf,self.rs=params[self.instance_type][self.parameter_number]
             self.read_data()
             self.G=nx.DiGraph()#Create a networkx graph object
             self.G_T=nx.DiGraph()#Create a networkx graph object
@@ -92,6 +94,10 @@ class instance(object):
             self.calculate_et() # Calculates both EST and EFT
             self.calculate_mts()
             self.calulate_activity_attributes()
+
+
+
+
     def read_data(self):
         """Function for reading data and updating attributes from a fixed format .sm file"""
         file=open(self.filepath,"r")
@@ -113,6 +119,9 @@ class instance(object):
         self.total_resources=list(map(int,list(lines[18+self.n_jobs+4+self.n_jobs+3].split())))
         file.close()
 
+
+
+
     def draw(self):
         """
         Function to draw the precedence relations in the form of a DAG for visualisation purposes
@@ -126,6 +135,9 @@ class instance(object):
         node_colors.append('green') #End node is green
         nx.draw(self.G, pos=nx.nx_agraph.graphviz_layout(self.G),node_color=node_colors, edge_color='b',node_size=node_sizes)
         plt.show()
+ 
+ 
+ 
     def calculate_lt(self):
         """ Calculates values of LFT and LST for each job (Does a serial SGS without considering resource constraints)"""
         scheduled=[0]*(self.n_jobs+1)
@@ -162,6 +174,9 @@ class instance(object):
             self.latest_start_times[i]=self.latest_finish_times[i]-self.durations[i]+1
         self.latest_finish_times[1]=0
         self.latest_start_times[self.n_jobs]=self.latest_finish_times[self.n_jobs]
+
+
+
     def calculate_et(self):
         """ Calculates values of EFT and EST for each job (Does a serial SGS without considering resource constraints)"""
         scheduled=[0]*(self.n_jobs+1)
@@ -193,12 +208,18 @@ class instance(object):
             self.earliest_finish_times[choice]=self.earliest_start_times[choice]+self.durations[choice]-1
             finish_times[choice]=self.earliest_start_times[choice]+self.durations[choice]-1
             scheduled[choice]=1
+
+
+
     def calculate_mts(self):
         """Calculates Total succesors and Total predecessors for each job"""
         for i in range(1,self.n_jobs+1):
             self.mts[i]=len(nx.descendants(self.G,i))
         for i in range(1,self.n_jobs+1):
             self.mtp[i]=len(nx.descendants(self.G_T,i))
+
+
+
     def calculate_grpw(self):
         """Calculates Greatest Rank Position Wight(GRPW) for each job"""
         self.grpw=[0]*(self.n_jobs+1)
@@ -206,12 +227,18 @@ class instance(object):
             self.grpw[i]=self.durations[i]
             for j in list(self.G_T.predecessors(i)):
                 self.grpw[i]+=self.durations[j]
+
+
+
     def calculate_grd(self):
         self.grd=[0]*(self.n_jobs+1)
         """Calculates Greatest Resource Demand(GRD) for each job"""
         for i in range(1,self.n_jobs+1):
             for j in range(self.k):
                 self.grd[i]+=self.durations[i]*self.job_resources[i][j]
+
+
+
     def serial_sgs(self,option='forward',priority_rule='LFT',priorities=[]):
         """
             Implements the Serial Schedule Generation Scheme
@@ -272,6 +299,9 @@ class instance(object):
                 finish_times[i]=makespan-start_times[i]
                 start_times[i]=finish_times[i]-durations[i]+1
         return (makespan-self.mpm_time)/self.mpm_time,makespan
+ 
+ 
+ 
     def parallel_sgs(self,option='forward',priority_rule='LFT',priorities=[]):
 
         """
@@ -354,6 +384,9 @@ class instance(object):
                 finish_times[i]=makespan-start_times[i]
                 start_times[i]=finish_times[i]-durations[i]+1
         return (makespan-self.mpm_time)/self.mpm_time,makespan
+
+
+
     def calculate_dynamic_priority_rules(self,eligible,current_time,current_consumption, active_list,finish_times):
         """
             Calculates IRSM, WCS, ACS priority values
@@ -378,6 +411,8 @@ class instance(object):
             self.irsm[j]=irsm_val
             self.wcs[j]=self.latest_start_times[j]-max_e_val
             self.acs[j]=self.latest_start_times[j]-(1/(len(eligible)-1))*sum_e_vals
+
+
 
     def earliest_start(self,i,j,current_time,current_consumption, active_list, finish_times):
         """
@@ -412,10 +447,14 @@ class instance(object):
             starts.append(new_time)
         return min(starts)
 
+
+
     def isGFP(self,i,j):
         """Checks if (i,j) is a Generally forbidden pair"""
         return not less_than(add_lists(self.job_resources[i],self.job_resources[j]),self.total_resources)
  
+
+
     def isCSP(self,i,j,current_consumption):
         "Checks if (i,j) is a currently schedulable pair(simultaneously)"
         new_consumption=add_lists(self.job_resources[i],self.job_resources[j])
@@ -423,6 +462,7 @@ class instance(object):
         return less_than(new_consumption,self.total_resources) 
        
     
+
     def time_resource_available(self,activity,resource_consumption,start_time):
         possible_start=start_time #Iterate through all possible start times until one is found
         while(True):
@@ -444,6 +484,8 @@ class instance(object):
             else:
                 possible_start+=1
 
+    
+    
     def time_feasible(self,activity,resource_consumption,time):
         possible=True
         for i in range(time,time+self.durations[activity]):
@@ -459,6 +501,8 @@ class instance(object):
                 break
         return possible
    
+    
+    
     def choose(self,eligible,priority_rule='LFT',priorities=[]):
 
         if(priorities==[]):
@@ -493,6 +537,8 @@ class instance(object):
         else:
             return eligible[find_index(eligible,priorities,'min')]
     
+    
+    
     def calulate_activity_attributes(self):
         """
             Normalises and calculates the activity attributes required for GP
@@ -524,21 +570,21 @@ class instance(object):
             self.min_rreq[i]=minv
             self.max_rreq[i]=maxv
 
+    
+    
     def __str__(self):
         info="Instance Type : " + self.instance_type+"\nParameter number : "+str(self.parameter_number)+"\nInstance number : "+str(self.instance_number)+"\n"
         info+="#jobs : "+str(self.n_jobs)+"\nResources available "+str(self.total_resources)+ " Horizon : "+str(self.horizon)
         return info
 
-j30_params=[[]]
-j60_params=[[]]
-j90_params=[[]]
-j120_params=[[]]
+params={'j30':[[]],'j60':[[]],'j90':[[]],'j120':[[]]}
 
 
-read_param('./j30/param.txt',j30_params,48)
-read_param('./j60/param.txt',j60_params,48)
-read_param('./j90/param.txt',j90_params,48)
-read_param('./j120/param.txt',j120_params,60)
+
+read_param('./j30/param.txt',params['j30'],48)
+read_param('./j60/param.txt',params['j60'],48)
+read_param('./j90/param.txt',params['j90'],48)
+read_param('./j120/param.txt',params['j120'],60)
 
 
 
@@ -548,10 +594,10 @@ types=['j30','j60','j90','j120']
 
 # series_priority_rules=['LST']
 # types=['j120']
-# x=instance('./j30/j3048_10.sm')
-
-
+x=instance('./j30/j3048_10.sm')
+# print(x.rs,x.rf)
+# print(params['j30'])
 if __name__ == '__main__':
-    statistics.get_stats(instance,series_priority_rules,types,'parallel','forward',use_precomputed=True)
+    # statistics.get_stats(instance,series_priority_rules,types,'parallel','forward',use_precomputed=True)
     pass
 
