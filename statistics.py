@@ -76,7 +76,9 @@ def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',o
     total_makespan=0
     count=0
     for file in all_files:
-        if file[-4] in ['1','2','3']: #Ignore train set and validation set i.e all instances with j30xx_1,j30xx_2,j30xx_3,j60xx_1,j60xx_2,j60xx_3
+        filename=list(file.split('/'))[-1]
+        # print(filename)
+        if (file[-4] in ['1','2','3']) and filename[1] in ['3','6']: #Ignore train set and validation set i.e all instances with j30xx_1,j30xx_2,j30xx_3,j60xx_1,j60xx_2,j60xx_3
             continue
         count+=1
         x=instance(file,use_precomputed=use_precomputed)
@@ -97,6 +99,40 @@ def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',o
         sys.stdout.flush()
     print()
     print(count, inst_type, "files read")
+    total_dev_percent=(100*total_dev)/count
+    return (total_dev_percent,total_makespan,total_dev,count)
+
+
+def evaluate_custom_set(eval_set,instance,priority_func,mode='serial',option='forward',use_precomputed=True):
+    """
+    """
+    all_files=eval_set
+    all_files.sort()
+    total_dev=0;
+    total_makespan=0
+    count=0
+    for file in all_files:
+        filename=list(file.split('/'))[-1]
+
+        count+=1
+        x=instance(file,use_precomputed=use_precomputed)
+        priorities=[]
+        priorities=[0]*(x.n_jobs+1)
+        for job in range(1,x.n_jobs+1):
+            priorities[job]=priority_func(x.earliest_start_times[job],x.earliest_finish_times[job],x.latest_start_times[job],x.latest_finish_times[job],x.mtp[job],x.mts[job],x.rr[job],x.avg_rreq[job],x.max_rreq[job],x.min_rreq[job])
+        if(mode=='parallel'):
+            y=x.parallel_sgs(option=option,priority_rule='',priorities=priorities)
+        elif mode=='serial':
+            y=x.serial_sgs(option=option,priority_rule='',priorities=priorities)
+        else:
+            print("Invalid mode")
+        total_dev+=y[0]
+        total_makespan+=y[1]
+        
+        print(file,y,(100*total_dev)/count,"                   ", end='\r')
+        sys.stdout.flush()
+    print()
+    
     total_dev_percent=(100*total_dev)/count
     return (total_dev_percent,total_makespan,total_dev,count)
 

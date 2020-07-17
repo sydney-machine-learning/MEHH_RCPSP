@@ -12,6 +12,7 @@ from utils import read_param,add_lists,sub_lists, less_than, min_finish_time, fi
 import numpy as np
 from deap import base,creator,tools,algorithms,gp
 import operator
+import qdpy
 import math
 train_set=[]
 
