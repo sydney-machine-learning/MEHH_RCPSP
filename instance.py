@@ -73,6 +73,9 @@ class instance(object):
                     self.G_T.add_edge(j,i)
         else:
             print("Path not provided")
+        self.predecessors=[[]]
+        for i in range(1,self.n_jobs+1):
+            self.predecessors.append(list(self.G.predecessors(i)))
         if(use_precomputed):
             data_file=open("./precomputes/"+self.instance_type+"/"+self.filename_comp,"rb")
             (self.earliest_start_times,self.earliest_finish_times,self.latest_start_times,self.latest_finish_times,self.mts,self.mtp,self.rr,self.avg_rreq,self.min_rreq,self.max_rreq)=pickle.load(data_file)
@@ -146,16 +149,17 @@ class instance(object):
         scheduled[start_vertex]=1
         for g in range(1,self.n_jobs):
             eligible=[]
-            scheduled_list=[]
-            for i in range(1,self.n_jobs+1):
-                if(scheduled[i]):
-                    scheduled_list.append(i)
             
             for i in range(1,self.n_jobs+1):
                 if(scheduled[i]==0):
                     pred_lis=list(graph.predecessors(i))
                     #Consider only precedence relations
-                    if(set(pred_lis)<=set(scheduled_list)):
+                    con=True
+                    for j in pred_lis:
+                        if scheduled[j]==0:
+                            con=False
+                            break
+                    if(con):
                         eligible.append(i)
             #Pick any job from the eligible set (Here always the first)
             choice=eligible[0]
@@ -259,7 +263,7 @@ class instance(object):
         start_times=[0]*(self.n_jobs+1) #Start times of schedule
         finish_times=[0]*(self.n_jobs+1) #Finish times of schedule
         earliest_start=[0]*(self.n_jobs+1) #Earliest precedence feasible start times(Different from EST)
-        resource_consumption=[[0 for col in range(self.k)] for row in range(self.horizon+1)] #2D array of resource consumption of size n x k
+        self.resource_consumption=[[0 for col in range(self.k)] for row in range(self.horizon+1)] #2D array of resource consumption of size n x k
         scheduled=[0]*(self.n_jobs+1) #Boolean array to indicate if job is scheduled
         if(option =='forward'): 
             graph=self.G #If forward scheduling use graph as it is
@@ -272,27 +276,27 @@ class instance(object):
         scheduled[start_vertex]=1
         for g in range(1,self.n_jobs): #Perform n-1 iterations (Dummy job already scheduled)
             eligible=[] #List of eligible jobs based on precedence only
-            scheduled_list=[] #List of jobs already scheduled
-            for i in range(1,self.n_jobs+1):
-                if(scheduled[i]):
-                    scheduled_list.append(i) #Form the scheduled list using the boolean array
+           
             #For each unscheduled job check if it is eligible
             for i in range(1,self.n_jobs+1):
                 if(scheduled[i]==0):
-                    pred_lis=list(graph.predecessors(i))
-                    if(set(pred_lis)<=set(scheduled_list)): #Job is eligible if its predecossors are a subset of scheduled jobs
+                    con=True
+                    for j in self.predecessors[i]:
+                        if scheduled[j]==0:
+                            con=False
+                            break
+                    if(con):
                         eligible.append(i)
             choice=self.choose(eligible,priority_rule=priority_rule,priorities=priorities) #Choose a job according to some priority rule
-            pred_lis=list(graph.predecessors(choice)) #find predecessors of chosen job
             max_pred_finish_time=0 #Find the maximum precedence feasible start time for chosen job
-            for i in pred_lis:
+            for i in self.predecessors[choice]:
                 max_pred_finish_time=max(finish_times[i],max_pred_finish_time)
             earliest_start[choice]=max_pred_finish_time+1 #Update the found value in array
             scheduled[choice]=1
-            feasible_start_time=self.time_resource_available(choice,resource_consumption,earliest_start[choice]) #Find the earliest resource feasible time
+            feasible_start_time=self.time_resource_available(choice,earliest_start[choice]) #Find the earliest resource feasible time
             finish_times[choice]=feasible_start_time+self.durations[choice]-1 #Update finish time
             for i in range(feasible_start_time,finish_times[choice]+1):
-                resource_consumption[i]=add_lists(resource_consumption[i],self.job_resources[choice]) #Update resource consumption
+                self.resource_consumption[i]=add_lists(self.resource_consumption[i],self.job_resources[choice]) #Update resource consumption
         makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
         if(option!='forward'):
             for i in range(1,len(finish_times)):
@@ -337,6 +341,7 @@ class instance(object):
         finish_times[start_vertex]=0
         scheduled[start_vertex]=1
         active_list=[start_vertex]
+        completed=[0]*(self.n_jobs+1)
         completed_list=[]
         current_time=0
         current_consumption=[0]*self.k
@@ -344,21 +349,28 @@ class instance(object):
         while(len(active_list)+len(completed_list)<self.n_jobs):
             current_time=finish_times[active_list[find_index(active_list,finish_times,'min')]]+1 #Update the current time to the minimum of the finish times in the active list + 1
             #Remove completed jobs from active list add them to completed list and update resource consumption
+            removals=[]
             for i in active_list:
                 if(finish_times[i]<current_time):
                     completed_list.append(i)
+                    completed[i]=1
                     current_consumption=sub_lists(current_consumption,self.job_resources[i])
-            for i in completed_list:
-                if i in active_list:
-                    active_list.remove(i)
+                    removals.append(i)
+            for i in removals:
+                active_list.remove(i)
             
             #Find the eligible list by considering both precedence and resource feasibility
             precedence_eligible=[]
             eligible=[]
             for i in range(1, self.n_jobs+1):
                 if(scheduled[i]==0):
-                    pred_list=list(graph.predecessors(i))
-                    if(set(pred_list)<=set(completed_list)):
+                    pred_list=self.predecessors[i]
+                    con=True
+                    for j in pred_list:
+                        if(completed[j]==0):
+                            con=False
+                            break
+                    if(con):
                         precedence_eligible.append(i)
             for i in precedence_eligible:
                 if(less_than(self.job_resources[i],sub_lists(self.total_resources,current_consumption))):
@@ -463,7 +475,7 @@ class instance(object):
        
     
 
-    def time_resource_available(self,activity,resource_consumption,start_time):
+    def time_resource_available(self,activity,start_time):
         possible_start=start_time #Iterate through all possible start times until one is found
         while(True):
             possible=True
@@ -471,7 +483,7 @@ class instance(object):
                 consumed=[0]*self.k
                 for j in range(self.k):
                     #Find the resource consumed if scheduled now
-                    consumed[j]=resource_consumption[i][j]+self.job_resources[activity][j]
+                    consumed[j]=self.resource_consumption[i][j]+self.job_resources[activity][j]
                     if(consumed[j]>self.total_resources[j]):
                         #If it exceeds consider next possible time
                         possible=False
@@ -484,23 +496,7 @@ class instance(object):
             else:
                 possible_start+=1
 
-    
-    
-    def time_feasible(self,activity,resource_consumption,time):
-        possible=True
-        for i in range(time,time+self.durations[activity]):
-            consumed=[0]*self.k
-            for j in range(self.k):
-                #Find the resource consumed if scheduled now
-                consumed[j]=resource_consumption[i][j]+self.job_resources[activity][j]
-                if(consumed[j]>self.total_resources[j]):
-                    #If it exceeds consider next possible time
-                    possible=False
-                    break
-            if(not possible):
-                break
-        return possible
-   
+
     
     
     def choose(self,eligible,priority_rule='LFT',priorities=[]):
@@ -598,6 +594,6 @@ x=instance('./j30/j3048_10.sm')
 # print(x.rs,x.rf)
 # print(params['j30'])
 if __name__ == '__main__':
-    # statistics.get_stats(instance,series_priority_rules,types,'parallel','forward',use_precomputed=True)
+    statistics.get_stats(instance,['LST'],['j120'],'serial','forward',use_precomputed=True)
     pass
 

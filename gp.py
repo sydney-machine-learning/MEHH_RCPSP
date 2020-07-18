@@ -66,7 +66,7 @@ pset.renameArguments(ARG9="MinRReq")
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,)) # Define the Fitness type(minimisation) 
 # weights=(-1,) indicates that there is 1 fitness value which has to be minimised
 creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin) # Define Individual type (PrimitiveTree)
-maxlen=0
+
 def evalSymbReg(individual):
     """
         Evaluation function which calculates fitness of an individual
@@ -75,9 +75,7 @@ def evalSymbReg(individual):
         Returns:
             A tuple of fitness values since only 1 value is used we return a 1 element tuple (fitness,)
     """
-    global maxlen
-    maxlen=max(maxlen,len(individual))
-    print("maxlen " ,maxlen)
+    start=time.time()
     func = toolbox.compile(expr=individual) # Transform the tree expression in a callable function
     sumv=0 # Evaluate the individual on each file and train set and return the normalised sum of deviation values
     for i in range(len(train_set)):
@@ -89,9 +87,7 @@ def evalSymbReg(individual):
 
         frac,makespan=inst.parallel_sgs(option='forward',priority_rule='',priorities=priorities)
         sumv+=frac
-        
     return (sumv/len(train_set),)
-
 
 # Toolbox defines all gp functions such as mate,mutate,evaluate
 toolbox = base.Toolbox()
@@ -135,9 +131,9 @@ hof = tools.HallOfFame(HOF_SIZE)
     3. eaMuCommaLambda - Same as above except the new population is formed from only the x offspring by choosing y of them 
 """
 pop, log = algorithms.eaMuPlusLambda(pop, toolbox,MU,LAMBDA, MATING_PROB, MUTATION_PROB, NUM_GENERATIONS, stats=mstats,halloffame=hof, verbose=True)
-
+print(count)
 #Store the hof in a pickled file
-file=open('./evolved_funcs/best_funcs3','wb')
+file=open('./evolved_funcs/best_funcstest','wb')
 hof=pickle.dump(hof,file)
 file.close()
 
