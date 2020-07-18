@@ -62,7 +62,7 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
     file.close()
     print("Time taken : ",time.time()-start) 
 
-def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',option='forward',use_precomputed=True):
+def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='parallel',option='forward',use_precomputed=True,verbose=True):
     """
         Evaluates custom priority rule which is given by priority_func
         Parameters:
@@ -94,26 +94,25 @@ def evaluate_custom_rule(instance,priority_func,inst_type='j120',mode='serial',o
             print("Invalid mode")
         total_dev+=y[0]
         total_makespan+=y[1]
-        
-        print(file,y,(100*total_dev)/count,"                   ", end='\r')
-        sys.stdout.flush()
-    print()
-    print(count, inst_type, "files read")
+        if(verbose):
+            print(file,y,(100*total_dev)/count,"                   ", end='\r')
+            sys.stdout.flush()
+    if(verbose):
+        print()
+        print(count, inst_type, "files read")
     total_dev_percent=(100*total_dev)/count
     return (total_dev_percent,total_makespan,total_dev,count)
 
 
-def evaluate_custom_set(eval_set,instance,priority_func,mode='serial',option='forward',use_precomputed=True):
+def evaluate_custom_set(eval_set,instance,priority_func,mode='parallel',option='forward',use_precomputed=True,verbose=True):
     """
     """
-    all_files=eval_set
-    all_files.sort()
-    total_dev=0;
+    eval_set.sort()
+    total_dev=0
     total_makespan=0
     count=0
-    for file in all_files:
+    for file in eval_set:
         filename=list(file.split('/'))[-1]
-
         count+=1
         x=instance(file,use_precomputed=use_precomputed)
         priorities=[]
@@ -128,10 +127,12 @@ def evaluate_custom_set(eval_set,instance,priority_func,mode='serial',option='fo
             print("Invalid mode")
         total_dev+=y[0]
         total_makespan+=y[1]
-        
-        print(file,y,(100*total_dev)/count,"                   ", end='\r')
-        sys.stdout.flush()
-    print()
+        if(verbose):
+            print(file,y,(100*total_dev)/count,"                   ", end='\r')
+            sys.stdout.flush()
+    if(verbose):
+        print()
+        print(len(eval_set)," files read")
     
     total_dev_percent=(100*total_dev)/count
     return (total_dev_percent,total_makespan,total_dev,count)

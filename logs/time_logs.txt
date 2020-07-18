@@ -1,3 +1,4 @@
+pprofile --exclude-syspath --out ./logs/time_logs_parallel2.txt --threads 0  gp.py
 Command line: gp.py
 Total duration: 347.776s
 File: /home/kousik/Documents/Projects/GP/parallelgeneticprogramming_scheduling/instance.py
