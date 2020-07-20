@@ -63,3 +63,27 @@ add(neg(min(min(div(MinRReq, EF), sub(LS, AvgRReq)), div(div(RR, MaxRReq), div(T
 add(neg(min(min(div(MinRReq, EF), sub(LS, AvgRReq)), div(div(RR, MaxRReq), div(TSC, AvgRReq)))), mul(add(sub(sub(LF, LF), mul(MinRReq, LS)), max(neg(LF), min(LS, EF))), div(max(min(EF, MinRReq), min(LF, MinRReq)), sub(mul(ES, EF), div(LF, TSC))))) : 
                j120         192               1          0.5           0.3         63.03        92517       
 
+neg(mul(min(TPC, EF), sub(AvgRReq, AvgRReq))) : 
+               j30         192               1          0.5           0.3         21.86        21296       
+
+neg(mul(min(TPC, EF), sub(AvgRReq, AvgRReq))) : 
+               j60         192               1          0.5           0.3         20.86        29126       
+
+neg(mul(min(TPC, EF), sub(AvgRReq, AvgRReq))) : 
+               j90         192               1          0.5           0.3         19.47        49689       
+
+neg(mul(min(TPC, EF), sub(AvgRReq, AvgRReq))) : 
+               j120         192               1          0.5           0.3         51.57        86008       
+
+sub(sub(mul(mul(ES, RR), mul(EF, AvgRReq)), sub(sub(MinRReq, TSC), add(LS, LF))), div(min(max(MaxRReq, ES), add(RR, MinRReq)), max(sub(RR, EF), add(LS, ES)))) : 
+               j30         192               10          0.7           0.3         19.33        20854       
+
+sub(sub(mul(mul(ES, RR), mul(EF, AvgRReq)), sub(sub(MinRReq, TSC), add(LS, LF))), div(min(max(MaxRReq, ES), add(RR, MinRReq)), max(sub(RR, EF), add(LS, ES)))) : 
+               j60         192               10          0.7           0.3         17.83        28398       
+
+sub(sub(mul(mul(ES, RR), mul(EF, AvgRReq)), sub(sub(MinRReq, TSC), add(LS, LF))), div(min(max(MaxRReq, ES), add(RR, MinRReq)), max(sub(RR, EF), add(LS, ES)))) : 
+               j90         192               10          0.7           0.3         15.92        48237       
+
+sub(sub(mul(mul(ES, RR), mul(EF, AvgRReq)), sub(sub(MinRReq, TSC), add(LS, LF))), div(min(max(MaxRReq, ES), add(RR, MinRReq)), max(sub(RR, EF), add(LS, ES)))) : 
+               j120         192               10          0.7           0.3         44.74        82174       
+
