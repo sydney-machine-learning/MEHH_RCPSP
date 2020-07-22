@@ -35,14 +35,14 @@ instances=[]
 for i in range(len(train_set)):
     instances.append(instance.instance(train_set[i],use_precomputed=True))
 # Parameters
-nb_features = 3                            # The number of features to take into account in the container
-nb_bins = [5, 5, 5]
-features_domain = [(1, 63),(0.6,1.3),(0.0,0.5) ]      # The domain (min/max values) of the features
+nb_features = 4                            # The number of features to take into account in the container
+nb_bins = [20,7,20,20]
+features_domain = [(1, 63),(1,7),(0.7,1.2),(0.1,0.4)]      # The domain (min/max values) of the features
 fitness_domain = [(0., 1.0)]               # The domain (min/max values) of the fitness
 init_batch_size = 1024                     # The number of evaluations of the initial batch ('batch' = population)
 batch_size = 1024                           # The number of evaluations in each subsequent batch
-nb_iterations = 10                        # The number of iterations (i.e. times where a new batch is evaluated)
-cxpb = 0.7
+nb_iterations = 15                        # The number of iterations (i.e. times where a new batch is evaluated)
+cxpb = 0.5
 mutation_pb = 0.3                        # The probability of mutating each value of a genome
 max_items_per_bin = 2                      # The number of items in each bin of the grid
 verbose = True                             
@@ -50,8 +50,8 @@ show_warnings = True                      # Display warning and error messages. 
 log_base_path = '.'
 
 SELECTION_POOL_SIZE=7 # Number of individuals for tournament
-HEIGHT_LIMIT = 6 # Height Limit for tree
-GEN_MIN_HEIGHT=3
+HEIGHT_LIMIT = 7 # Height Limit for tree
+GEN_MIN_HEIGHT=1
 GEN_MAX_HEIGHT=5
 """Eval mode
 0:  Evaluate only best individual on train set
@@ -59,7 +59,7 @@ GEN_MAX_HEIGHT=5
 2: Evaluate all individuals on grid
 """
 
-eval_mode=0
+eval_mode=[0,1]
 
 
 # Update seed
@@ -102,10 +102,7 @@ creator.create("FitnessMin", base.Fitness, weights=(-1.0,)) # Define the Fitness
 creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin) # Define Individual type (PrimitiveTree)
 
 def evalSymbReg(individual):
-    start=time.time()
-    times=[0,0]
     func = toolbox.compile(expr=individual) # Transform the tree expression in a callable function
-    times=[0,0,0]
     sumv=0 # Evaluate the individual on each file and train set and return the normalised sum of deviation values
     hard_cases_sum=0
     hard_cases_count=0
@@ -115,16 +112,12 @@ def evalSymbReg(individual):
         priorities=[0]*(inst.n_jobs+1)
         for j in range(1,inst.n_jobs+1):
             priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j])
-        temp=time.time()
         frac,makespan=inst.parallel_sgs(option='forward',priority_rule='',priorities=priorities)
-        times[0]+=time.time()-temp
-        temp=time.time()
+        sumv+=frac
         frac2,makespan2=inst.serial_sgs(option='forward',priority_rule='',priorities=priorities)
-        times[1]+=time.time()-temp
         if(inst.rs==0.2 and inst.rf==1.0):
             hard_cases_count+=1
             hard_cases_sum+=frac
-        sumv+=frac
         serial_cases_sum+=frac2
     fitness=[sumv/len(train_set)]
 
@@ -133,10 +126,10 @@ def evalSymbReg(individual):
     serial_cases_frac=serial_cases_sum/len(train_set)
     length = len(individual)
     height = individual.height
-    features = [length,hard_cases_frac,serial_cases_frac]
-    # print(time.time()-start,times)
+    features = [length,individual.height,hard_cases_frac,serial_cases_frac]
+    # print(features)
     return [fitness, features]
-    # return [[random.random()],[10,0.2,0.3]]
+    # return[fitness,[len(individual),individual.height]]
 
 
 # Toolbox defines all gp functions such as mate,mutate,evaluate
@@ -170,6 +163,7 @@ if __name__ == "__main__":
 
     print("Generating grid")
     grid = Grid(shape=nb_bins, max_items_per_bin=max_items_per_bin, fitness_domain=fitness_domain, features_domain=features_domain, storage_type=list)
+    
     #(none, multiprocessing, concurrent, multithreading, scoop)
     with ParallelismManager("multiprocessing", toolbox=toolbox) as pMgr:
         # Create a QD algorithm
@@ -179,7 +173,6 @@ if __name__ == "__main__":
         print("Running algo")
         # Run the illumination process !
         algo.run()
-
 
     # Print results info
     print(f"Total elapsed: {algo.total_elapsed}\n")
@@ -191,27 +184,31 @@ if __name__ == "__main__":
     print("Function ", grid.best)
     print("best fitness:", grid.best.fitness)
     print("best features:", grid.best.features)
-    if eval_mode==0:
+    if 0 in eval_mode:
         test_type=['j30','j60','j90','j120']
         sum_total_dev=0
         sum_counts=0
         print("Individual : ", grid.best)
+        log_file=open('results_log.txt','a+')
         for typ in test_type:
             total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=grid.best),inst_type=typ,mode='parallel',option='forward',verbose=False)
             print(typ,total_dev_percent,makespan)
-            log_file=open('results_log.txt','a+')
-            log_file.write(str(grid.best)+" : \n               "+typ+"         "+str(len(train_set))+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
-            log_file.close()
+            
+            log_file.write(str(grid.best)+" : \n               "+typ+"         "+str(len(train_set))+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n")
+            
             sum_total_dev+=total_dev
             sum_counts+=count
+        log_file.write("Aggregate % : "+str((sum_total_dev*100)/sum_counts)+"  \n\n\n")
+        log_file.close()
         print("Aggregate % ",(sum_total_dev*100)/sum_counts)
-    elif eval_mode==1:
+    if 1 in eval_mode:
         print("Evaluating all individuals on validation set")
         min_deviation=999
         
         for ind in grid:
             
-            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=grid.best),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+            # print("Deviation of individual ",total_dev_percent,min_deviation)
             if total_dev_percent<min_deviation:
                 min_deviation=total_dev_percent
                 best_individual=ind
@@ -219,18 +216,23 @@ if __name__ == "__main__":
         test_type=['j30','j60','j90','j120']
         sum_total_dev=0
         sum_counts=0
+        log_file=open('results_log.txt','a+')
         print("Individual : ", best_individual)
         for typ in test_type:
             total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=best_individual),inst_type=typ,mode='parallel',option='forward',verbose=False)
             print(typ,total_dev_percent,makespan)
-            log_file=open('results_log.txt','a+')
-            log_file.write(str(best_individual)+" : \n               "+typ+"         "+str(len(train_set))+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
-            log_file.close()
+            
+            log_file.write(str(best_individual)+" : \n               "+typ+"         "+str(len(train_set))+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n")
+            
             sum_total_dev+=total_dev
             sum_counts+=count
+        log_file.write("Aggregate % : "+str((sum_total_dev*100)/sum_counts)+"  \n\n\n")
+        log_file.close()
         print("Aggregate % ",(sum_total_dev*100)/sum_counts)
-    elif eval_mode==2:
+    
+    if 2 in eval_mode:
         test_type=['j30','j60','j90','j120']
+        log_file=open('results_log.txt','a+')
         for ind in grid:
             print("Individual : ",ind)
             sum_total_dev=0
@@ -241,9 +243,12 @@ if __name__ == "__main__":
                 
                 sum_total_dev+=total_dev
                 sum_counts+=count
+            log_file.write("Individual : "+str(ind)+"\n")
+            log_file.write("Aggregate % : "+str((sum_total_dev*100)/sum_counts)+"  \n\n\n")
+
             print("Aggregate % ",(sum_total_dev*100)/sum_counts)    
 
-
+        log_file.close()
     # Generate and Store graph
     nodes, edges, labels = gp.graph(grid.best)
     g = pgv.AGraph()
