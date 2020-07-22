@@ -14,76 +14,61 @@ add(add(LS, LF), min(div(add(LS, LF), sub(div(neg(LF), mul(MaxRReq, TSC)), min(m
 add(add(LS, LF), min(div(add(LS, LF), sub(div(neg(LF), mul(MaxRReq, TSC)), min(mul(MaxRReq, EF), mul(LS, LS)))), neg(AvgRReq))) : 
                j120         192               25          0.5           0.3         42.89        81110       
 ---------------
-                
-max(neg(neg(LS)), neg(mul(add(LS, max(LF, LF)), mul(TPC, div(AvgRReq, EF))))) : 
-               j120         192               1          0.5           0.3         44.04        81753       
 
-max(neg(div(AvgRReq, ES)), mul(sub(EF, TPC), max(ES, LF))) : 
-               j30         192               1          0.5           0.3         22.89        21474       
 
-max(min(add(ES, ES), div(mul(max(ES, TSC), min(TSC, AvgRReq)), sub(add(TPC, RR), max(AvgRReq, TPC)))), neg(mul(div(mul(add(MaxRReq, MaxRReq), add(MaxRReq, LF)), neg(mul(TSC, RR))), TPC))) : 
-               j30         192               25          0.5           0.3         21.0        21158       
 
-sub(div(div(MaxRReq, TPC), max(MinRReq, LS)), sub(min(LS, MaxRReq), div(ES, RR))) : 
-               j30         192               25          0.5           0.3         29.7        22633       
 
-neg(min(neg(min(AvgRReq, EF)), max(add(add(EF, LS), sub(TSC, LF)), TSC))) : 
-               j30         192               1          0.5           0.3         26.6        22106       
+min(sub(div(sub(neg(min(RR, MaxRReq)), mul(max(TPC, TPC), sub(ES, ES))), add(min(div(MinRReq, MaxRReq), add(EF, TSC)), add(div(LF, AvgRReq), div(TPC, MaxRReq)))), neg(LS)), add(div(LF, MinRReq), max(add(max(add(LF, MinRReq), div(TPC, TSC)), div(sub(TSC, MaxRReq), sub(AvgRReq, EF))), sub(neg(sub(RR, LS)), max(max(ES, MaxRReq), neg(TSC)))))) : 
+               j30         192               20          0.8           0.2         18.32        20684       
+min(sub(div(sub(neg(min(RR, MaxRReq)), mul(max(TPC, TPC), sub(ES, ES))), add(min(div(MinRReq, MaxRReq), add(EF, TSC)), add(div(LF, AvgRReq), div(TPC, MaxRReq)))), neg(LS)), add(div(LF, MinRReq), max(add(max(add(LF, MinRReq), div(TPC, TSC)), div(sub(TSC, MaxRReq), sub(AvgRReq, EF))), sub(neg(sub(RR, LS)), max(max(ES, MaxRReq), neg(TSC)))))) : 
+               j60         192               20          0.8           0.2         17.08        28224       
+min(sub(div(sub(neg(min(RR, MaxRReq)), mul(max(TPC, TPC), sub(ES, ES))), add(min(div(MinRReq, MaxRReq), add(EF, TSC)), add(div(LF, AvgRReq), div(TPC, MaxRReq)))), neg(LS)), add(div(LF, MinRReq), max(add(max(add(LF, MinRReq), div(TPC, TSC)), div(sub(TSC, MaxRReq), sub(AvgRReq, EF))), sub(neg(sub(RR, LS)), max(max(ES, MaxRReq), neg(TSC)))))) : 
+               j90         192               20          0.8           0.2         15.34        47998       
+min(sub(div(sub(neg(min(RR, MaxRReq)), mul(max(TPC, TPC), sub(ES, ES))), add(min(div(MinRReq, MaxRReq), add(EF, TSC)), add(div(LF, AvgRReq), div(TPC, MaxRReq)))), neg(LS)), add(div(LF, MinRReq), max(add(max(add(LF, MinRReq), div(TPC, TSC)), div(sub(TSC, MaxRReq), sub(AvgRReq, EF))), sub(neg(sub(RR, LS)), max(max(ES, MaxRReq), neg(TSC)))))) : 
+               j120         192               20          0.8           0.2         42.83        81074       
+Aggregate % : 25.661507814063878  
 
-neg(min(neg(min(AvgRReq, EF)), max(add(add(EF, LS), sub(TSC, LF)), TSC))) : 
-               j60         192               1          0.5           0.3         25.44        30224       
+sub(neg(max(add(LF, RR), add(EF, TPC))), sub(neg(max(TPC, RR)), sub(add(LS, LF), mul(MaxRReq, AvgRReq)))) : 
+               j30         192               15          0.8           0.2         18.8        20768       
+sub(neg(max(add(LF, RR), add(EF, TPC))), sub(neg(max(TPC, RR)), sub(add(LS, LF), mul(MaxRReq, AvgRReq)))) : 
+               j60         192               15          0.8           0.2         17.25        28259       
+sub(neg(max(add(LF, RR), add(EF, TPC))), sub(neg(max(TPC, RR)), sub(add(LS, LF), mul(MaxRReq, AvgRReq)))) : 
+               j90         192               15          0.8           0.2         15.28        47974       
+sub(neg(max(add(LF, RR), add(EF, TPC))), sub(neg(max(TPC, RR)), sub(add(LS, LF), mul(MaxRReq, AvgRReq)))) : 
+               j120         192               15          0.8           0.2         43.19        81302       
+Aggregate % : 25.89143173952911  
 
-neg(min(neg(min(AvgRReq, EF)), max(add(add(EF, LS), sub(TSC, LF)), TSC))) : 
-               j90         192               1          0.5           0.3         25.79        52313       
 
-neg(min(neg(min(AvgRReq, EF)), max(add(add(EF, LS), sub(TSC, LF)), TSC))) : 
-               j120         192               1          0.5           0.3         64.95        93571       
+min(neg(sub(AvgRReq, LF)), max(max(sub(add(div(TPC, LF), max(MaxRReq, AvgRReq)), neg(max(TPC, MinRReq))), max(MaxRReq, ES)), min(add(EF, TSC), max(MinRReq, AvgRReq)))) : 
+               j30         192               15          0.8           0.2         18.64        20735       
+min(neg(sub(AvgRReq, LF)), max(max(sub(add(div(TPC, LF), max(MaxRReq, AvgRReq)), neg(max(TPC, MinRReq))), max(MaxRReq, ES)), min(add(EF, TSC), max(MinRReq, AvgRReq)))) : 
+               j60         192               15          0.8           0.2         17.18        28243       
+min(neg(sub(AvgRReq, LF)), max(max(sub(add(div(TPC, LF), max(MaxRReq, AvgRReq)), neg(max(TPC, MinRReq))), max(MaxRReq, ES)), min(add(EF, TSC), max(MinRReq, AvgRReq)))) : 
+               j90         192               15          0.8           0.2         15.92        48221       
+min(neg(sub(AvgRReq, LF)), max(max(sub(add(div(TPC, LF), max(MaxRReq, AvgRReq)), neg(max(TPC, MinRReq))), max(MaxRReq, ES)), min(add(EF, TSC), max(MinRReq, AvgRReq)))) : 
+               j120         192               15          0.8           0.2         45.24        82372       
+Aggregate % : 26.725573886477335  
 
-add(max(min(TSC, TPC), neg(ES)), add(neg(TSC), sub(ES, LF))) : 
-               j30         192               1          0.5           0.3         26.19        22054       
 
-add(max(min(TSC, TPC), neg(ES)), add(neg(TSC), sub(ES, LF))) : 
-               j60         192               1          0.5           0.3         26.7        30530       
+div(max(div(LS, AvgRReq), min(MinRReq, LF)), div(TSC, LF)) : 
+               j30         192               15          0.5           0.3         18.7        20744       
+div(max(div(LS, AvgRReq), min(MinRReq, LF)), div(TSC, LF)) : 
+               j60         192               15          0.5           0.3         17.53        28325       
+div(max(div(LS, AvgRReq), min(MinRReq, LF)), div(TSC, LF)) : 
+               j90         192               15          0.5           0.3         15.54        48067       
+div(max(div(LS, AvgRReq), min(MinRReq, LF)), div(TSC, LF)) : 
+               j120         192               15          0.5           0.3         43.81        81635       
+Aggregate % : 26.211259201237972  
 
-add(max(min(TSC, TPC), neg(ES)), add(neg(TSC), sub(ES, LF))) : 
-               j90         192               1          0.5           0.3         26.07        52437       
 
-add(max(min(TSC, TPC), neg(ES)), add(neg(TSC), sub(ES, LF))) : 
-               j120         192               1          0.5           0.3         65.6        93930       
+add(LF, min(mul(sub(TPC, AvgRReq), div(max(MaxRReq, MinRReq), div(LS, LS))), div(ES, MinRReq))) : 
+               j30         192               15          0.5           0.3         18.48        20716       
+add(LF, min(mul(sub(TPC, AvgRReq), div(max(MaxRReq, MinRReq), div(LS, LS))), div(ES, MinRReq))) : 
+               j60         192               15          0.5           0.3         17.64        28348       
+add(LF, min(mul(sub(TPC, AvgRReq), div(max(MaxRReq, MinRReq), div(LS, LS))), div(ES, MinRReq))) : 
+               j90         192               15          0.5           0.3         15.63        48126       
+add(LF, min(mul(sub(TPC, AvgRReq), div(max(MaxRReq, MinRReq), div(LS, LS))), div(ES, MinRReq))) : 
+               j120         192               15          0.5           0.3         43.77        81604       
+Aggregate % : 26.197676788756603  
 
-add(neg(min(min(div(MinRReq, EF), sub(LS, AvgRReq)), div(div(RR, MaxRReq), div(TSC, AvgRReq)))), mul(add(sub(sub(LF, LF), mul(MinRReq, LS)), max(neg(LF), min(LS, EF))), div(max(min(EF, MinRReq), min(LF, MinRReq)), sub(mul(ES, EF), div(LF, TSC))))) : 
-               j30         192               1          0.5           0.3         26.89        22152       
-
-add(neg(min(min(div(MinRReq, EF), sub(LS, AvgRReq)), div(div(RR, MaxRReq), div(TSC, AvgRReq)))), mul(add(sub(sub(LF, LF), mul(MinRReq, LS)), max(neg(LF), min(LS, EF))), div(max(min(EF, MinRReq), min(LF, MinRReq)), sub(mul(ES, EF), div(LF, TSC))))) : 
-               j60         192               1          0.5           0.3         25.66        30278       
-
-add(neg(min(min(div(MinRReq, EF), sub(LS, AvgRReq)), div(div(RR, MaxRReq), div(TSC, AvgRReq)))), mul(add(sub(sub(LF, LF), mul(MinRReq, LS)), max(neg(LF), min(LS, EF))), div(max(min(EF, MinRReq), min(LF, MinRReq)), sub(mul(ES, EF), div(LF, TSC))))) : 
-               j90         192               1          0.5           0.3         24.18        51664       
-
-add(neg(min(min(div(MinRReq, EF), sub(LS, AvgRReq)), div(div(RR, MaxRReq), div(TSC, AvgRReq)))), mul(add(sub(sub(LF, LF), mul(MinRReq, LS)), max(neg(LF), min(LS, EF))), div(max(min(EF, MinRReq), min(LF, MinRReq)), sub(mul(ES, EF), div(LF, TSC))))) : 
-               j120         192               1          0.5           0.3         63.03        92517       
-
-neg(mul(min(TPC, EF), sub(AvgRReq, AvgRReq))) : 
-               j30         192               1          0.5           0.3         21.86        21296       
-
-neg(mul(min(TPC, EF), sub(AvgRReq, AvgRReq))) : 
-               j60         192               1          0.5           0.3         20.86        29126       
-
-neg(mul(min(TPC, EF), sub(AvgRReq, AvgRReq))) : 
-               j90         192               1          0.5           0.3         19.47        49689       
-
-neg(mul(min(TPC, EF), sub(AvgRReq, AvgRReq))) : 
-               j120         192               1          0.5           0.3         51.57        86008       
-
-sub(sub(mul(mul(ES, RR), mul(EF, AvgRReq)), sub(sub(MinRReq, TSC), add(LS, LF))), div(min(max(MaxRReq, ES), add(RR, MinRReq)), max(sub(RR, EF), add(LS, ES)))) : 
-               j30         192               10          0.7           0.3         19.33        20854       
-
-sub(sub(mul(mul(ES, RR), mul(EF, AvgRReq)), sub(sub(MinRReq, TSC), add(LS, LF))), div(min(max(MaxRReq, ES), add(RR, MinRReq)), max(sub(RR, EF), add(LS, ES)))) : 
-               j60         192               10          0.7           0.3         17.83        28398       
-
-sub(sub(mul(mul(ES, RR), mul(EF, AvgRReq)), sub(sub(MinRReq, TSC), add(LS, LF))), div(min(max(MaxRReq, ES), add(RR, MinRReq)), max(sub(RR, EF), add(LS, ES)))) : 
-               j90         192               10          0.7           0.3         15.92        48237       
-
-sub(sub(mul(mul(ES, RR), mul(EF, AvgRReq)), sub(sub(MinRReq, TSC), add(LS, LF))), div(min(max(MaxRReq, ES), add(RR, MinRReq)), max(sub(RR, EF), add(LS, ES)))) : 
-               j120         192               10          0.7           0.3         44.74        82174       
 
