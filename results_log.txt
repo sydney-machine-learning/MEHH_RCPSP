@@ -28,47 +28,10 @@ min(sub(div(sub(neg(min(RR, MaxRReq)), mul(max(TPC, TPC), sub(ES, ES))), add(min
                j120         192               20          0.8           0.2         42.83        81074       
 Aggregate % : 25.661507814063878  
 
-sub(neg(max(add(LF, RR), add(EF, TPC))), sub(neg(max(TPC, RR)), sub(add(LS, LF), mul(MaxRReq, AvgRReq)))) : 
-               j30         192               15          0.8           0.2         18.8        20768       
-sub(neg(max(add(LF, RR), add(EF, TPC))), sub(neg(max(TPC, RR)), sub(add(LS, LF), mul(MaxRReq, AvgRReq)))) : 
-               j60         192               15          0.8           0.2         17.25        28259       
-sub(neg(max(add(LF, RR), add(EF, TPC))), sub(neg(max(TPC, RR)), sub(add(LS, LF), mul(MaxRReq, AvgRReq)))) : 
-               j90         192               15          0.8           0.2         15.28        47974       
-sub(neg(max(add(LF, RR), add(EF, TPC))), sub(neg(max(TPC, RR)), sub(add(LS, LF), mul(MaxRReq, AvgRReq)))) : 
-               j120         192               15          0.8           0.2         43.19        81302       
-Aggregate % : 25.89143173952911  
+----------------------------------------------------------------------------------------------------------------------------------------
+Multi run results
+---
+Function |  TestType | Seed | Generations | Mate_prob | Mutate_prob| % Deviation | Makespan |
 
-
-min(neg(sub(AvgRReq, LF)), max(max(sub(add(div(TPC, LF), max(MaxRReq, AvgRReq)), neg(max(TPC, MinRReq))), max(MaxRReq, ES)), min(add(EF, TSC), max(MinRReq, AvgRReq)))) : 
-               j30         192               15          0.8           0.2         18.64        20735       
-min(neg(sub(AvgRReq, LF)), max(max(sub(add(div(TPC, LF), max(MaxRReq, AvgRReq)), neg(max(TPC, MinRReq))), max(MaxRReq, ES)), min(add(EF, TSC), max(MinRReq, AvgRReq)))) : 
-               j60         192               15          0.8           0.2         17.18        28243       
-min(neg(sub(AvgRReq, LF)), max(max(sub(add(div(TPC, LF), max(MaxRReq, AvgRReq)), neg(max(TPC, MinRReq))), max(MaxRReq, ES)), min(add(EF, TSC), max(MinRReq, AvgRReq)))) : 
-               j90         192               15          0.8           0.2         15.92        48221       
-min(neg(sub(AvgRReq, LF)), max(max(sub(add(div(TPC, LF), max(MaxRReq, AvgRReq)), neg(max(TPC, MinRReq))), max(MaxRReq, ES)), min(add(EF, TSC), max(MinRReq, AvgRReq)))) : 
-               j120         192               15          0.8           0.2         45.24        82372       
-Aggregate % : 26.725573886477335  
-
-
-div(max(div(LS, AvgRReq), min(MinRReq, LF)), div(TSC, LF)) : 
-               j30         192               15          0.5           0.3         18.7        20744       
-div(max(div(LS, AvgRReq), min(MinRReq, LF)), div(TSC, LF)) : 
-               j60         192               15          0.5           0.3         17.53        28325       
-div(max(div(LS, AvgRReq), min(MinRReq, LF)), div(TSC, LF)) : 
-               j90         192               15          0.5           0.3         15.54        48067       
-div(max(div(LS, AvgRReq), min(MinRReq, LF)), div(TSC, LF)) : 
-               j120         192               15          0.5           0.3         43.81        81635       
-Aggregate % : 26.211259201237972  
-
-
-add(LF, min(mul(sub(TPC, AvgRReq), div(max(MaxRReq, MinRReq), div(LS, LS))), div(ES, MinRReq))) : 
-               j30         192               15          0.5           0.3         18.48        20716       
-add(LF, min(mul(sub(TPC, AvgRReq), div(max(MaxRReq, MinRReq), div(LS, LS))), div(ES, MinRReq))) : 
-               j60         192               15          0.5           0.3         17.64        28348       
-add(LF, min(mul(sub(TPC, AvgRReq), div(max(MaxRReq, MinRReq), div(LS, LS))), div(ES, MinRReq))) : 
-               j90         192               15          0.5           0.3         15.63        48126       
-add(LF, min(mul(sub(TPC, AvgRReq), div(max(MaxRReq, MinRReq), div(LS, LS))), div(ES, MinRReq))) : 
-               j120         192               15          0.5           0.3         43.77        81604       
-Aggregate % : 26.197676788756603  
 
 

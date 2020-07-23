@@ -30,10 +30,7 @@ for typ in types:
     validation_set.append("./"+typ+"/"+typ+str(i)+"_3.sm")
     train_set.append("./"+typ+'/'+typ+str(i)+"_1.sm")
     train_set.append("./"+typ+'/'+typ+str(i)+"_2.sm")
-instances=[]
-# print(len(train_set))
-for i in range(len(train_set)):
-    instances.append(instance.instance(train_set[i],use_precomputed=True))
+
 # Parameters
 nb_features = 4                            # The number of features to take into account in the container
 nb_bins = [20,7,20,20]
@@ -41,10 +38,10 @@ features_domain = [(1, 63),(1,7),(0.7,1.2),(0.1,0.4)]      # The domain (min/max
 fitness_domain = [(0., 1.0)]               # The domain (min/max values) of the fitness
 init_batch_size = 1024                     # The number of evaluations of the initial batch ('batch' = population)
 batch_size = 1024                           # The number of evaluations in each subsequent batch
-nb_iterations = 15                        # The number of iterations (i.e. times where a new batch is evaluated)
-cxpb = 0.5
-mutation_pb = 0.3                        # The probability of mutating each value of a genome
-max_items_per_bin = 2                      # The number of items in each bin of the grid
+nb_iterations = 25                        # The number of iterations (i.e. times where a new batch is evaluated)
+cxpb = 0.8
+mutation_pb = 0.2                        # The probability of mutating each value of a genome
+max_items_per_bin = 3                      # The number of items in each bin of the grid
 verbose = True                             
 show_warnings = True                      # Display warning and error messages. Set to True if you want to check if some individuals were out-of-bounds
 log_base_path = '.'
@@ -76,7 +73,7 @@ def div(left, right): # Safe division to avoid ZeroDivisionError
 
 
 # Generate the primitive set which contains all operators
-pset = gp.PrimitiveSet("MAIN",10)
+pset = gp.PrimitiveSet("MAIN",12)
 pset.addPrimitive(operator.add, 2)
 pset.addPrimitive(operator.sub, 2)
 pset.addPrimitive(operator.mul, 2)
@@ -95,6 +92,8 @@ pset.renameArguments(ARG6="RR")
 pset.renameArguments(ARG7="AvgRReq")
 pset.renameArguments(ARG8="MaxRReq")
 pset.renameArguments(ARG9="MinRReq")
+pset.renameArguments(ARG10="GRPW")
+pset.renameArguments(ARG11="GRD")
 
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,)) # Define the Fitness type(minimisation) 
@@ -108,10 +107,11 @@ def evalSymbReg(individual):
     hard_cases_count=0
     serial_cases_sum=0
     for i in range(len(train_set)):
-        inst=instances[i]
+        file=train_set[i]
+        inst=instance.instance(file,use_precomputed=True)
         priorities=[0]*(inst.n_jobs+1)
         for j in range(1,inst.n_jobs+1):
-            priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j])
+            priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j],inst.grpw[j],inst.grd[j])
         frac,makespan=inst.parallel_sgs(option='forward',priority_rule='',priorities=priorities)
         sumv+=frac
         frac2,makespan2=inst.serial_sgs(option='forward',priority_rule='',priorities=priorities)
