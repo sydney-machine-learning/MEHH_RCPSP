@@ -195,9 +195,12 @@ if __name__ == "__main__":
             n = g.get_node(i)
             n.attr["label"] = labels[i]
         g.draw("./gp_trees/"+str(round((sum_total_dev*100)/sum_counts,2))+"_run_"+str(run)+".png")
+    
+    print("All aggregates : ",all_aggregate)
     all_aggregate=np.array(all_aggregate)
     print("Mean ",np.mean(all_aggregate))
     print("Median", np.median(all_aggregate))
     print("STD",np.std(all_aggregate))
     print("MIN",np.min(all_aggregate))
     print("MAX",np.max(all_aggregate))
+    
