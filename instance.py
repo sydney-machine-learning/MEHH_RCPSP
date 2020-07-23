@@ -96,6 +96,7 @@ class instance(object):
             self.calculate_lt() # Calculates both LFT and LST
             self.calculate_et() # Calculates both EST and EFT
             self.calculate_mts()
+
             self.calulate_activity_attributes()
 
 
@@ -255,9 +256,8 @@ class instance(object):
                 Tuple of (Fractional deviation , makespan)
                 Fractional deviation = (makespan-self.mpm_time)/self.mpm_time,makespan
         """
-        if(priority_rule=='GRPW'):
+        if priority_rule in ['GRPW','GRD']:
             self.calculate_grpw()
-        elif(priority_rule=='GRD'):
             self.calculate_grd()
         #Initialize arrays to store computed values
         start_times=[0]*(self.n_jobs+1) #Start times of schedule
@@ -319,11 +319,10 @@ class instance(object):
                 Tuple of (Fractional deviation , makespan)
                 Fractional deviation = (makespan-self.mpm_time)/self.mpm_time,makespan
         """
-        if(priority_rule=='GRPW'):
+        if priority_rule in ['GRPW','GRD']:
             self.calculate_grpw()
-        elif(priority_rule=='GRD'):
             self.calculate_grd()
-        elif priority_rule in ['IRSM','WCS','ACS']:
+        if priority_rule in ['IRSM','WCS','ACS']:
             self.irsm=[0]*(self.n_jobs+1)
             self.wcs=[0]*(self.n_jobs+1)
             self.acs=[0]*(self.n_jobs+1)
@@ -590,7 +589,7 @@ types=['j30','j60','j90','j120']
 
 # series_priority_rules=['LST']
 # types=['j120']
-x=instance('./j30/j3048_10.sm')
+# x=instance('./j30/j3048_10.sm')
 # print(x.rs,x.rf)
 # print(params['j30'])
 if __name__ == '__main__':
