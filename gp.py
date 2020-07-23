@@ -154,7 +154,7 @@ if __name__ == "__main__":
         file=open('./evolved_funcs/evolved_pop_'+str(run),'wb')
         pickle.dump(pop,file)
         file.close()
-        file=open('./logs/training_logs/training_log_'+str(run),'w')
+        file=open('./logs/training_logs/training_log_'+str(run)+".txt",'w')
         file.write(str(log))
         file.close()
 
