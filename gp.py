@@ -199,3 +199,5 @@ if __name__ == "__main__":
     print("Mean ",np.mean(all_aggregate))
     print("Median", np.median(all_aggregate))
     print("STD",np.std(all_aggregate))
+    print("MIN",np.min(all_aggregate))
+    print("MAX",np.max(all_aggregate))
