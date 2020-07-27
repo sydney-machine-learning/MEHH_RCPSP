@@ -1,0 +1,16 @@
+Function |  TestType | Seed | Generations | Mate_prob | Mutate_prob| % Deviation | Makespan | 
+neg(sub(add(neg(sub(LF, MinRReq)), sub(max(MaxRReq, MinRReq), min(TPC, ES))), sub(add(add(sub(LS, TSC), neg(TPC)), max(mul(TSC, EF), mul(AvgRReq, LS))), max(mul(sub(RR, EF), min(EF, MaxRReq)), neg(div(RR, TSC)))))) : 
+               j30         1000               25          0.8           0.2         18.82        20767       
+
+neg(sub(add(neg(sub(LF, MinRReq)), sub(max(MaxRReq, MinRReq), min(TPC, ES))), sub(add(add(sub(LS, TSC), neg(TPC)), max(mul(TSC, EF), mul(AvgRReq, LS))), max(mul(sub(RR, EF), min(EF, MaxRReq)), neg(div(RR, TSC)))))) : 
+               j60         1000               25          0.8           0.2         17.57        28340       
+
+neg(sub(add(neg(sub(LF, MinRReq)), sub(max(MaxRReq, MinRReq), min(TPC, ES))), sub(add(add(sub(LS, TSC), neg(TPC)), max(mul(TSC, EF), mul(AvgRReq, LS))), max(mul(sub(RR, EF), min(EF, MaxRReq)), neg(div(RR, TSC)))))) : 
+               j90         1000               25          0.8           0.2         15.53        48085       
+
+neg(sub(add(neg(sub(LF, MinRReq)), sub(max(MaxRReq, MinRReq), min(TPC, ES))), sub(add(add(sub(LS, TSC), neg(TPC)), max(mul(TSC, EF), mul(AvgRReq, LS))), max(mul(sub(RR, EF), min(EF, MaxRReq)), neg(div(RR, TSC)))))) : 
+               j120         1000               25          0.8           0.2         43.45        81427       
+
+Aggregate % (best on validation): 26.11581859270627  
+
+

@@ -94,7 +94,9 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
-
+exp='sub(add(sub(sub(LS,TSC),mul(MaxRReq,AvgRReq)), LF),AvgRReq)'
+x=toolbox.compile(expr=exp)
+print(x(1,1,1,1,1,1,1,1,1,1))
 stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
 stats_size = tools.Statistics(len)
 mstats = tools.MultiStatistics(fitness=stats_fit, size=stats_size)
@@ -109,29 +111,28 @@ file=open('./evolved_funcs/best_funcs2','rb')
 hof=pickle.load(file)
 file.close()
 for hof_index in range(HOF_SIZE):
-    nodes, edges, labels = gp.graph(hof[hof_index])
-    print("Function ", hof[hof_index])
+    ind=x
+    # nodes, edges, labels = gp.graph(exp)
+    print("Function ", exp)
     test_type=['j30','j60','j90','j120']
     sum_total_dev=0
     sum_counts=0
     for typ in test_type:
-        total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=hof[hof_index]),inst_type=typ,mode='parallel',option='forward')
+        total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=exp),inst_type=typ,mode='parallel',option='forward')
         print(typ,total_dev_percent,makespan)
-        log_file=open('results_log.txt','a+')
-        log_file.write(str(hof[hof_index])+" : \n              "+INST_TYPE+"         "+typ+"         "+str(len(train_set))+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
-        log_file.close()
+        
         sum_total_dev+=total_dev
         sum_counts+=count
     print("Aggregate %",(100*sum_total_dev)/sum_counts)
 
 
-    g = pgv.AGraph()
-    g.add_nodes_from(nodes)
-    g.add_edges_from(edges)
-    g.layout(prog="dot")
+    # g = pgv.AGraph()
+    # g.add_nodes_from(nodes)
+    # g.add_edges_from(edges)
+    # g.layout(prog="dot")
 
-    for i in nodes:
-        n = g.get_node(i)
-        n.attr["label"] = labels[i]
+    # for i in nodes:
+    #     n = g.get_node(i)
+    #     n.attr["label"] = labels[i]
 
-    g.draw("./gp_trees/"+str(round(total_dev_percent,2))+"__2.png")
+    # g.draw("./gp_trees/test"+str(round(total_dev_percent,2))+"__2.png")

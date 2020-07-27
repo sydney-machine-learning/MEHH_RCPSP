@@ -32,7 +32,7 @@ for i in range(len(train_set)):
     instances.append(instance.instance(train_set[i],use_precomputed=True))
 
 # Parameters for GP
-N_RUNS=31
+N_RUNS=2
 POP_SIZE=1024
 NUM_GENERATIONS=25 # Number of generation to evolve
 MATING_PROB=0.9 # Probability of mating two individuals
