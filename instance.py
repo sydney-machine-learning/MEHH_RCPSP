@@ -74,8 +74,10 @@ class instance(object):
         else:
             print("Path not provided")
         self.predecessors=[[]]
+        self.successors=[[]]
         for i in range(1,self.n_jobs+1):
             self.predecessors.append(list(self.G.predecessors(i)))
+            self.successors.append(list(self.G_T.predecessors(i)))
         if(use_precomputed):
             data_file=open("./precomputes/"+self.instance_type+"/"+self.filename_comp,"rb")
             (self.earliest_start_times,self.earliest_finish_times,self.latest_start_times,self.latest_finish_times,self.mts,self.mtp,self.rr,self.avg_rreq,self.min_rreq,self.max_rreq)=pickle.load(data_file)
@@ -113,8 +115,8 @@ class instance(object):
         self.rel_date,self.due_fate,self.tardcost,self.mpm_time=(line[2],line[3],line[4],line[5])
         for i in range(18,18+self.n_jobs):
             line=list(map(int,list(lines[i].split())))
-            n_succesors=line[2]
-            self.adj.append(line[3:3+n_succesors])
+            n_successors=line[2]
+            self.adj.append(line[3:3+n_successors])
         
         for i in range(18+self.n_jobs+4,18+self.n_jobs+4+self.n_jobs):
             line=list(map(int,list(lines[i].split())))
@@ -181,7 +183,6 @@ class instance(object):
         self.latest_start_times[self.n_jobs]=self.latest_finish_times[self.n_jobs]
 
 
-
     def calculate_et(self):
         """ Calculates values of EFT and EST for each job (Does a serial SGS without considering resource constraints)"""
         scheduled=[0]*(self.n_jobs+1)
@@ -215,7 +216,6 @@ class instance(object):
             scheduled[choice]=1
 
 
-
     def calculate_mts(self):
         """Calculates Total succesors and Total predecessors for each job"""
         for i in range(1,self.n_jobs+1):
@@ -244,7 +244,7 @@ class instance(object):
 
 
 
-    def serial_sgs(self,option='forward',priority_rule='LFT',priorities=[]):
+    def serial_sgs(self,option='forward',priority_rule='LFT',priorities=[],stat='min'):
         """
             Implements the Serial Schedule Generation Scheme
 
@@ -268,9 +268,11 @@ class instance(object):
         if(option =='forward'): 
             graph=self.G #If forward scheduling use graph as it is
             start_vertex=1
+            predecessors=self.predecessors
         else:#option = reverse 
             graph=self.G_T #If reverse scheduling use transpose of grapj
             start_vertex=self.n_jobs
+            predecessors=self.successors
         start_times[start_vertex]=0 #Schedule the first dummy job
         finish_times[start_vertex]=0
         scheduled[start_vertex]=1
@@ -281,7 +283,7 @@ class instance(object):
             for i in range(1,self.n_jobs+1):
                 if(scheduled[i]==0):
                     con=True
-                    for j in self.predecessors[i]:
+                    for j in predecessors[i]:
                         if scheduled[j]==0:
                             con=False
                             break
@@ -289,24 +291,26 @@ class instance(object):
                         eligible.append(i)
             choice=self.choose(eligible,priority_rule=priority_rule,priorities=priorities) #Choose a job according to some priority rule
             max_pred_finish_time=0 #Find the maximum precedence feasible start time for chosen job
-            for i in self.predecessors[choice]:
+            for i in predecessors[choice]:
                 max_pred_finish_time=max(finish_times[i],max_pred_finish_time)
             earliest_start[choice]=max_pred_finish_time+1 #Update the found value in array
             scheduled[choice]=1
             feasible_start_time=self.time_resource_available(choice,earliest_start[choice]) #Find the earliest resource feasible time
+            start_times[choice]=feasible_start_time
             finish_times[choice]=feasible_start_time+self.durations[choice]-1 #Update finish time
             for i in range(feasible_start_time,finish_times[choice]+1):
                 self.resource_consumption[i]=add_lists(self.resource_consumption[i],self.job_resources[choice]) #Update resource consumption
         makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
         if(option!='forward'):
-            for i in range(1,len(finish_times)):
+            for i in range(1,self.n_jobs+1):
                 finish_times[i]=makespan-start_times[i]
-                start_times[i]=finish_times[i]-durations[i]+1
+                start_times[i]=finish_times[i]-self.durations[i]+1
+        self.serial_finish_times=finish_times
         return (makespan-self.mpm_time)/self.mpm_time,makespan
  
  
  
-    def parallel_sgs(self,option='forward',priority_rule='LFT',priorities=[]):
+    def parallel_sgs(self,option='forward',priority_rule='LFT',priorities=[],stat='min'):
 
         """
             Implements the Parallel Schedule Generation Scheme
@@ -333,9 +337,11 @@ class instance(object):
         if(option =='forward'): 
             graph=self.G #If forward scheduling use graph as it is
             start_vertex=1
+            predecessors=self.predecessors
         else:#option = reverse 
             graph=self.G_T #If reverse scheduling use transpose of grapj
             start_vertex=self.n_jobs
+            predecessors=self.successors
         start_times[start_vertex]=0 #Schedule the first dummy job
         finish_times[start_vertex]=0
         scheduled[start_vertex]=1
@@ -344,6 +350,7 @@ class instance(object):
         completed_list=[]
         current_time=0
         current_consumption=[0]*self.k
+        resource_consumption=[[0 for col in range(self.k)] for row in range(self.horizon+1)] 
         #Maintain an active and completed disjoint lists and schedule till all jobs are in one of these lists
         while(len(active_list)+len(completed_list)<self.n_jobs):
             current_time=finish_times[active_list[find_index(active_list,finish_times,'min')]]+1 #Update the current time to the minimum of the finish times in the active list + 1
@@ -363,7 +370,7 @@ class instance(object):
             eligible=[]
             for i in range(1, self.n_jobs+1):
                 if(scheduled[i]==0):
-                    pred_list=self.predecessors[i]
+                    pred_list=predecessors[i]
                     con=True
                     for j in pred_list:
                         if(completed[j]==0):
@@ -387,13 +394,36 @@ class instance(object):
                 start_times[choice]=current_time
                 finish_times[choice]=current_time+self.durations[choice]-1
                 current_consumption=add_lists(current_consumption,self.job_resources[choice]) #Update resource consumption
-
+            resource_consumption[current_time]=current_consumption
         
         makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
+        #slack calculation starts
+        
+        # self.slack=0
+        # prev_consumption=[0]*self.k
+        # for i in range(0,self.horizon+1):
+        #     if resource_consumption[i]==[0]*self.k:
+        #         resource_consumption[i]=prev_consumption
+        #     else:
+        #         prev_consumption=resource_consumption[i]
+        # for i in range(1,self.n_jobs):
+        #     curr_slack=0
+        #     least_time=1000000
+        #     for j in self.successors[i]:
+        #         least_time=min(least_time,start_times[j])
+        #     for j in range(finish_times[i]+1,least_time):
+        #         if(less_than(self.job_resources[i],sub_lists(self.total_resources,resource_consumption[j]))):
+        #             curr_slack+=1
+        #         else:
+        #             break
+        #     self.slack+=curr_slack
+
+        #slack calculation ends
         if(option!='forward'):#If reverse scheduling invert times
-            for i in range(1,len(finish_times)):
+            for i in range(1,self.n_jobs+1):
                 finish_times[i]=makespan-start_times[i]
-                start_times[i]=finish_times[i]-durations[i]+1
+                start_times[i]=finish_times[i]-self.durations[i]+1
+        self.parallel_finish_times=finish_times
         return (makespan-self.mpm_time)/self.mpm_time,makespan
 
 
@@ -498,7 +528,7 @@ class instance(object):
 
     
     
-    def choose(self,eligible,priority_rule='LFT',priorities=[]):
+    def choose(self,eligible,priority_rule='LFT',priorities=[],stat='min'):
 
         if(priorities==[]):
             if(priority_rule=='LFT'):
@@ -530,7 +560,7 @@ class instance(object):
             else:
                 print("Invalid priority rule")
         else:
-            return eligible[find_index(eligible,priorities,'min')]
+            return eligible[find_index(eligible,priorities,stat)]
     
     
     
@@ -589,10 +619,19 @@ types=['j30','j60','j90','j120']
 
 # series_priority_rules=['LST']
 # types=['j120']
-# x=instance('./j30/j3048_10.sm')
+x=instance('./j120/j12043_1.sm',use_precomputed=False)
+# x.serial_sgs(option='backward')
+# print(x.serial_finish_times)
+# print(x.parallel_sgs())
+# print(x.serial_finish_times)
+# print(x.earliest_finish_times)
+# print(x.earliest_finish_times)
+# print(x.latest_start_times)
+# print(x.latest_finish_times)
 # print(x.rs,x.rf)
 # print(params['j30'])
 if __name__ == '__main__':
-    statistics.get_stats(instance,['LST'],['j120'],'serial','forward',use_precomputed=True)
+    # statistics.get_stats(instance,['LST'],['j120'],'parallel','forward',use_precomputed=False)
     pass
+    
 
