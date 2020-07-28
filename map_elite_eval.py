@@ -159,6 +159,8 @@ test_type=['j30','j60','j90','j120']
 sum_total_dev=0
 sum_counts=0
 print("Individual : ", grid.best)
+print(len(grid),data.keys())
+print(data["logbook"])
 # log_file=open('results_log.txt','a+')
 for typ in test_type:
     total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=grid.best),inst_type=typ,mode='parallel',option='forward',verbose=False)

@@ -397,25 +397,28 @@ class instance(object):
             resource_consumption[current_time]=current_consumption
         
         makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
-        self.slack=0
-        prev_consumption=[0]*self.k
-        for i in range(0,self.horizon+1):
-            if resource_consumption[i]==[0]*self.k:
-                resource_consumption[i]=prev_consumption
-            else:
-                prev_consumption=resource_consumption[i]
-        for i in range(1,self.n_jobs):
-            curr_slack=0
-            least_time=1000000
-            for j in self.successors[i]:
-                least_time=min(least_time,start_times[j])
-            for j in range(finish_times[i]+1,least_time):
-                if(less_than(self.job_resources[i],sub_lists(self.total_resources,resource_consumption[j]))):
-                    curr_slack+=1
-                else:
-                    break
-            self.slack+=curr_slack
-            
+        #slack calculation starts
+        
+        # self.slack=0
+        # prev_consumption=[0]*self.k
+        # for i in range(0,self.horizon+1):
+        #     if resource_consumption[i]==[0]*self.k:
+        #         resource_consumption[i]=prev_consumption
+        #     else:
+        #         prev_consumption=resource_consumption[i]
+        # for i in range(1,self.n_jobs):
+        #     curr_slack=0
+        #     least_time=1000000
+        #     for j in self.successors[i]:
+        #         least_time=min(least_time,start_times[j])
+        #     for j in range(finish_times[i]+1,least_time):
+        #         if(less_than(self.job_resources[i],sub_lists(self.total_resources,resource_consumption[j]))):
+        #             curr_slack+=1
+        #         else:
+        #             break
+        #     self.slack+=curr_slack
+
+        #slack calculation ends
         if(option!='forward'):#If reverse scheduling invert times
             for i in range(1,self.n_jobs+1):
                 finish_times[i]=makespan-start_times[i]

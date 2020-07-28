@@ -33,32 +33,7 @@ for typ in types:
     train_set.append("./"+typ+'/'+typ+str(i)+"_2.sm")
 
 # Parameters
-n_runs=2
-nb_features = 5                            # The number of features to take into account in the container
-nb_bins = [7,7,7,7]
-features_domain = [(1, 63),(0.7,1.2),(0.1,0.4),(0,450)]      # The domain (min/max values) of the features
-fitness_domain = [(0., 1.0)]               # The domain (min/max values) of the fitness
-init_batch_size = 1024                     # The number of evaluations of the initial batch ('batch' = population)
-batch_size = 1024                           # The number of evaluations in each subsequent batch
-nb_iterations = 25                        # The number of iterations (i.e. times where a new batch is evaluated)
-cxpb = 0.8
-mutation_pb = 0.2                        # The probability of mutating each value of a genome
-max_items_per_bin = 1                      # The number of items in each bin of the grid
-verbose = True                             
-show_warnings = True                      # Display warning and error messages. Set to True if you want to check if some individuals were out-of-bounds
-log_base_path = './logs'
-
-SELECTION_POOL_SIZE=7 # Number of individuals for tournament
-HEIGHT_LIMIT = 6 # Height Limit for tree
-GEN_MIN_HEIGHT=3
-GEN_MAX_HEIGHT=6
-"""Eval mode
-0:  Evaluate only best individual on train set
-1: Evaluate best individual on validation set
-2: Evaluate all individuals on grid
-"""
-
-eval_mode=[1]
+from params_map_elites import *
 
 
 # Update seed
@@ -119,7 +94,7 @@ def evalSymbReg(individual):
             hard_cases_sum+=frac
         serial_cases_sum+=frac2
     fitness=[sumv/len(train_set)]
-    features = [len(individual),hard_cases_sum/hard_cases_count,serial_cases_sum/len(train_set),inst.slack]
+    features = [len(individual),hard_cases_sum/hard_cases_count,serial_cases_sum/len(train_set)]
     return [fitness, features]
 
 
