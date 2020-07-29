@@ -22,6 +22,7 @@ import scipy
 import instance
 import time
 from utils import sub_lists
+from multiprocessing import Pool
 #Generate the training set
 train_set=[]
 validation_set=[]
@@ -114,7 +115,22 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 # Decorators to limit size of operator tree
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
-
+def parallelised_evaluation(ind):
+    global log_file
+    
+    sum_total_dev=0
+    sum_counts=0
+    for typ in test_type:
+        total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=ind),inst_type=typ,mode='parallel',option='forward',verbose=False)
+        sum_total_dev+=total_dev
+        sum_counts+=count
+    log_file.write("Individual : "+str(ind)+"\n")
+    log_file.write("Aggregate % : "+str((sum_total_dev*100)/sum_counts)+"  \n\n\n")
+    if((sum_total_dev*100)/sum_counts < 26.5):
+        print("\n\nIndividual : ",ind)
+        print("Aggregate % ",(sum_total_dev*100)/sum_counts)
+        print("Fitness ",ind.fitness)
+        print("Features ",ind.features) 
 
 if __name__ == "__main__":
     all_aggregate=[]
@@ -180,7 +196,7 @@ if __name__ == "__main__":
             log_file.close()
             print("Aggregate % ",(sum_total_dev*100)/sum_counts)
         if 1 in eval_mode:
-            print("Evaluating all individuals on validation set")
+            print("\n\nEvaluating all individuals on validation set....")
             min_deviation=999
             
             for ind in grid:
@@ -208,22 +224,18 @@ if __name__ == "__main__":
             log_file.close()
             all_aggregate.append((sum_total_dev*100)/sum_counts)
             print("Aggregate % ",(sum_total_dev*100)/sum_counts)
+            print("Fitness ",best_individual.fitness)
+            print("Features ",best_individual.features)
+            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+            print("Performance on validation ",total_dev_percent)
         
         if 2 in eval_mode:
+            print("\n\nEvaluating all individuals on grid.....")
             test_type=['j30','j60','j90','j120']
             log_file=open('map_elites_results_log.txt','a+')
-            for ind in grid:
-                print("Individual : ",ind)
-                sum_total_dev=0
-                sum_counts=0
-                for typ in test_type:
-                    total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=ind),inst_type=typ,mode='parallel',option='forward',verbose=False)
-                    sum_total_dev+=total_dev
-                    sum_counts+=count
-                log_file.write("Individual : "+str(ind)+"\n")
-                log_file.write("Aggregate % : "+str((sum_total_dev*100)/sum_counts)+"  \n\n\n")
-
-                print("Aggregate % ",(sum_total_dev*100)/sum_counts)    
+            with Pool(os.cpu_count()) as p:
+                p.map(parallelised_evaluation,grid)
+               
 
             log_file.close()
         # Generate and Store graph

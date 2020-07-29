@@ -1,5 +1,5 @@
  
-n_runs=2
+n_runs=1
 nb_features = 3                            # The number of features to take into account in the container
 nb_bins = [7,7,7]
 features_domain = [(4, 63),(0.75,1.2),(0.15,0.4)]      # The domain (min/max values) of the features
@@ -24,4 +24,4 @@ GEN_MAX_HEIGHT=6
 2: Evaluate all individuals on grid
 """
 
-eval_mode=[1]
+eval_mode=[1,2]
