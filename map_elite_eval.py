@@ -147,23 +147,24 @@ toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_v
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 
 
-with open("./logs/final0.p", "rb") as f:
-    data = pickle.load(f)
+# with open("./logs/final0.p", "rb") as f:
+#     data = pickle.load(f)
 
 
-print(data.keys())
-print(data['container'].best)
+# print(data.keys())
+# print(data['container'].best)
 
-grid=data['container']
+# grid=data['container']
+ind='add(add(add(sub(sub(AvgRReq,MaxRReq),AvgRReq),LS),add(div(max(TSC,AvgRReq),neg(LF)),LS)),add(LS,mul(min(max(RR,LS),add(RR,MaxRReq)),sub(LF,AvgRReq))))'
 test_type=['j30','j60','j90','j120']
 sum_total_dev=0
 sum_counts=0
-print("Individual : ", grid.best)
-print(len(grid),data.keys())
-print(data["logbook"])
+print("Individual : ", ind)
+# print(len(grid),data.keys())
+# print(data["logbook"])
 # log_file=open('results_log.txt','a+')
 for typ in test_type:
-    total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=grid.best),inst_type=typ,mode='parallel',option='forward',verbose=False)
+    total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=ind),inst_type=typ,mode='parallel',option='forward',verbose=False)
     print(typ,total_dev_percent,makespan)
     
     # log_file.write(str(grid.best)+" : \n               "+typ+"         "+str(len(train_set))+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n")
