@@ -31,20 +31,7 @@ instances=[]
 for i in range(len(train_set)):
     instances.append(instance.instance(train_set[i],use_precomputed=True))
 
-# Parameters for GP
-N_RUNS=2
-POP_SIZE=1024
-NUM_GENERATIONS=25 # Number of generation to evolve
-MATING_PROB=0.9 # Probability of mating two individuals
-MUTATION_PROB=0.1 # Probability of introducing mutation
-SELECTION_POOL_SIZE=7 # Number of individuals for tournament
-HOF_SIZE=3 # Number of top individuals to evaluate on test set
-HEIGHT_LIMIT = 6 # Height Limit for tree
-MU=1024 # The number of individuals to select for the next generation.
-LAMBDA=1024 # The number of children to produce at each generation.
-GEN_MIN_HEIGHT=3
-GEN_MAX_HEIGHT=5
-
+from params_gp import *
 
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:
@@ -151,10 +138,10 @@ if __name__ == "__main__":
         pop, log = algorithms.eaMuPlusLambda(pop, toolbox,MU,LAMBDA, MATING_PROB, MUTATION_PROB, NUM_GENERATIONS, stats=mstats,halloffame=hof, verbose=True)
         
         #Store the hof in a pickled file
-        file=open('./evolved_funcs/evolved_pop_'+str(run),'wb')
+        file=open('./evolved_funcs/gp/evolved_pop_'+str(run),'wb')
         pickle.dump(pop,file)
         file.close()
-        file=open('./logs/training_logs/training_log_'+str(run)+".txt",'w')
+        file=open('./logs/gp/training_logs/training_log_'+str(run)+".txt",'w')
         file.write(str(log))
         file.close()
 
@@ -171,7 +158,7 @@ if __name__ == "__main__":
         test_type=['j30','j60','j90','j120']
         sum_total_dev=0
         sum_counts=0
-        log_file=open('results_log.txt','a+')
+        log_file=open('./logs/gp/gp_results_log.txt','a+')
         for typ in test_type:
             total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=best_individual),inst_type=typ,mode='parallel',option='forward',verbose=False)
             print(typ,total_dev_percent,makespan)
@@ -185,16 +172,16 @@ if __name__ == "__main__":
 
         all_aggregate.append((sum_total_dev*100)/sum_counts)
 
-        # Generate and Store graph
-        nodes, edges, labels = gp.graph(best_individual)
-        g = pgv.AGraph()
-        g.add_nodes_from(nodes)
-        g.add_edges_from(edges)
-        g.layout(prog="dot")
-        for i in nodes:
-            n = g.get_node(i)
-            n.attr["label"] = labels[i]
-        g.draw("./gp_trees/"+str(round((sum_total_dev*100)/sum_counts,2))+"_run_"+str(run)+".png")
+        # # Generate and Store graph
+        # nodes, edges, labels = gp.graph(best_individual)
+        # g = pgv.AGraph()
+        # g.add_nodes_from(nodes)
+        # g.add_edges_from(edges)
+        # g.layout(prog="dot")
+        # for i in nodes:
+        #     n = g.get_node(i)
+        #     n.attr["label"] = labels[i]
+        # g.draw("./gp_trees/"+str(round((sum_total_dev*100)/sum_counts,2))+"_run_"+str(run)+".png")
     
     print("All aggregates : ",all_aggregate)
     all_aggregate=np.array(all_aggregate)
