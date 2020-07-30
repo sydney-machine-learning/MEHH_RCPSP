@@ -174,7 +174,7 @@ if __name__ == "__main__":
         # Print results info
         print(f"Total elapsed: {algo.total_elapsed}\n")
         print(grid.summary())
-        file=open('./logs/grid_logs/grid_summary_'+str(run),"w")
+        file=open('./logs/map_elites/grid_logs/grid_summary_'+str(run),"w")
         file.write(grid.summary())
         file.close()
 
@@ -182,14 +182,14 @@ if __name__ == "__main__":
         print("Best Function on training", grid.best)
         print("best fitness:", grid.best.fitness)
         print("best features:", grid.best.features)
-        file=open('./evolved_funcs/map_elites_grid_'+str(run),"wb")
+        file=open('./evolved_funcs/map_elites/grid_'+str(run),"wb")
         pickle.dump(grid,file)
         file.close()
-        file=open('./evolved_funcs/map_elites_best_'+str(run),"wb")
+        file=open('./evolved_funcs/map_elites/best_ind_'+str(run),"wb")
         pickle.dump(grid.best,file)
         file.close()
-        log_file=open('map_elites_results_log.txt','a+')
-        log_file2=open('map_elites_results_all.txt','a+')
+        log_file=open('./logs/map_elites/map_elites_results_log.txt','a+')
+        log_file2=open('./logs/map_elites/map_elites_results_all.txt','a+')
 
 
         log_file.write('-'*100+'\n\n\n\n\n')
@@ -204,7 +204,6 @@ if __name__ == "__main__":
             sum_total_dev=0
             sum_counts=0
             print("Best Individual on Training: ", grid.best)
-            log_file=open('map_elites_results_log.txt','a+')
             for typ in test_type:
                 total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=grid.best),inst_type=typ,mode='parallel',option='forward',verbose=False)
                 print(typ,total_dev_percent,makespan)
@@ -295,15 +294,15 @@ if __name__ == "__main__":
         log_file.close()
         log_file2.close()
         # Generate and Store graph
-        nodes, edges, labels = gp.graph(grid.best)
-        g = pgv.AGraph()
-        g.add_nodes_from(nodes)
-        g.add_edges_from(edges)
-        g.layout(prog="dot")
-        for i in nodes:
-            n = g.get_node(i)
-            n.attr["label"] = labels[i]
-        g.draw("./gp_trees/individual"+"__map_elites"+str(run) + ".png")
+        # nodes, edges, labels = gp.graph(grid.best)
+        # g = pgv.AGraph()
+        # g.add_nodes_from(nodes)
+        # g.add_edges_from(edges)
+        # g.layout(prog="dot")
+        # for i in nodes:
+        #     n = g.get_node(i)
+        #     n.attr["label"] = labels[i]
+        # g.draw("./gp_trees/individual"+"__map_elites"+str(run) + ".png")
 
         # Create plots
         plot_path = os.path.join(log_base_path, "performancesGrid"+str(run)+".pdf")
@@ -322,7 +321,7 @@ if __name__ == "__main__":
     print("STD",np.std(all_aggregate))
     print("MIN",np.min(all_aggregate))
     print("MAX",np.max(all_aggregate))
-    file=open('./logs/final_stats_map_elites.txt',"w")
+    file=open('./logs/map_elites/final_stats_map_elites.txt',"w")
     data= "All aggregates : "+str(all_aggregate)+"\nMean  "+str(np.mean(all_aggregate))+"\nMedian  "+str(np.median(all_aggregate))+"\nSTD  "+str(np.std(all_aggregate))+"\nMIN  "+str(np.min(all_aggregate))+"\nMAX  "+str(np.max(all_aggregate))
     file.write(data)
     file.close()

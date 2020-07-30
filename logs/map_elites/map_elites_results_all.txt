@@ -1,0 +1,7 @@
+Function |  TestType | Seed | Generations | Mate_prob | Mutate_prob| % Deviation | Makespan | 
+
+
+
+----------------------------------------------------------------------------------------------------
+
+

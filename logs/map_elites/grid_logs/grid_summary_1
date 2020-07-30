@@ -1,0 +1,33 @@
+Summary Grid:
+  activity_per_bin: [[[5.]]]
+  best: min(max(neg(min(ES, max(TSC, ES))), ES), max(EF, add(ES, mul(max(min(RR, MinRReq), MaxRReq), ES))))
+  best_features: [20, 0.9901235445883172, 0.23830754425494446]
+  best_fitness: (0.22290410468614716,)
+  best_index: (0, 0, 0)
+  capacity: 1
+  depot: None
+  discard_random_on_bin_overload: False
+  features: {(0, 0, 0): [[20, 0.9901235445883172, 0.23830754425494446]]}
+  features_domain: [(4, 63), (0.75, 1.2), (0.15, 0.4)]
+  features_extrema: ((20.0, 20.0), (0.9901235445883172, 0.9901235445883172), (0.23830754425494446, 0.23830754425494446))
+  filled_bins: 1
+  fitness: {(0, 0, 0): [deap.creator.FitnessMin((0.22290410468614716,))]}
+  fitness_domain: [(0.0, 1.0)]
+  fitness_extrema: ((0.22290410468614716, 0.22290410468614716),)
+  free: 0
+  history_recentness_per_bin: {(0, 0, 0): [1, 2, 3, 4, 5]}
+  items: [[<deap.gp.Primitive object at 0x7f42fd039410>, <deap.gp.Primitive object at 0x7f42fd0393b0>, <deap.gp.Primitive object at 0x7f42fd039350>, <deap.gp.Primitive object at 0x7f42fd039410>, <deap.gp.Terminal object at 0x7f42fcab99b0>, <deap.gp.Primi ...
+  max_items_per_bin: 1
+  name: Grid-139925698280400
+  nb_added: 5
+  nb_discarded: 4
+  nb_items_per_bin: [[[1.]]]
+  nb_operations: 9
+  nb_rejected: 4
+  quality: {(0, 0, 0): deap.creator.FitnessMin((0.22290410468614716,))}
+  quality_array: [[[[0.2229041]]]]
+  recentness: [4]
+  recentness_per_bin: {(0, 0, 0): [5]}
+  shape: (1, 1, 1)
+  size: 1
+  solutions: {(0, 0, 0): [[<deap.gp.Primitive object at 0x7f42fd039410>, <deap.gp.Primitive object at 0x7f42fd0393b0>, <deap.gp.Primitive object at 0x7f42fd039350>, <deap.gp.Primitive object at 0x7f42fd039410>, <deap.gp.Terminal object at 0x7f42fcab99b0>, <d ...
