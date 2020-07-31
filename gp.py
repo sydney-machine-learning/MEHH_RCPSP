@@ -190,4 +190,8 @@ if __name__ == "__main__":
     print("STD",np.std(all_aggregate))
     print("MIN",np.min(all_aggregate))
     print("MAX",np.max(all_aggregate))
+    file=open('./logs/gp/final_stats_gp.txt',"w")
+    data= "All aggregates : "+str(all_aggregate)+"\nMean  "+str(np.mean(all_aggregate))+"\nMedian  "+str(np.median(all_aggregate))+"\nSTD  "+str(np.std(all_aggregate))+"\nMIN  "+str(np.min(all_aggregate))+"\nMAX  "+str(np.max(all_aggregate))
+    file.write(data)
+    file.close()
     
