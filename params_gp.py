@@ -5,8 +5,8 @@
 N_RUNS=31
 POP_SIZE=1024
 NUM_GENERATIONS=25 # Number of generation to evolve
-MATING_PROB=0.9 # Probability of mating two individuals
-MUTATION_PROB=0.1 # Probability of introducing mutation
+MATING_PROB=0.8 # Probability of mating two individuals
+MUTATION_PROB=0.2 # Probability of introducing mutation
 SELECTION_POOL_SIZE=7 # Number of individuals for tournament
 HOF_SIZE=3 # Number of top individuals to evaluate on test set
 HEIGHT_LIMIT = 6 # Height Limit for tree

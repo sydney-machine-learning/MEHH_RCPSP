@@ -18,7 +18,7 @@ log_base_path = './logs/map_elites/data_and_charts'
 SELECTION_POOL_SIZE=7 # Number of individuals for tournament
 HEIGHT_LIMIT = 6 # Height Limit for tree
 GEN_MIN_HEIGHT=2
-GEN_MAX_HEIGHT=6
+GEN_MAX_HEIGHT=5
 """Eval mode
 0:  Evaluate only best individual on train set
 1: Evaluate best individual on validation set

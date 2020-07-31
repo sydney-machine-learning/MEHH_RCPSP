@@ -16,9 +16,9 @@ Summary Grid:
   fitness_extrema: ((0.18518204247126957, 0.18518204247126957),)
   free: 0
   history_recentness_per_bin: {(0, 0, 0): [1, 2, 3, 4]}
-  items: [[<deap.gp.Primitive object at 0x7f42fd9c97d0>, <deap.gp.Primitive object at 0x7f42fd9c97d0>, <deap.gp.Terminal object at 0x7f42fd9c4a00>, <deap.gp.Terminal object at 0x7f42fd9c4c30>, <deap.gp.Primitive object at 0x7f42fd9c99b0>, <deap.gp.Primit ...
+  items: [[<deap.gp.Primitive object at 0x7fd9075237d0>, <deap.gp.Primitive object at 0x7fd9075237d0>, <deap.gp.Terminal object at 0x7fd90751e910>, <deap.gp.Terminal object at 0x7fd90751eb40>, <deap.gp.Primitive object at 0x7fd9075239b0>, <deap.gp.Primit ...
   max_items_per_bin: 1
-  name: Grid-139925699458000
+  name: Grid-140570107450512
   nb_added: 4
   nb_discarded: 3
   nb_items_per_bin: [[[1.]]]
@@ -30,4 +30,4 @@ Summary Grid:
   recentness_per_bin: {(0, 0, 0): [4]}
   shape: (1, 1, 1)
   size: 1
-  solutions: {(0, 0, 0): [[<deap.gp.Primitive object at 0x7f42fd9c97d0>, <deap.gp.Primitive object at 0x7f42fd9c97d0>, <deap.gp.Terminal object at 0x7f42fd9c4a00>, <deap.gp.Terminal object at 0x7f42fd9c4c30>, <deap.gp.Primitive object at 0x7f42fd9c99b0>, <de ...
+  solutions: {(0, 0, 0): [[<deap.gp.Primitive object at 0x7fd9075237d0>, <deap.gp.Primitive object at 0x7fd9075237d0>, <deap.gp.Terminal object at 0x7fd90751e910>, <deap.gp.Terminal object at 0x7fd90751eb40>, <deap.gp.Primitive object at 0x7fd9075239b0>, <de ...
