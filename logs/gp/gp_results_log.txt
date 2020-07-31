@@ -2,3 +2,63 @@ Function |  TestType | Sample_Size | Generations | Mate_prob | Mutate_prob| % De
 
 -----------------
 
+max(neg(RR), max(AvgRReq, LS)) : 
+               j30         1000               2          0.9           0.1         19.56        20904       
+
+max(neg(RR), max(AvgRReq, LS)) : 
+               j60         1000               2          0.9           0.1         17.83        28405       
+
+max(neg(RR), max(AvgRReq, LS)) : 
+               j90         1000               2          0.9           0.1         15.94        48253       
+
+max(neg(RR), max(AvgRReq, LS)) : 
+               j120         1000               2          0.9           0.1         44.91        82269       
+
+Aggregate % : 26.919208391787826  
+
+
+add(add(EF, LF), max(EF, LF)) : 
+               j30         1001               2          0.9           0.1         19.39        20868       
+
+add(add(EF, LF), max(EF, LF)) : 
+               j60         1001               2          0.9           0.1         18.26        28504       
+
+add(add(EF, LF), max(EF, LF)) : 
+               j90         1001               2          0.9           0.1         16.48        48473       
+
+add(add(EF, LF), max(EF, LF)) : 
+               j120         1001               2          0.9           0.1         45.97        82839       
+
+Aggregate % : 27.477137467249683  
+
+
+max(neg(RR), max(AvgRReq, LS)) : 
+               j30         1000               2          0.9           0.1         19.56        20904       
+
+max(neg(RR), max(AvgRReq, LS)) : 
+               j60         1000               2          0.9           0.1         17.83        28405       
+
+max(neg(RR), max(AvgRReq, LS)) : 
+               j90         1000               2          0.9           0.1         15.94        48253       
+
+max(neg(RR), max(AvgRReq, LS)) : 
+               j120         1000               2          0.9           0.1         44.91        82269       
+
+Aggregate % : 26.919208391787826  
+
+
+add(add(EF, LF), max(EF, LF)) : 
+               j30         1001               2          0.9           0.1         19.39        20868       
+
+add(add(EF, LF), max(EF, LF)) : 
+               j60         1001               2          0.9           0.1         18.26        28504       
+
+add(add(EF, LF), max(EF, LF)) : 
+               j90         1001               2          0.9           0.1         16.48        48473       
+
+add(add(EF, LF), max(EF, LF)) : 
+               j120         1001               2          0.9           0.1         45.97        82839       
+
+Aggregate % : 27.477137467249683  
+
+
