@@ -98,7 +98,7 @@ def evalSymbReg(individual,train_set):
     serial_cases_sum=0
     for i in range(len(train_set)):
         file=train_set[i]
-        inst=instance.instance(file,use_precomputed=False)
+        inst=instance.instance(file,use_precomputed=True)
         priorities=[0]*(inst.n_jobs+1)
         for j in range(1,inst.n_jobs+1):
             priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j])
