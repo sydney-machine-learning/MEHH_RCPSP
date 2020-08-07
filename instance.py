@@ -560,7 +560,17 @@ class instance(object):
             else:
                 print("Invalid priority rule")
         else:
-            return eligible[find_index(eligible,priorities,stat)]
+            if (isinstance(priorities[0], list)):
+                votes={}
+
+                for prio in priorities:
+                    candidate=eligible[find_index(eligible,prio,stat)]
+                    if(candidate not in votes):
+                        votes[candidate]=0
+                    votes[candidate]+=1
+                return max(votes,key=votes.get)
+            else:
+                return eligible[find_index(eligible,priorities,stat)]
     
     
     

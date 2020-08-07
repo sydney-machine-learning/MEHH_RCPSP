@@ -1,0 +1,17 @@
+
+
+
+
+Run #0
+
+
+Run #0
+Generation :8
+Validation set accuracy of representative (0.18361242336017944,)
+Test set accuracy of representative (0.27445100373830583,)
+
+
+
+Final results : 
+Validation set accuracy of representative (0.18361242336017944,)
+Test set accuracy of representative (0.27445100373830583,)
