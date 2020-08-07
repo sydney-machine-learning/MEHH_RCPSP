@@ -101,3 +101,16 @@ Aggregate % (best on validation): 31.702041141057904
 
 Individuals passing threshold on test : 
 
+----------------------------------------------------------------------------------------------------
+
+
+
+
+Run #0
+
+
+
+Best on training add(add(EF, LF), max(mul(sub(neg(EF), neg(TPC)), neg(add(ES, LS))), LF))
+
+Fitness  (0.18518204247126957,)
+Features  [16, 0.8906130244680593, 0.20485668004821567]
