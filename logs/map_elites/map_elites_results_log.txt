@@ -114,3 +114,37 @@ Best on training add(add(EF, LF), max(mul(sub(neg(EF), neg(TPC)), neg(add(ES, LS
 
 Fitness  (0.18518204247126957,)
 Features  [16, 0.8906130244680593, 0.20485668004821567]
+----------------------------------------------------------------------------------------------------
+
+
+
+
+Run #0
+
+
+
+Best on training mul(neg(TSC), max(neg(sub(neg(AvgRReq), min(TSC, MaxRReq))), TSC))
+
+Fitness  (0.19170339750500204,)
+Features  [12, 0.8258527245512479, 0.21821512421444217]
+Aggregate % (best on train): 1001.7332797534419  
+Makespan (best on train): 343200  
+
+
+----------------------------------------------------------------------------------------------------
+
+
+
+
+Run #0
+
+
+
+Best on training add(sub(neg(min(mul(LS, MaxRReq), neg(LS))), min(ES, ES)), add(min(min(ES, AvgRReq), mul(min(neg(RR), mul(LF, AvgRReq)), max(max(AvgRReq, TSC), mul(MaxRReq, MaxRReq)))), add(sub(LS, AvgRReq), add(EF, LF))))
+
+Fitness  (0.1844111759866479,)
+Features  [38, 0.7878017779329765, 0.20407697531800437]
+Aggregate % (best on train): 1004.143326046724  
+Makespan (best on train): 344332  
+
+

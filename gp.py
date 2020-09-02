@@ -12,7 +12,7 @@ import numpy as np
 from deap import base,creator,tools,algorithms,gp
 import operator
 import math
-import time
+import time 
 import multiprocessing
 
 
@@ -164,7 +164,7 @@ if __name__ == "__main__":
         # Evaluate on test set and generate tree structure
        
         for ind in pop:
-            min_deviation=999
+            min_deviation=100000
             total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
             if total_dev_percent<min_deviation:
                 min_deviation=total_dev_percent
