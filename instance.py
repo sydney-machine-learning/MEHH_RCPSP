@@ -44,8 +44,10 @@ class instance(object):
         self.instance_number=0#Instance number for a particular parameter combination
         self.instance_type=''#'j30' / 'j60' / 'j90' / 'j120'
         self.filename_comp=''
-        if(filepath):
-            filename=list(filepath.split('/'))[-1]
+        
+        filename=list(filepath.split('/'))[-1]
+        if filename[0]=='j':
+                
             self.filename_comp=filename[:-3]
             filename=list(filename.split('_'))
             
@@ -65,22 +67,30 @@ class instance(object):
                 print("Invalid file name")
             self.nc,self.rf,self.rs=params[self.instance_type][self.parameter_number]
             self.read_data()
-            self.G=nx.DiGraph()#Create a networkx graph object
-            self.G_T=nx.DiGraph()#Create a networkx graph object
-            for i in range(1,len(self.adj)):
-                for j in self.adj[i]:
-                    self.G.add_edge(i,j)
-                    self.G_T.add_edge(j,i)
+        elif filename[0]=='R':
+            self.filename_comp=filename[:-4]
+            self.instance_type='RG300' 
+            self.read_data_RG()
         else:
-            print("Path not provided")
+            print("Invalid file name")
+       
+        self.G=nx.DiGraph()#Create a networkx graph object
+        self.G_T=nx.DiGraph()#Create a networkx graph object
+        for i in range(1,len(self.adj)):
+            for j in self.adj[i]:
+                self.G.add_edge(i,j)
+                self.G_T.add_edge(j,i)
+
         self.predecessors=[[]]
         self.successors=[[]]
         for i in range(1,self.n_jobs+1):
             self.predecessors.append(list(self.G.predecessors(i)))
             self.successors.append(list(self.G_T.predecessors(i)))
+            
         if(use_precomputed):
             data_file=open("./precomputes/"+self.instance_type+"/"+self.filename_comp,"rb")
-            (self.earliest_start_times,self.earliest_finish_times,self.latest_start_times,self.latest_finish_times,self.mts,self.mtp,self.rr,self.avg_rreq,self.min_rreq,self.max_rreq)=pickle.load(data_file)
+            (self.earliest_start_times,self.earliest_finish_times,self.latest_start_times,self.latest_finish_times,self.mts,self.mtp,self.rr,self.avg_rreq,self.min_rreq,self.max_rreq,self.mpm_time)=pickle.load(data_file)
+            
         else:
                 
             #initialize empty arrays for storing values
@@ -98,10 +108,11 @@ class instance(object):
             self.calculate_lt() # Calculates both LFT and LST
             self.calculate_et() # Calculates both EST and EFT
             self.calculate_mts()
+            if(self.instance_type=='RG300'):
+                self.mpm_time=max(self.latest_finish_times)
+            self.calulate_activity_attributes() #UNCOMMENT PLSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 
-            self.calulate_activity_attributes()
-
-
+       
 
 
     def read_data(self):
@@ -112,7 +123,7 @@ class instance(object):
         self.horizon=int(list(lines[6].strip().split(':'))[1].strip())
         self.k=int(list(lines[8].strip().split(':'))[1].strip()[0])
         line=list(map(int,list(lines[14].split())))
-        self.rel_date,self.due_fate,self.tardcost,self.mpm_time=(line[2],line[3],line[4],line[5])
+        self.rel_date,self.due_date,self.tardcost,self.mpm_time=(line[2],line[3],line[4],line[5])
         for i in range(18,18+self.n_jobs):
             line=list(map(int,list(lines[i].split())))
             n_successors=line[2]
@@ -123,6 +134,37 @@ class instance(object):
             self.durations.append(line[2])
             self.job_resources.append(line[3:3+self.k+1])
         self.total_resources=list(map(int,list(lines[18+self.n_jobs+4+self.n_jobs+3].split())))
+        file.close()
+    def read_data_RG(self):
+        """Function for reading data and updating attributes from a fixed format .rcp file in RG300 format"""
+        file=open(self.filepath,"r")
+        lines=file.readlines()
+        self.n_jobs=int(list(lines[0].strip().split())[0].strip())
+        self.horizon=0
+        self.k=int(list(lines[0].strip().split())[1].strip())
+        self.total_resources=list(map(int,list(lines[1].split())))
+        current_line=2
+        for i in range(2,2+self.n_jobs):
+            line=list(map(int,list(lines[current_line].split())))
+            while(not line):
+                current_line+=1
+                line=list(map(int,list(lines[current_line].split())))
+            # print(line)
+            self.durations.append(line[0])
+            self.horizon+=line[0]
+            self.job_resources.append(line[1:1+self.k])
+            num_succesors=line[1+self.k]
+            self.adj.append(line[1+self.k+1:])
+            num_succesors-=len(line[1+self.k+1:])
+            while(num_succesors>0):
+                current_line+=1
+                line=list(map(int,list(lines[current_line].split())))
+                self.adj[i-1]+=line
+                num_succesors-=len(line)
+            current_line+=1
+
+                
+        
         file.close()
 
 
@@ -181,7 +223,7 @@ class instance(object):
             self.latest_start_times[i]=self.latest_finish_times[i]-self.durations[i]+1
         self.latest_finish_times[1]=0
         self.latest_start_times[self.n_jobs]=self.latest_finish_times[self.n_jobs]
-
+        
 
     def calculate_et(self):
         """ Calculates values of EFT and EST for each job (Does a serial SGS without considering resource constraints)"""
@@ -350,7 +392,7 @@ class instance(object):
         completed_list=[]
         current_time=0
         current_consumption=[0]*self.k
-        resource_consumption=[[0 for col in range(self.k)] for row in range(self.horizon+1)] 
+        resource_consumption=[[0 for col in range(self.k)] for row in range(self.horizon+2)] 
         #Maintain an active and completed disjoint lists and schedule till all jobs are in one of these lists
         while(len(active_list)+len(completed_list)<self.n_jobs):
             current_time=finish_times[active_list[find_index(active_list,finish_times,'min')]]+1 #Update the current time to the minimum of the finish times in the active list + 1
@@ -395,28 +437,27 @@ class instance(object):
                 finish_times[choice]=current_time+self.durations[choice]-1
                 current_consumption=add_lists(current_consumption,self.job_resources[choice]) #Update resource consumption
             resource_consumption[current_time]=current_consumption
-        
         makespan=max(finish_times) #Makespan is the max value of finish time over all jobs
         #slack calculation starts
         
-        # self.slack=0
-        # prev_consumption=[0]*self.k
-        # for i in range(0,self.horizon+1):
-        #     if resource_consumption[i]==[0]*self.k:
-        #         resource_consumption[i]=prev_consumption
-        #     else:
-        #         prev_consumption=resource_consumption[i]
-        # for i in range(1,self.n_jobs):
-        #     curr_slack=0
-        #     least_time=1000000
-        #     for j in self.successors[i]:
-        #         least_time=min(least_time,start_times[j])
-        #     for j in range(finish_times[i]+1,least_time):
-        #         if(less_than(self.job_resources[i],sub_lists(self.total_resources,resource_consumption[j]))):
-        #             curr_slack+=1
-        #         else:
-        #             break
-        #     self.slack+=curr_slack
+        self.slack=0
+        prev_consumption=[0]*self.k
+        for i in range(0,self.horizon+1):
+            if resource_consumption[i]==[0]*self.k:
+                resource_consumption[i]=prev_consumption
+            else:
+                prev_consumption=resource_consumption[i]
+        for i in range(1,self.n_jobs):
+            curr_slack=0
+            least_time=1000000
+            for j in self.successors[i]:
+                least_time=min(least_time,start_times[j])
+            for j in range(finish_times[i]+1,least_time):
+                if(less_than(self.job_resources[i],sub_lists(self.total_resources,resource_consumption[j]))):
+                    curr_slack+=1
+                else:
+                    break
+            self.slack+=curr_slack
 
         #slack calculation ends
         if(option!='forward'):#If reverse scheduling invert times
@@ -625,23 +666,14 @@ read_param('./j120/param.txt',params['j120'],60)
 
 series_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD']
 parallel_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD','IRSM','ACS','WCS']
-types=['j30','j60','j90','j120']
+types=['j30','j60','j90','j120','RG300']
 
 # series_priority_rules=['LST']
-# types=['j120']
-x=instance('./j120/j12043_1.sm',use_precomputed=False)
-# x.serial_sgs(option='backward')
-# print(x.serial_finish_times)
-# print(x.parallel_sgs())
-# print(x.serial_finish_times)
-# print(x.earliest_finish_times)
-# print(x.earliest_finish_times)
-# print(x.latest_start_times)
-# print(x.latest_finish_times)
-# print(x.rs,x.rf)
-# print(params['j30'])
+types=['RG300']
+x=instance('./RG300/RG300_157.rcp',use_precomputed=False)
+
 if __name__ == '__main__':
-    # statistics.get_stats(instance,['LST'],['j120'],'parallel','forward',use_precomputed=False)
+    statistics.get_stats(instance,['LST'],['RG300'],'parallel','forward',use_precomputed=True)
     pass
     
 

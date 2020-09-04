@@ -1,3 +1,0 @@
-Generation :8
-Validation set accuracy of representative (0.17433242482539732,)
-Test set accuracy of representative (0.261117292201048,)

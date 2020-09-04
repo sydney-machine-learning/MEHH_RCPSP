@@ -14,14 +14,13 @@ from deap import base,creator,tools,algorithms,gp
 import operator
 import qdpy
 import math
-train_set=[]
+validation_set=random.sample(["./"+"RG300"+'/'+i for i in listdir('./'+"RG300") if i!='param.txt'],60)
+test_set=[]
 
-types=['j30','j60']
-for typ in types:
-  for i in range(1,49):
-    train_set.append("./"+typ+'/'+typ+str(i)+"_1.sm")
-    train_set.append("./"+typ+'/'+typ+str(i)+"_2.sm")
-
+train_set= ["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt'] + random.sample(["./"+"j60"+'/'+i for i in listdir('./'+"j60") if i!='param.txt'],80)+random.sample(["./"+"j90"+'/'+i for i in listdir('./'+"j90") if i!='param.txt'],80)
+test_set=[]
+for typ in ["RG300"]:
+    test_set+=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
 
 POP_SIZE=1024
 NUM_GENERATIONS=25
@@ -94,9 +93,7 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
-exp='sub(add(sub(sub(LS,TSC),mul(MaxRReq,AvgRReq)), LF),AvgRReq)'
-x=toolbox.compile(expr=exp)
-print(x(1,1,1,1,1,1,1,1,1,1))
+
 stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
 stats_size = tools.Statistics(len)
 mstats = tools.MultiStatistics(fitness=stats_fit, size=stats_size)
@@ -107,32 +104,24 @@ mstats.register("max", np.max)
 pop = toolbox.population(n=POP_SIZE)
 hof = tools.HallOfFame(HOF_SIZE)
 
-file=open('./evolved_funcs/best_funcs2','rb')
-hof=pickle.load(file)
+file=open('./evolved_funcs/gp/evolved_pop_0','rb')
+pop=pickle.load(file)
 file.close()
-for hof_index in range(HOF_SIZE):
-    ind=x
-    # nodes, edges, labels = gp.graph(exp)
-    print("Function ", exp)
-    test_type=['j30','j60','j90','j120']
-    sum_total_dev=0
-    sum_counts=0
-    for typ in test_type:
-        total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=exp),inst_type=typ,mode='parallel',option='forward')
-        print(typ,total_dev_percent,makespan)
-        
-        sum_total_dev+=total_dev
-        sum_counts+=count
-    print("Aggregate %",(100*sum_total_dev)/sum_counts)
 
-
-    # g = pgv.AGraph()
-    # g.add_nodes_from(nodes)
-    # g.add_edges_from(edges)
-    # g.layout(prog="dot")
-
-    # for i in nodes:
-    #     n = g.get_node(i)
-    #     n.attr["label"] = labels[i]
-
-    # g.draw("./gp_trees/test"+str(round(total_dev_percent,2))+"__2.png")
+min_deviation=100000
+# best_individual=grid.best
+# print(best_individual)
+fin=0    
+for ind in pop:
+    
+    fin+=1
+    total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+    if(fin%50 ==0 ):
+        print(fin,"/",len(pop),total_dev_percent,total_makespan)
+    if total_dev_percent<min_deviation:
+        min_deviation=total_dev_percent
+        best_individual=ind
+print(best_individual)
+total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+print("Aggregate % ",total_dev_percent)
+print("Makespan ",total_makespan )

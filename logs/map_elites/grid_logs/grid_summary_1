@@ -1,33 +1,33 @@
 Summary Grid:
-  activity_per_bin: [[[6.]]]
-  best: min(max(mul(sub(max(MinRReq, TPC), div(LF, TPC)), add(add(AvgRReq, AvgRReq), neg(LF))), ES), max(EF, add(ES, mul(max(min(RR, MinRReq), MaxRReq), ES))))
-  best_features: [28, 0.9583309717147115, 0.23965791647035253]
-  best_fitness: (0.21496589846442846,)
-  best_index: (0, 0, 0)
-  capacity: 1
+  activity_per_bin: [[[0. 0. 3. 3. 6. 4. 3. 1. 0. 0.]   [0. 0. 1. 2. 1. 0. 2. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0 ...
+  best: max(min(max(EF, AvgRReq), div(LF, LS)), add(max(mul(LF, AvgRReq), LF), LF))
+  best_features: [15, 2, 1.7235074207792755]
+  best_fitness: (0.18522414606443494,)
+  best_index: (0, 0, 2)
+  capacity: 1000
   depot: None
   discard_random_on_bin_overload: False
-  features: {(0, 0, 0): [[28, 0.9583309717147115, 0.23965791647035253]]}
-  features_domain: [(4, 63), (0.75, 1.2), (0.15, 0.4)]
-  features_extrema: ((28.0, 28.0), (0.9583309717147115, 0.9583309717147115), (0.23965791647035253, 0.23965791647035253))
-  filled_bins: 1
-  fitness: {(0, 0, 0): [deap.creator.FitnessMin((0.21496589846442846,))]}
+  features: {(0, 0, 0): [], (0, 0, 1): [], (0, 0, 2): [[15, 2, 1.7235074207792755]], (0, 0, 3): [[14, 1, 1.7900536493031212]], (0, 0, 4): [[7, 1, 1.849679364261922]], (0, 0, 5): [[7, 1, 1.908696337000349]], (0, 0, 6): [[7, 0, 1.9832475702357992]], (0, 0, 7) ...
+  features_domain: [(4, 127), (0, 40), (1.6, 2.2)]
+  features_extrema: ((7.0, 98.0), (0.0, 24.0), (1.7196703382494742, 2.0328626292952334))
+  filled_bins: 65
+  fitness: {(0, 0, 0): [], (0, 0, 1): [], (0, 0, 2): [deap.creator.FitnessMin((0.18522414606443494,))], (0, 0, 3): [deap.creator.FitnessMin((0.20040456985091387,))], (0, 0, 4): [deap.creator.FitnessMin((0.22046286060452283,))], (0, 0, 5): [deap.creator.Fit ...
   fitness_domain: [(0.0, 1.0)]
-  fitness_extrema: ((0.21496589846442846, 0.21496589846442846),)
-  free: 0
-  history_recentness_per_bin: {(0, 0, 0): [1, 2, 3, 4, 5, 6]}
-  items: [[<deap.gp.Primitive object at 0x7fd906617410>, <deap.gp.Primitive object at 0x7fd9066173b0>, <deap.gp.Primitive object at 0x7fd906617290>, <deap.gp.Primitive object at 0x7fd906617230>, <deap.gp.Primitive object at 0x7fd9066173b0>, <deap.gp.Term ...
+  fitness_extrema: ((0.18522414606443494, 0.3147735420699056),)
+  free: 935
+  history_recentness_per_bin: {(0, 0, 0): [], (0, 0, 1): [], (0, 0, 2): [4, 13, 97], (0, 0, 3): [14, 27, 39], (0, 0, 4): [11, 17, 18, 25, 26, 34], (0, 0, 5): [3, 12, 30, 110], (0, 0, 6): [2, 5, 48], (0, 0, 7): [31], (0, 0, 8): [], (0, 0, 9): [], (0, 1, 0): [], (0, 1, 1): [], ...
+  items: [[<deap.gp.Primitive object at 0x7f4b23a2d7d0>, <deap.gp.Primitive object at 0x7f4b23a2dad0>, <deap.gp.Primitive object at 0x7f4b23a2da70>, <deap.gp.Primitive object at 0x7f4b23a2d7d0>, <deap.gp.Primitive object at 0x7f4b23a2da70>, <deap.gp.Term ...
   max_items_per_bin: 1
-  name: Grid-140570106320848
-  nb_added: 6
-  nb_discarded: 5
-  nb_items_per_bin: [[[1.]]]
-  nb_operations: 11
-  nb_rejected: 4
-  quality: {(0, 0, 0): deap.creator.FitnessMin((0.21496589846442846,))}
-  quality_array: [[[[0.2149659]]]]
-  recentness: [5]
-  recentness_per_bin: {(0, 0, 0): [6]}
-  shape: (1, 1, 1)
-  size: 1
-  solutions: {(0, 0, 0): [[<deap.gp.Primitive object at 0x7fd906617410>, <deap.gp.Primitive object at 0x7fd9066173b0>, <deap.gp.Primitive object at 0x7fd906617290>, <deap.gp.Primitive object at 0x7fd906617230>, <deap.gp.Primitive object at 0x7fd9066173b0>, < ...
+  name: Grid-139961228756368
+  nb_added: 112
+  nb_discarded: 47
+  nb_items_per_bin: [[[0. 0. 1. 1. 1. 1. 1. 1. 0. 0.]   [0. 0. 1. 1. 1. 0. 1. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]   [0. 0 ...
+  nb_operations: 159
+  nb_rejected: 2
+  quality: {(0, 0, 0): None, (0, 0, 1): None, (0, 0, 2): deap.creator.FitnessMin((0.18522414606443494,)), (0, 0, 3): deap.creator.FitnessMin((0.20040456985091387,)), (0, 0, 4): deap.creator.FitnessMin((0.22046286060452283,)), (0, 0, 5): deap.creator.Fitnes ...
+  quality_array: [[[[       nan]    [       nan]    [0.18522415]    [0.20040457]    [0.22046286]    [0.2453053 ]    [0.27759479]    [0.31477354]    [       nan]    [       nan]]    [[       nan]    [       nan]    [0.20640293]    [0.21613698]    [0.22683216]     ...
+  recentness: [6, 7, 15, 18, 19, 23, 27, 30, 32, 33, 36, 37, 38, 40, 41, 42, 43, 47, 48, 49, 51, 52, 53, 55, 59, 61, 62, 64, 65, 67, 68, 69, 70, 71, 72, 74, 77, 78, 80, 81, 82, 83, 86, 87, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 102, 103, 104, 105, 106,  ...
+  recentness_per_bin: {(0, 0, 0): [], (0, 0, 1): [], (0, 0, 2): [97], (0, 0, 3): [39], (0, 0, 4): [34], (0, 0, 5): [110], (0, 0, 6): [48], (0, 0, 7): [31], (0, 0, 8): [], (0, 0, 9): [], (0, 1, 0): [], (0, 1, 1): [], (0, 1, 2): [49], (0, 1, 3): [43], (0, 1, 4): [16],  ...
+  shape: (10, 10, 10)
+  size: 65
+  solutions: {(0, 0, 0): [], (0, 0, 1): [], (0, 0, 2): [[<deap.gp.Primitive object at 0x7f4b23a2da70>, <deap.gp.Primitive object at 0x7f4b23a2dad0>, <deap.gp.Primitive object at 0x7f4b23a2da70>, <deap.gp.Terminal object at 0x7f4b23a320f0>, <deap.gp.Terminal  ...
