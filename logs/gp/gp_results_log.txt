@@ -1,6 +1,2 @@
 Function |  TestType | Sample_Size | Generations | Mate_prob | Mutate_prob| % Deviation | Makespan |
 
-
-neg(sub(sub(sub(sub(TSC, add(LS, LF)), add(mul(min(min(MinRReq, TSC), add(TSC, EF)), mul(mul(LS, LS), div(MinRReq, RR))), LF)), add(neg(mul(div(MinRReq, MinRReq), max(TSC, MaxRReq))), LF)), add(LS, LF))) : 
-               RG300         1000               25          0.3           0.5         1005.05        344313       
-

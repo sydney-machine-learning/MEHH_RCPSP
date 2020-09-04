@@ -25,7 +25,7 @@ from utils import sub_lists
 from multiprocessing import Pool
 from os import listdir
 #Generate the training set
-validation_set=["./RG300/RG300_"+str(i)+".rcp" for i in range(1,30)]
+validation_set=random.sample(["./"+"RG300"+'/'+i for i in listdir('./'+"RG300") if i!='param.txt'],60)
 test_set=[]
 
 train_set=["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt']
@@ -131,17 +131,18 @@ if __name__ == "__main__":
     file=open('./evolved_funcs/map_elites/grid_0',"rb")
     grid=pickle.load(file)
     min_deviation=100000
-    best_individual=grid.best
+    # best_individual=grid.best
+    # print(best_individual)
+    fin=0    
+    for ind in grid:
+        
+        fin+=1
+        total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+        print(fin,"/",len(grid),total_dev_percent,total_makespan)
+        if total_dev_percent<min_deviation:
+            min_deviation=total_dev_percent
+            best_individual=ind
     print(best_individual)
-    # fin=0    
-    # for ind in grid:
-    #     print(fin,"/",len(grid))
-    #     fin+=1
-    #     total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
-    #     if total_dev_percent<min_deviation:
-    #         min_deviation=total_dev_percent
-    #         best_individual=ind
-    
     total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
     print("Aggregate % ",total_dev_percent)
     print("Makespan ",total_makespan )

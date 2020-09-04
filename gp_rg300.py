@@ -19,10 +19,11 @@ import multiprocessing
 
 #Generate the training set
 
-validation_set=[]
+validation_set=random.sample(["./"+"RG300"+'/'+i for i in listdir('./'+"RG300") if i!='param.txt'],60)
 test_set=[]
 
-train_set=["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt']
+train_set= ["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt'] + random.sample(["./"+"j60"+'/'+i for i in listdir('./'+"j60") if i!='param.txt'],80)+random.sample(["./"+"j90"+'/'+i for i in listdir('./'+"j90") if i!='param.txt'],80)
+
 test_set=[]
 for typ in ["RG300"]:
     test_set+=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
@@ -150,17 +151,29 @@ if __name__ == "__main__":
        
         best_individual=hof[0]
        
-        print("Best Individual Run_"+str(run)+" :  ", best_individual)
+        print("Best Individual on train Run_"+str(run)+" :  ", best_individual)
         
         log_file=open('./logs/gp/gp_results_log.txt','a+')
        
         total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',verbose=False)
-        print("Performance on Test ",total_dev_percent,makespan)
-        log_file.write(str(best_individual)+" : \n               "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
-    
-        log_file.close()
+        print("Performance on Test by best individual on train",total_dev_percent,makespan)
+        log_file.write(str(best_individual)+" : \n  best train   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
+
+        min_deviation=100000
         
+        for ind in pop:
+
+            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+            if total_dev_percent<min_deviation:
+                min_deviation=total_dev_percent
+                best_individual=ind
+
+        total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
         all_aggregate.append(total_dev_percent)
+        print("Performance on Test by best individual on validation",total_dev_percent,makespan)
+        log_file.write(str(best_individual)+" : \n  best validation   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
+        log_file.close()
+       
 
         # # Generate and Store graph
         # nodes, edges, labels = gp.graph(best_individual)

@@ -21,28 +21,13 @@ if not os.path.exists('./logs/coevolution'):
 if not os.path.exists('./evolved_funcs/coevolution'):
     os.makedirs('./evolved_funcs/coevolution')
 #Generate the training set
-train_set=[]
 validation_set=[]
 test_set=[]
-types=['j30','j60']
-for typ in types:
-  for i in range(1,49):
-    validation_set.append("./"+typ+"/"+typ+str(i)+"_3.sm")
-    train_set.append("./"+typ+'/'+typ+str(i)+"_1.sm")
-    train_set.append("./"+typ+'/'+typ+str(i)+"_2.sm")
-    for j in range(4,11):
-        test_set.append("./"+typ+'/'+typ+str(i)+"_"+str(j)+".sm")
-    
-for typ in ['j90']:    
-    for i in range(1,49):
 
-        for j in range(1,11):
-            test_set.append("./"+typ+'/'+typ+str(i)+"_"+str(j)+".sm")
-for typ in ['j120']:    
-    for i in range(1,61):
-
-        for j in range(1,11):
-            test_set.append("./"+typ+'/'+typ+str(i)+"_"+str(j)+".sm")
+train_set=["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt']
+test_set=[]
+for typ in ["RG300"]:
+    test_set+=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
 
 from params_coevolution import *
 
@@ -199,18 +184,19 @@ if __name__ == "__main__":
                 diff = best_fitness_history[-1] - best_fitness_history[0]
             except TypeError:
                 diff = float("inf")
-            file.write("Generation :"+str(g)+"\n")
-            file.write("Validation set accuracy of representative "+str(evalCoEvolve(representatives,validation_set))+"\n")
-            file.write("Test set accuracy of representative "+str(evalCoEvolve(representatives,test_set))+"\n")
+            # file.write("Generation :"+str(g)+"\n")
+            # file.write("Validation set accuracy of representative "+str(evalCoEvolve(representatives,validation_set))+"\n")
+            # file.write("Test set accuracy of representative "+str(evalCoEvolve(representatives,test_set))+"\n")
             
-        val_res=evalCoEvolve(representatives,validation_set)
+        # val_res=evalCoEvolve(representatives,validation_set)
         test_res=evalCoEvolve(representatives,test_set)
-        all_aggregate.append(test_res[0])
-        print("Results on validation ",val_res)
-        print("Results on test ",test_res)
+        print(test_res)
+        all_aggregate.append(100*test_res[0])
+        # print("Results on validation ",val_res)
+        print("Results on test ",100*test_res)
         file.write("\n\n\nFinal results : \n")
-        file.write("Validation set accuracy of representative "+str(val_res)+"\n")
-        file.write("Test set accuracy of representative "+str(test_res)+"\n")
+        # file.write("Validation set accuracy of representative "+str(val_res)+"\n")
+        file.write("Test set accuracy of representative "+str(100*test_res)+"\n")
         
         file.close()
         print("\n\nCurrent aggregates : ",all_aggregate)

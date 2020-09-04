@@ -25,18 +25,15 @@ from utils import sub_lists
 from multiprocessing import Pool
 from os import listdir
 #Generate the training set
-validation_set=[]
+validation_set=random.sample(["./"+"RG300"+'/'+i for i in listdir('./'+"RG300") if i!='param.txt'],60)
 test_set=[]
 
-train_set=["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt']
+train_set= ["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt'] + random.sample(["./"+"j60"+'/'+i for i in listdir('./'+"j60") if i!='param.txt'],80)+random.sample(["./"+"j90"+'/'+i for i in listdir('./'+"j90") if i!='param.txt'],80)
 test_set=[]
 for typ in ["RG300"]:
     test_set+=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
 # Parameters
 from params_map_elites import *
-
-
-# Update seed
 
 
 
@@ -80,6 +77,7 @@ def evalSymbReg(individual,train_set):
     hard_cases_sum=0
     hard_cases_count=0
     serial_cases_sum=0
+    total_slack=0
     for i in range(len(train_set)):
         file=train_set[i]
         inst=instance.instance(file,use_precomputed=True)
@@ -88,13 +86,15 @@ def evalSymbReg(individual,train_set):
             priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j])
         frac,makespan=inst.parallel_sgs(option='forward',priority_rule='',priorities=priorities)
         sumv+=frac
-        frac2,makespan2=inst.serial_sgs(option='forward',priority_rule='',priorities=priorities)
-        if(inst.rs==0.2 and inst.rf==1.0):
-            hard_cases_count+=1
-            hard_cases_sum+=frac
-        serial_cases_sum+=frac2
+        total_slack+=inst.slack/inst.n_jobs
+    
+    # str_ind=str(individual)
+    # prec_count=str_ind.count("ES")+str_ind.count("EF")+str_ind.count("LS")+str_ind.count("LF")+str_ind.count("TPC")+str_ind.count("TSC")
+    total_slack/=len(train_set)
     fitness=[sumv/len(train_set)]
-    features = [len(individual),hard_cases_sum/hard_cases_count,serial_cases_sum/len(train_set)]
+    features = [len(individual),str(individual).count("RR"),total_slack]
+    # print(individual)
+    # print(features)
     return [fitness, features]
 
 
@@ -173,20 +173,17 @@ if __name__ == "__main__":
         pickle.dump(grid.best,file)
         file.close()
         log_file=open('./logs/map_elites/map_elites_results_log.txt','a+')
-        log_file2=open('./logs/map_elites/map_elites_results_all.txt','a+')
+        
 
 
         log_file.write('-'*100+'\n\n\n\n\n')
         log_file.write("Run #"+str(run)+'\n\n\n\n')
-        log_file2.write('-'*100+'\n\n\n\n\n')
-        log_file2.write("Run #"+str(run)+'\n\n\n\n')
+        
         log_file.write("Best on training "+str(grid.best)+"\n\n")
         log_file.write("Fitness  "+str(grid.best.fitness)+"\n")
         log_file.write("Features  "+str(grid.best.features)+"\n")
         if 0 in eval_mode:
-            test_type=['j30','j60','j90','j120']
-            sum_total_dev=0
-            sum_counts=0
+           
             print("Best Individual on Training: ", grid.best)
             
             total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=grid.best),mode='parallel',option='forward',verbose=False)
@@ -195,10 +192,10 @@ if __name__ == "__main__":
             log_file.write("Makespan (best on train): "+str(makespan)+"  \n\n\n")
             print("Aggregate % ",total_dev_percent)
             print("Makespan ",makespan )
-            all_aggregate.append(total_dev_percent)
+            
         if 1 in eval_mode:
             print("\n\nEvaluating all individuals on validation set....\n\n")
-            min_deviation=999
+            min_deviation=100000
             
             for ind in grid:
                 total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
@@ -206,74 +203,38 @@ if __name__ == "__main__":
                     min_deviation=total_dev_percent
                     best_individual=ind
             
-            test_type=['j30','j60','j90','j120']
-            sum_total_dev=0
-            sum_counts=0
+            
+           
             log_file.write("\n\nBest individual on Validation..")
             print("Best Individual on validation: ", best_individual)
             log_file.write("\n\n"+str(best_individual))
-            for typ in test_type:
-                total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=best_individual),inst_type=typ,mode='parallel',option='forward',verbose=False)
-                print(typ,total_dev_percent,makespan)
-                
-                log_file.write("\n               "+typ+"         "+str(seed)+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       ")
-                
-                sum_total_dev+=total_dev
-                sum_counts+=count
+        
+            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+            print("Deviation on test (RG300)",total_dev_percent)
+            print("Makespan on test ",makespan)
             
-            all_aggregate.append((sum_total_dev*100)/sum_counts)
+            log_file.write("\n               "+"RG300"+"         "+str(seed)+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       ")
+            
+                
+            
+            all_aggregate.append(total_dev_percent)
             best_fitness,best_features=evalSymbReg(best_individual,validation_set)
             print("Fitness on train",best_individual.fitness)
             print("Features on train",best_individual.features)
             print("Fitness on validation ",best_fitness,'\n')
             print("Features on validation ",best_features,'\n')
-            print("Aggregate % ",(sum_total_dev*100)/sum_counts,'\n\n')
+
             log_file.write("\nFitness on train "+str(best_individual.fitness))
             log_file.write("\nFeatures on train "+str(best_individual.features))
             log_file.write("\nFitness on validation "+str(best_fitness))
             log_file.write("\nFeatures on validation "+str(best_features))
 
-            log_file.write("\nAggregate % (best on validation): "+str((sum_total_dev*100)/sum_counts)+" \n\n\n")
+            log_file.write("\nDeviation on test% (best ind on validation): "+str(total_dev_percent))
+            log_file.write("\nMakespan on test (best ind on validation): "+str(total_makespan)+" \n\n\n")
         
-        if 2 in eval_mode:
-            print("\n\nEvaluating all individuals on grid.....\n")
-            test_type=['j30','j60','j90','j120']
-            log_file2.write("\n\nEvaluating all individuals on test..\n\n")
-            log_file.write("\n\nIndividuals passing threshold on test : \n\n")
-            with Pool(os.cpu_count()) as p:
-                test_results=p.map(parallelised_evaluation,grid)
-            for tup in test_results:
-                ind,aggregate_percent,fitness_val,features_val,fitness_test,features_test=tup
-                log_file2.write("Individual : "+str(ind)+"\n")
-                log_file2.write("Fitness on train "+str(ind.fitness)+"\n")
-                log_file2.write("Features on train "+str(ind.features)+"\n")
-                log_file2.write("Fitness on validation "+str(fitness_val)+"\n")
-                log_file2.write("Features on validation "+str(features_val)+"\n")
-                log_file2.write("Fitness on test "+str(fitness_test)+"\n")
-                log_file2.write("Features on test "+str(features_test)+"\n")
-                log_file2.write("Aggregate % : "+str(aggregate_percent)+"  \n\n\n\n")
-                if(aggregate_percent < test_threshold):
-                    print("\n\nIndividual : ",ind)
-                    print("Fitness on train ",ind.fitness)
-                    print("Features on train ",ind.features)
-                    print("Fitness on validation ",fitness_val)
-                    print("Features on validation ",features_val)
-                    print("Fitness on test ",fitness_test)
-                    print("Features on test ",features_test)
-                    print("Aggregate % ",aggregate_percent,"\n\n")
-                    log_file.write("Individual : "+str(ind)+"\n")
-                    log_file.write("Fitness on train "+str(ind.fitness)+"\n")
-                    log_file.write("Features on train "+str(ind.features)+"\n")
-                    log_file.write("Fitness on validation "+str(fitness_val)+"\n")
-                    log_file.write("Features on validation "+str(features_val)+"\n")
-                    log_file.write("Fitness on test "+str(fitness_test)+"\n")
-                    log_file.write("Features on test "+str(features_test)+"\n")
-                    log_file.write("Aggregate % : "+str(aggregate_percent)+"  \n\n\n\n")
-
-
-
+       
         log_file.close()
-        log_file2.close()
+        
         # Generate and Store graph
         # nodes, edges, labels = gp.graph(grid.best)
         # g = pgv.AGraph()
@@ -307,11 +268,3 @@ if __name__ == "__main__":
     file.write(data)
     file.close()
 
-
-"""
--feature values on training set
--fitness on training set
-Feature values on validation set
--validation performance
--Test Performance
-"""
