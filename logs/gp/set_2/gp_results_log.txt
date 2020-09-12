@@ -1,0 +1,15 @@
+Run #0
+
+mul(LS, sub(LS, sub(AvgRReq, LF))) : 
+  best train   RG300         1000               5          0.8           0.2         1009.83        310653       
+
+Run #1
+
+mul(LS, mul(LS, max(EF, LF))) : 
+  best train   RG300         1001               5          0.8           0.2         1018.63        313121       
+
+Run #2
+
+sub(TSC, div(TSC, max(LS, TPC))) : 
+  best train   RG300         1002               5          0.8           0.2         1013.1        311523       
+

@@ -1,8 +1,8 @@
 
-
+import os
 
 # Parameters for GP
-N_RUNS=31
+N_RUNS=1
 POP_SIZE=1024
 NUM_GENERATIONS=25 # Number of generation to evolve
 MATING_PROB=0.8 # Probability of mating two individuals
@@ -14,3 +14,7 @@ MU=1024 # The number of individuals to select for the next generation.
 LAMBDA=1024 # The number of children to produce at each generation.
 GEN_MIN_HEIGHT=2
 GEN_MAX_HEIGHT=5
+
+filename="./gp_rg300.py"
+with open(filename) as infile:
+    exec(infile.read())

@@ -1,0 +1,85 @@
+----------------------------------------------------------------------------------------------------
+
+
+
+
+Run #0
+
+
+
+Best on training neg(sub(mul(LF, EF), add(LF, ES)))
+
+Fitness  (0.261593317861121,)
+Features  [8, 0, 1.7007144109396912]
+
+
+Best individual on Train..
+
+neg(sub(mul(LF, EF), add(LF, ES)))
+Aggregate % (best on train): 1021.1204707217338  
+Makespan (best on train): 314375  
+
+
+
+
+Best individual on Validation..
+
+min(neg(neg(sub(AvgRReq, AvgRReq))), max(RR, mul(mul(neg(TSC), div(ES, EF)), add(neg(MaxRReq), sub(RR, AvgRReq)))))
+               RG300         1001               5          0.8           0.2         1016.3        314375       
+               j120         1001               5          0.8           0.2         1016.3        314375       ----------------------------------------------------------------------------------------------------
+
+
+
+
+Run #1
+
+
+
+Best on training mul(neg(div(LF, max(mul(max(LS, MinRReq), neg(LF)), EF))), min(sub(mul(neg(div(RR, TSC)), sub(min(MaxRReq, TPC), mul(EF, MinRReq))), TPC), max(sub(AvgRReq, EF), div(LS, MaxRReq))))
+
+Fitness  (0.2683686288991083,)
+Features  [34, 6, 1.7202204814625928]
+
+
+Best individual on Train..
+
+mul(neg(div(LF, max(mul(max(LS, MinRReq), neg(LF)), EF))), min(sub(mul(neg(div(RR, TSC)), sub(min(MaxRReq, TPC), mul(EF, MinRReq))), TPC), max(sub(AvgRReq, EF), div(LS, MaxRReq))))
+Aggregate % (best on train): 1023.750417173657  
+Makespan (best on train): 314461  
+
+
+
+
+Best individual on Validation..
+
+max(neg(max(neg(mul(sub(MinRReq, MinRReq), div(LS, LF))), mul(add(LF, MaxRReq), sub(RR, LF)))), div(sub(div(max(MinRReq, LF), mul(AvgRReq, TPC)), sub(max(LF, LS), div(MinRReq, min(min(ES, AvgRReq), mul(ES, AvgRReq))))), neg(min(max(MinRReq, MinRReq), max(RR, MaxRReq)))))
+               RG300         1002               5          0.8           0.2         1013.52        314461       
+               j120         1002               5          0.8           0.2         1013.52        314461       ----------------------------------------------------------------------------------------------------
+
+
+
+
+Run #2
+
+
+
+Best on training sub(max(div(sub(ES, MaxRReq), min(MaxRReq, ES)), max(mul(max(min(MaxRReq, MinRReq), sub(LS, ES)), MinRReq), add(LS, LS))), add(add(neg(TPC), mul(sub(sub(TSC, LF), add(LS, RR)), TPC)), div(mul(LS, TPC), add(LS, MinRReq))))
+
+Fitness  (0.26139899783751197,)
+Features  [42, 7, 1.7291823830875372]
+
+
+Best individual on Train..
+
+sub(max(div(sub(ES, MaxRReq), min(MaxRReq, ES)), max(mul(max(min(MaxRReq, MinRReq), sub(LS, ES)), MinRReq), add(LS, LS))), add(add(neg(TPC), mul(sub(sub(TSC, LF), add(LS, RR)), TPC)), div(mul(LS, TPC), add(LS, MinRReq))))
+Aggregate % (best on train): 1017.2214361916771  
+Makespan (best on train): 312680  
+
+
+
+
+Best individual on Validation..
+
+neg(neg(min(RR, RR)))
+               RG300         1003               5          0.8           0.2         1016.3        312680       
+               j120         1003               5          0.8           0.2         1016.3        312680       
