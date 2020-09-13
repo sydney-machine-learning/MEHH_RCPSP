@@ -11,7 +11,7 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
             types : All types for which stats to be calculated
     """
     start=time.time()
-    ans={'j30':{},'j60':{},'j90':{},'j120':{},'RG300':{}}
+    ans={'j30':{},'j60':{},'j90':{},'j120':{},'RG300':{},'RG30/set1':{},'RG30/set2':{},'RG30/set3':{},'RG30/set4':{},'RG30/set5':{}}
     for typ in types:
         all_files=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
         for rule in priority_rules:
@@ -20,7 +20,7 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
             count=0
             for i in all_files:
                 
-                try:
+                if(1):
                     x=instance(i,use_precomputed=use_precomputed)
                     if(mode=='parallel'):
                         y=x.parallel_sgs(option=option,priority_rule=rule)
@@ -28,10 +28,10 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
                         y=x.serial_sgs(option=option,priority_rule=rule)
                     else:
                         print("Invalid mode")
-                except Exception as e:
-                    print("Encountered error while reading",i)
-                    print(e)
-                    continue
+                # except Exception as e:
+                #     print("Encountered error while reading",i)
+                #     print(e)
+                #     continue
                 count+=1
                 total_dev+=y[0]
                 total_makespan+=y[1]

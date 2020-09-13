@@ -21,10 +21,10 @@ if not os.path.exists('./logs/coevolution'):
 if not os.path.exists('./evolved_funcs/coevolution'):
     os.makedirs('./evolved_funcs/coevolution')
 #Generate the training set
-validation_set=[]
+validation_set=random.sample(["./"+"RG300"+'/'+i for i in listdir('./'+"RG300") if i!='param.txt'],60)
 test_set=[]
 
-train_set=["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt']
+train_set= ["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt'] + random.sample(["./"+"j60"+'/'+i for i in listdir('./'+"j60") if i!='param.txt'],80)+random.sample(["./"+"j90"+'/'+i for i in listdir('./'+"j90") if i!='param.txt'],80)
 test_set=[]
 for typ in ["RG300"]:
     test_set+=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
@@ -193,10 +193,10 @@ if __name__ == "__main__":
         print(test_res)
         all_aggregate.append(100*test_res[0])
         # print("Results on validation ",val_res)
-        print("Results on test ",100*test_res)
+        print("Results on test ",100*test_res[0])
         file.write("\n\n\nFinal results : \n")
         # file.write("Validation set accuracy of representative "+str(val_res)+"\n")
-        file.write("Test set accuracy of representative "+str(100*test_res)+"\n")
+        file.write("Test set accuracy of representative "+str(100*test_res[0])+"\n")
         
         file.close()
         print("\n\nCurrent aggregates : ",all_aggregate)

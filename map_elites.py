@@ -49,7 +49,7 @@ for typ in ['j120']:
 
 
 # Parameters
-from params_map_elites import *
+
 
 
 # Update seed

@@ -19,20 +19,13 @@ import multiprocessing
 
 #Generate the training set
 
-validation_set=random.sample(["./"+"RG300"+'/'+i for i in listdir('./'+"RG300") if i!='param.txt'],60)
-test_set=[]
-
-train_set= ["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt'] + random.sample(["./"+"j60"+'/'+i for i in listdir('./'+"j60") if i!='param.txt'],80)+random.sample(["./"+"j90"+'/'+i for i in listdir('./'+"j90") if i!='param.txt'],80)
+train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
 
 test_set=[]
-for typ in ["RG300"]:
-    test_set+=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
-instances=[]
-# print(len(train_set))
-for i in range(len(train_set)):
-    instances.append(instance.instance(train_set[i],use_precomputed=True))
+all_rg300=["./RG300/"+i for i in listdir('./RG300')]
+test_set=[i for i in all_rg300 if i not in train_set]
+ 
 
-from params_gp import *
 
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:
@@ -106,6 +99,14 @@ toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max
 
 if __name__ == "__main__":
     all_aggregate=[]
+    occupied=0
+    while os.path.exists('./logs/gp/set_'+str(occupied)):
+        occupied+=1
+    os.makedirs('./logs/gp/set_'+str(occupied))
+    os.makedirs('./logs/gp/set_'+str(occupied)+"/data_and_charts/")
+    os.makedirs('./logs/gp/set_'+str(occupied)+"/training_logs/")
+
+    log_base_path="./logs/gp/set_"+str(occupied)+'/'
     for run in range(N_RUNS):
         print("Run #"+str(run))
         pool = multiprocessing.Pool()
@@ -139,10 +140,10 @@ if __name__ == "__main__":
         pop, log = algorithms.eaMuPlusLambda(pop, toolbox,MU,LAMBDA, MATING_PROB, MUTATION_PROB, NUM_GENERATIONS, stats=mstats,halloffame=hof, verbose=True)
         
         #Store the hof in a pickled file
-        file=open('./evolved_funcs/gp/evolved_pop_'+str(run),'wb')
+        file=open(log_base_path+'data_and_charts/'+'evolved_pop_'+str(run),'wb')
         pickle.dump(pop,file)
         file.close()
-        file=open('./logs/gp/training_logs/training_log_'+str(run)+".txt",'w')
+        file=open(log_base_path+'training_logs/training_log_'+str(run)+".txt",'w')
         file.write(str(log))
         file.close()
 
@@ -153,25 +154,25 @@ if __name__ == "__main__":
        
         print("Best Individual on train Run_"+str(run)+" :  ", best_individual)
         
-        log_file=open('./logs/gp/gp_results_log.txt','a+')
-       
+        log_file=open(log_base_path+'gp_results_log.txt','a+')
+        log_file.write("Run #"+str(run)+"\n\n")
         total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',verbose=False)
         print("Performance on Test by best individual on train",total_dev_percent,makespan)
         log_file.write(str(best_individual)+" : \n  best train   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
 
-        min_deviation=100000
+        # min_deviation=100000
         
-        for ind in pop:
+        # for ind in pop:
 
-            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
-            if total_dev_percent<min_deviation:
-                min_deviation=total_dev_percent
-                best_individual=ind
+        #     total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+        #     if total_dev_percent<min_deviation:
+        #         min_deviation=total_dev_percent
+        #         best_individual=ind
 
-        total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+        # total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
         all_aggregate.append(total_dev_percent)
-        print("Performance on Test by best individual on validation",total_dev_percent,makespan)
-        log_file.write(str(best_individual)+" : \n  best validation   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
+        # print("Performance on Test by best individual on validation",total_dev_percent,makespan)
+        # log_file.write(str(best_individual)+" : \n  best validation   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
         log_file.close()
        
 
@@ -193,7 +194,7 @@ if __name__ == "__main__":
     print("STD",np.std(all_aggregate))
     print("MIN",np.min(all_aggregate))
     print("MAX",np.max(all_aggregate))
-    file=open('./logs/gp/final_stats_gp.txt',"w")
+    file=open(log_base_path+'final_stats_gp.txt',"w")
     data= "All aggregates : "+str(all_aggregate)+"\nMean  "+str(np.mean(all_aggregate))+"\nMedian  "+str(np.median(all_aggregate))+"\nSTD  "+str(np.std(all_aggregate))+"\nMIN  "+str(np.min(all_aggregate))+"\nMAX  "+str(np.max(all_aggregate))
     file.write(data)
     file.close()

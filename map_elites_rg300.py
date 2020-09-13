@@ -25,16 +25,14 @@ from utils import sub_lists
 from multiprocessing import Pool
 from os import listdir
 #Generate the training set
-validation_set=random.sample(["./"+"RG300"+'/'+i for i in listdir('./'+"RG300") if i!='param.txt'],60)
-test_set=[]
 
-train_set= ["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt'] + random.sample(["./"+"j60"+'/'+i for i in listdir('./'+"j60") if i!='param.txt'],80)+random.sample(["./"+"j90"+'/'+i for i in listdir('./'+"j90") if i!='param.txt'],80)
-test_set=[]
-for typ in ["RG300"]:
-    test_set+=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
-# Parameters
-from params_map_elites import *
 
+train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
+
+test_set=[]
+all_rg300=["./RG300/"+i for i in listdir('./RG300')]
+test_set=[i for i in all_rg300 if i not in train_set]
+ 
 
 
 def div(left, right): # Safe division to avoid ZeroDivisionError
@@ -94,7 +92,6 @@ def evalSymbReg(individual,train_set):
     fitness=[sumv/len(train_set)]
     features = [len(individual),str(individual).count("RR"),total_slack]
     # print(individual)
-    # print(features)
     return [fitness, features]
 
 
@@ -114,21 +111,17 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 # Decorators to limit size of operator tree
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
-def parallelised_evaluation(ind):
-    global log_file
-    
-    sum_total_dev=0
-    sum_counts=0
-    for typ in test_type:
-        total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=ind),inst_type=typ,mode='parallel',option='forward',verbose=False)
-        sum_total_dev+=total_dev
-        sum_counts+=count
-    fitness_val,features_val=evalSymbReg(ind,validation_set)
-    fitness_test,features_test=evalSymbReg(ind,test_set)
-    return ind,(sum_total_dev*100)/sum_counts,fitness_val,features_val,fitness_test,features_test
 
 if __name__ == "__main__":
     all_aggregate=[]
+    occupied=0
+    while os.path.exists('./logs/map_elites/set_'+str(occupied)):
+        occupied+=1
+    os.makedirs('./logs/map_elites/set_'+str(occupied))
+    os.makedirs('./logs/map_elites/set_'+str(occupied)+"/data_and_charts/")
+    os.makedirs('./logs/map_elites/set_'+str(occupied)+"/grid_logs/")
+
+    log_base_path="./logs/map_elites/set_"+str(occupied)+'/'
     for run in range(n_runs):
         print("Run #"+str(run))
         seed = 1001+run
@@ -158,7 +151,7 @@ if __name__ == "__main__":
         # Print results info
         print(f"Total elapsed: {algo.total_elapsed}\n")
         print(grid.summary())
-        file=open('./logs/map_elites/grid_logs/grid_summary_'+str(run),"w")
+        file=open(log_base_path+'grid_logs/grid_summary_'+str(run),"w")
         file.write(grid.summary())
         file.close()
 
@@ -166,13 +159,13 @@ if __name__ == "__main__":
         print("Best Function on training", grid.best)
         print("best fitness:", grid.best.fitness)
         print("best features:", grid.best.features)
-        file=open('./evolved_funcs/map_elites/grid_'+str(run),"wb")
+        file=open(log_base_path+"data_and_charts/"+'grid_'+str(run),"wb")
         pickle.dump(grid,file)
         file.close()
-        file=open('./evolved_funcs/map_elites/best_ind_'+str(run),"wb")
+        file=open(log_base_path+"data_and_charts/"+'best_ind_'+str(run),"wb")
         pickle.dump(grid.best,file)
         file.close()
-        log_file=open('./logs/map_elites/map_elites_results_log.txt','a+')
+        log_file=open(log_base_path+'map_elites_results_log.txt','a+')
         
 
 
@@ -187,9 +180,11 @@ if __name__ == "__main__":
             print("Best Individual on Training: ", grid.best)
             
             total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=grid.best),mode='parallel',option='forward',verbose=False)
-                
-            log_file.write("Aggregate % (best on train): "+str(total_dev_percent)+"  \n")
+            log_file.write("\n\nBest individual on Train..")
+            log_file.write("\n\n"+str(grid.best))
+            log_file.write("\nAggregate % (best on train): "+str(total_dev_percent)+"  \n")
             log_file.write("Makespan (best on train): "+str(makespan)+"  \n\n\n")
+            all_aggregate.append(total_dev_percent)
             print("Aggregate % ",total_dev_percent)
             print("Makespan ",makespan )
             
@@ -210,27 +205,16 @@ if __name__ == "__main__":
             log_file.write("\n\n"+str(best_individual))
         
             total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+            all_aggregate.append(total_dev_percent)
             print("Deviation on test (RG300)",total_dev_percent)
             print("Makespan on test ",makespan)
-            
             log_file.write("\n               "+"RG300"+"         "+str(seed)+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       ")
+            
             
                 
             
-            all_aggregate.append(total_dev_percent)
-            best_fitness,best_features=evalSymbReg(best_individual,validation_set)
-            print("Fitness on train",best_individual.fitness)
-            print("Features on train",best_individual.features)
-            print("Fitness on validation ",best_fitness,'\n')
-            print("Features on validation ",best_features,'\n')
-
-            log_file.write("\nFitness on train "+str(best_individual.fitness))
-            log_file.write("\nFeatures on train "+str(best_individual.features))
-            log_file.write("\nFitness on validation "+str(best_fitness))
-            log_file.write("\nFeatures on validation "+str(best_features))
-
-            log_file.write("\nDeviation on test% (best ind on validation): "+str(total_dev_percent))
-            log_file.write("\nMakespan on test (best ind on validation): "+str(total_makespan)+" \n\n\n")
+            
+            
         
        
         log_file.close()
@@ -247,11 +231,11 @@ if __name__ == "__main__":
         # g.draw("./gp_trees/individual"+"__map_elites"+str(run) + ".png")
 
         # Create plots
-        plot_path = os.path.join(log_base_path, "performancesGrid"+str(run)+".pdf")
+        plot_path = os.path.join(log_base_path+"data_and_charts/", "performancesGrid"+str(run)+".pdf")
         plotGridSubplots(grid.quality_array[... ,0], plot_path, plt.get_cmap("nipy_spectral"), grid.features_domain, grid.fitness_extrema[0], nbTicks=None)
         print("\nA plot of the performance grid was saved in '%s'." % os.path.abspath(plot_path))
 
-        plot_path = os.path.join(log_base_path, "activityGrid"+str(run)+".pdf")
+        plot_path = os.path.join(log_base_path+"data_and_charts/", "activityGrid"+str(run)+".pdf")
         plotGridSubplots(grid.activity_per_bin, plot_path, plt.get_cmap("nipy_spectral"), grid.features_domain, [0, np.max(grid.activity_per_bin)], nbTicks=None)
         print("\nA plot of the activity grid was saved in '%s'." % os.path.abspath(plot_path))
 
@@ -263,7 +247,7 @@ if __name__ == "__main__":
     print("STD",np.std(all_aggregate))
     print("MIN",np.min(all_aggregate))
     print("MAX",np.max(all_aggregate))
-    file=open('./logs/map_elites/final_stats_map_elites.txt',"w")
+    file=open(log_base_path+'final_stats_map_elites.txt',"w")
     data= "All aggregates : "+str(all_aggregate)+"\nMean  "+str(np.mean(all_aggregate))+"\nMedian  "+str(np.median(all_aggregate))+"\nSTD  "+str(np.std(all_aggregate))+"\nMIN  "+str(np.min(all_aggregate))+"\nMAX  "+str(np.max(all_aggregate))
     file.write(data)
     file.close()

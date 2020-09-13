@@ -24,7 +24,6 @@ class instance(object):
         arr[1] corresponds to the dummy job which is part of the rcpsp and has 0 duration
         """
         
-        
         self.filepath=filepath
         self.n_jobs=0 #Including supersource and sink
         self.horizon=0 #Sum of all durations
@@ -67,13 +66,15 @@ class instance(object):
                 print("Invalid file name")
             self.nc,self.rf,self.rs=params[self.instance_type][self.parameter_number]
             self.read_data()
-        elif filename[0]=='R':
+        elif filename[-3:]=='rcp':
             self.filename_comp=filename[:-4]
-            self.instance_type='RG300' 
+            if(filename[0]=='R'):
+                self.instance_type='RG300' 
+            else:
+                self.instance_type=list(filepath.split('/'))[1]+'/'+list(filepath.split('/'))[2]
             self.read_data_RG()
         else:
             print("Invalid file name")
-       
         self.G=nx.DiGraph()#Create a networkx graph object
         self.G_T=nx.DiGraph()#Create a networkx graph object
         for i in range(1,len(self.adj)):
@@ -108,7 +109,7 @@ class instance(object):
             self.calculate_lt() # Calculates both LFT and LST
             self.calculate_et() # Calculates both EST and EFT
             self.calculate_mts()
-            if(self.instance_type=='RG300'):
+            if(self.instance_type=='RG300' or self.instance_type=='RG30'):
                 self.mpm_time=max(self.latest_finish_times)
             self.calulate_activity_attributes() #UNCOMMENT PLSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 
@@ -669,11 +670,11 @@ parallel_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW
 types=['j30','j60','j90','j120','RG300']
 
 # series_priority_rules=['LST']
-types=['RG300']
-x=instance('./RG300/RG300_157.rcp',use_precomputed=False)
+types=['RG30/set1','RG30/set2','RG30/set3','RG30/set4','RG30/set5']
 
+# print(x)
 if __name__ == '__main__':
-    statistics.get_stats(instance,['LST'],['RG300'],'parallel','forward',use_precomputed=True)
+    # statistics.get_stats(instance,series_priority_rules,types,'parallel','forward',use_precomputed=False)
     pass
     
 
