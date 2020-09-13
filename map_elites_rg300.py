@@ -27,25 +27,12 @@ from os import listdir
 #Generate the training set
 
 
-train_set=[]
-validation_set=[]
+train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
+
 test_set=[]
-jumps={'set1':(100,900),'set2':(20,180),'set3':(20,240),'set4':(20,240),'set5':(20,240)}
-
-for i in jumps:
-    for j in range(1,jumps[i][1],jumps[i][0]):
-        train_set.append('./RG30/'+i+'/Pat'+str(j)+".rcp")
-for i in range(1,49):
-    train_set.append("./j30/j30"+str(i)+"_1.sm")
-    train_set.append("./j60/j60"+str(i)+"_1.sm")
-    train_set.append("./j90/j90"+str(i)+"_1.sm")
-
-for i in range(1,480,10):
-    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
-
 all_rg300=["./RG300/"+i for i in listdir('./RG300')]
-test_set=[i for i in all_rg300 if i not in validation_set]
-test_set_2=["./j120"+'/'+i for i in listdir('./j120') if i!='param.txt']
+test_set=[i for i in all_rg300 if i not in train_set]
+ 
 
 
 def div(left, right): # Safe division to avoid ZeroDivisionError
@@ -105,7 +92,6 @@ def evalSymbReg(individual,train_set):
     fitness=[sumv/len(train_set)]
     features = [len(individual),str(individual).count("RR"),total_slack]
     # print(individual)
-    # print(features)
     return [fitness, features]
 
 
@@ -198,7 +184,7 @@ if __name__ == "__main__":
             log_file.write("\n\n"+str(grid.best))
             log_file.write("\nAggregate % (best on train): "+str(total_dev_percent)+"  \n")
             log_file.write("Makespan (best on train): "+str(makespan)+"  \n\n\n")
-           
+            all_aggregate.append(total_dev_percent)
             print("Aggregate % ",total_dev_percent)
             print("Makespan ",makespan )
             
@@ -223,10 +209,7 @@ if __name__ == "__main__":
             print("Deviation on test (RG300)",total_dev_percent)
             print("Makespan on test ",makespan)
             log_file.write("\n               "+"RG300"+"         "+str(seed)+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       ")
-            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
-            print("Deviation on test2 (j120)",total_dev_percent)
-            print("Makespan on test2 ",makespan)
-            log_file.write("\n               "+"j120"+"         "+str(seed)+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       ")
+            
             
                 
             

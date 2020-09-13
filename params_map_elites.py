@@ -1,8 +1,8 @@
 import os
-n_runs=1
+n_runs=31
 nb_features = 3                            # The number of features to take into account in the container
 nb_bins = [10,10,10]
-features_domain = [(4, 127),(0,40),(1.7,2.2)]      # The domain (min/max values) of the features
+features_domain = [(4, 127),(0,30),(1.65,2.00)]      # The domain (min/max values) of the features
 fitness_domain = [(0., 1.0)]               # The domain (min/max values) of the fitness
 init_batch_size = 1024                     # The number of evaluations of the initial batch ('batch' = population)
 batch_size = 1024                           # The number of evaluations in each subsequent batch
@@ -24,7 +24,7 @@ GEN_MAX_HEIGHT=5
 2: Evaluate all individuals on grid
 """
 
-eval_mode=[0,1]
+eval_mode=[0]
 filename="./map_elites_rg300.py"
 with open(filename) as infile:
     exec(infile.read())

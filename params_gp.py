@@ -2,7 +2,7 @@
 import os
 
 # Parameters for GP
-N_RUNS=1
+N_RUNS=31
 POP_SIZE=1024
 NUM_GENERATIONS=25 # Number of generation to evolve
 MATING_PROB=0.8 # Probability of mating two individuals
