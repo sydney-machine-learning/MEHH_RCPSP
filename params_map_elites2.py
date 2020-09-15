@@ -9,7 +9,6 @@ batch_size = 1024                           # The number of evaluations in each 
 nb_iterations = 25                       # The number of iterations (i.e. times where a new batch is evaluated)
 cxpb = 0.8
 mutation_pb = 0.2                        # The probability of mutating each value of a genome
-test_threshold=26                           # %deviation below which an individual is printed
 max_items_per_bin = 1                      # The number of items in each bin of the grid
 verbose = True                             
 show_warnings = True                      # Display warning and error messages. Set to True if you want to check if some individuals were out-of-bounds

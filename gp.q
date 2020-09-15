@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --job-name=test1
+#SBATCH --job-name=test4
 #SBATCH --ntasks=20
 #SBATCH --mem=20G
 #SBATCH --time=2-12:0:0

@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --job-name=test1
+#SBATCH --job-name=test3
 #SBATCH --ntasks=20
 #SBATCH --mem=20G
 #SBATCH --time=2-12:0:0
@@ -11,6 +11,6 @@
 
 module load python/3.7.2
 source $(which virtualenvwrapper_lazy.sh)
-workon test3
+workon test
 python params_map_elites3.py
 
