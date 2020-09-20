@@ -26,15 +26,12 @@ from multiprocessing import Pool
 from os import listdir
 #Generate the training set
 
-
 train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
-
-test_set=[]
+validation_set=[]
+for i in range(1,480,10):
+    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
 all_rg300=["./RG300/"+i for i in listdir('./RG300')]
-test_set=[i for i in all_rg300 if i not in train_set]
- 
-
-
+test_set=[i for i in all_rg300 if i not in validation_set]
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:
         return left / right
@@ -114,9 +111,7 @@ toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max
 
 if __name__ == "__main__":
     all_aggregate=[]
-    occupied=0
-    while os.path.exists('./logs/map_elites/set_'+str(occupied)):
-        occupied+=1
+    
     os.makedirs('./logs/map_elites/set_'+str(occupied))
     os.makedirs('./logs/map_elites/set_'+str(occupied)+"/data_and_charts/")
     os.makedirs('./logs/map_elites/set_'+str(occupied)+"/grid_logs/")
@@ -179,14 +174,13 @@ if __name__ == "__main__":
            
             print("Best Individual on Training: ", grid.best)
             
-            total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=grid.best),mode='parallel',option='forward',verbose=False)
+            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=grid.best),mode='parallel',option='forward',verbose=False)
             log_file.write("\n\nBest individual on Train..")
             log_file.write("\n\n"+str(grid.best))
             log_file.write("\nAggregate % (best on train): "+str(total_dev_percent)+"  \n")
-            log_file.write("Makespan (best on train): "+str(makespan)+"  \n\n\n")
-            all_aggregate.append(total_dev_percent)
+            log_file.write("Makespan (best on train): "+str(total_makespan)+"  \n\n\n")
             print("Aggregate % ",total_dev_percent)
-            print("Makespan ",makespan )
+            print("Makespan ",total_makespan )
             
         if 1 in eval_mode:
             print("\n\nEvaluating all individuals on validation set....\n\n")
@@ -207,8 +201,8 @@ if __name__ == "__main__":
             total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
             all_aggregate.append(total_dev_percent)
             print("Deviation on test (RG300)",total_dev_percent)
-            print("Makespan on test ",makespan)
-            log_file.write("\n               "+"RG300"+"         "+str(seed)+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       ")
+            print("Makespan on test ",total_makespan)
+            log_file.write("\n               "+"RG300"+"         "+str(seed)+"               "+str(nb_iterations)+"          "+str(cxpb)+"           "+str(mutation_pb)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       ")
             
             
                 

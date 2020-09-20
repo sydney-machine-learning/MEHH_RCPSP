@@ -22,8 +22,9 @@ GEN_MAX_HEIGHT=5
 1: Evaluate best individual on validation set
 2: Evaluate all individuals on grid
 """
+eval_mode=[0,1]
 
-eval_mode=[0]
+occupied=2 # Set number for storing results
 filename="./map_elites_rg300.py"
 with open(filename) as infile:
     exec(infile.read())

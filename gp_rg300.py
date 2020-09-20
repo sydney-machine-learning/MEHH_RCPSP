@@ -20,10 +20,11 @@ import multiprocessing
 #Generate the training set
 
 train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
-
-test_set=[]
+validation_set=[]
+for i in range(1,480,10):
+    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
 all_rg300=["./RG300/"+i for i in listdir('./RG300')]
-test_set=[i for i in all_rg300 if i not in train_set]
+test_set=[i for i in all_rg300 if i not in validation_set]
  
 
 
@@ -99,9 +100,7 @@ toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max
 
 if __name__ == "__main__":
     all_aggregate=[]
-    occupied=0
-    while os.path.exists('./logs/gp/set_'+str(occupied)):
-        occupied+=1
+    
     os.makedirs('./logs/gp/set_'+str(occupied))
     os.makedirs('./logs/gp/set_'+str(occupied)+"/data_and_charts/")
     os.makedirs('./logs/gp/set_'+str(occupied)+"/training_logs/")
@@ -156,24 +155,25 @@ if __name__ == "__main__":
         
         log_file=open(log_base_path+'gp_results_log.txt','a+')
         log_file.write("Run #"+str(run)+"\n\n")
-        total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',verbose=False)
-        print("Performance on Test by best individual on train",total_dev_percent,makespan)
-        log_file.write(str(best_individual)+" : \n  best train   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
+        total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',verbose=False)
+        print("Performance on Test by best individual on train",total_dev_percent,total_makespan)
+        log_file.write(str(best_individual)+" : \n  best train   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
 
-        # min_deviation=100000
-        
-        # for ind in pop:
+        min_deviation=100000
+        perfs={}
+        for ind in pop:
+            if str(ind) not in perfs:
+                total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+                if total_dev_percent<min_deviation:
+                    min_deviation=total_dev_percent
+                    best_individual=ind
+                perfs[str(ind)]=total_dev_percent
 
-        #     total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
-        #     if total_dev_percent<min_deviation:
-        #         min_deviation=total_dev_percent
-        #         best_individual=ind
-
-        # total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+        total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
         all_aggregate.append(total_dev_percent)
-        # print("Performance on Test by best individual on validation",total_dev_percent,makespan)
-        # log_file.write(str(best_individual)+" : \n  best validation   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
-        log_file.close()
+        print("Performance on Test by best individual on validation",total_dev_percent,total_makespan)
+        log_file.write(str(best_individual)+" : \n  best validation   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
+        log_file.close()    
        
 
         # # Generate and Store graph
