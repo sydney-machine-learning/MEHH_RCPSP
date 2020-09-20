@@ -25,13 +25,16 @@ from utils import sub_lists
 from multiprocessing import Pool
 from os import listdir
 #Generate the training set
-validation_set=random.sample(["./"+"RG300"+'/'+i for i in listdir('./'+"RG300") if i!='param.txt'],60)
-test_set=[]
 
-train_set=["./"+"j30"+'/'+i for i in listdir('./'+"j30") if i!='param.txt']
+validation_set=[]
+for i in range(1,480,10):
+    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
+print(len(validation_set))
+
 test_set=[]
-for typ in ["RG300"]:
-    test_set+=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
+all_rg300=["./RG300/"+i for i in listdir('./RG300')]
+test_set+=[i for i in all_rg300 if i not in validation_set]
+print(len(test_set))
 # Parameters
 from params_map_elites import *
 
@@ -114,25 +117,29 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 # Decorators to limit size of operator tree
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
-def parallelised_evaluation(ind):
-    global log_file
-    
-    sum_total_dev=0
-    sum_counts=0
-    for typ in test_type:
-        total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_rule(instance.instance,toolbox.compile(expr=ind),inst_type=typ,mode='parallel',option='forward',verbose=False)
-        sum_total_dev+=total_dev
-        sum_counts+=count
-    fitness_val,features_val=evalSymbReg(ind,validation_set)
-    fitness_test,features_test=evalSymbReg(ind,test_set)
-    return ind,(sum_total_dev*100)/sum_counts,fitness_val,features_val,fitness_test,features_test
 
-if __name__ == "__main__":
-    file=open('./evolved_funcs/map_elites/grid_0',"rb")
+def parallelised_evaluation(ind):
+    global min_deviation,best_individual
+    
+    
+    total_dev_percent_ind,total_makespan_ind,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+    if total_dev_percent_ind<min_deviation:
+        print(min_deviation)
+        min_deviation=total_dev_percent_ind
+        print("changing")
+        best_individual=ind
+
+
+
+path="./logs/map_elites/set_0/data_and_charts/"
+
+for run in range(25,31):
+
+    file=open(path+'grid_'+str(run),"rb")
     grid=pickle.load(file)
     min_deviation=100000
-    # best_individual=grid.best
-    # print(best_individual)
+
+    best_individual=grid.best
     fin=0    
     for ind in grid:
         
@@ -142,7 +149,19 @@ if __name__ == "__main__":
         if total_dev_percent<min_deviation:
             min_deviation=total_dev_percent
             best_individual=ind
+
     print(best_individual)
+    file=open(path+"best_func_"+str(run),"wb")
+    pickle.dump(best_individual,file)
+    file.close()
+
     total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
     print("Aggregate % ",total_dev_percent)
     print("Makespan ",total_makespan )
+    file=open(path+"new_results.txt","a")
+    file.write("Run#"+str(run)+"\n")
+    file.write(str(best_individual)+"\n")
+    file.write("Aggregate% "+str(total_dev_percent)+"\n")
+    file.write("Makespan% "+str(total_makespan)+"\n\n")
+
+    file.close()

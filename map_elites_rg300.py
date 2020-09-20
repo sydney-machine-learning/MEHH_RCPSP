@@ -26,14 +26,12 @@ from multiprocessing import Pool
 from os import listdir
 #Generate the training set
 
-
 train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
-
-test_set=[]
+validation_set=[]
+for i in range(1,480,10):
+    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
 all_rg300=["./RG300/"+i for i in listdir('./RG300')]
-test_set=[i for i in all_rg300 if i not in train_set]
- 
-
+test_set=[i for i in all_rg300 if i not in validation_set]
 
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:
@@ -114,9 +112,7 @@ toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max
 
 if __name__ == "__main__":
     all_aggregate=[]
-    occupied=0
-    while os.path.exists('./logs/map_elites/set_'+str(occupied)):
-        occupied+=1
+    
     os.makedirs('./logs/map_elites/set_'+str(occupied))
     os.makedirs('./logs/map_elites/set_'+str(occupied)+"/data_and_charts/")
     os.makedirs('./logs/map_elites/set_'+str(occupied)+"/grid_logs/")
@@ -184,7 +180,6 @@ if __name__ == "__main__":
             log_file.write("\n\n"+str(grid.best))
             log_file.write("\nAggregate % (best on train): "+str(total_dev_percent)+"  \n")
             log_file.write("Makespan (best on train): "+str(makespan)+"  \n\n\n")
-            all_aggregate.append(total_dev_percent)
             print("Aggregate % ",total_dev_percent)
             print("Makespan ",makespan )
             
