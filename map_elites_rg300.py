@@ -32,7 +32,6 @@ for i in range(1,480,10):
     validation_set.append("./RG300/RG300_"+str(i)+".rcp")
 all_rg300=["./RG300/"+i for i in listdir('./RG300')]
 test_set=[i for i in all_rg300 if i not in validation_set]
-print(len(train_set),len(validation_set),len(test_set),len(all_rg300))
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:
         return left / right
