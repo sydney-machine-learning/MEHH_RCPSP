@@ -160,13 +160,14 @@ if __name__ == "__main__":
         log_file.write(str(best_individual)+" : \n  best train   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
 
         min_deviation=100000
-        
+        perfs={}
         for ind in pop:
-
-            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
-            if total_dev_percent<min_deviation:
-                min_deviation=total_dev_percent
-                best_individual=ind
+            if str(ind) not in perfs:
+                total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+                if total_dev_percent<min_deviation:
+                    min_deviation=total_dev_percent
+                    best_individual=ind
+                perfs[str(ind)]=total_dev_percent
 
         total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
         all_aggregate.append(total_dev_percent)
