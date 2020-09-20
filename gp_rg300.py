@@ -155,9 +155,9 @@ if __name__ == "__main__":
         
         log_file=open(log_base_path+'gp_results_log.txt','a+')
         log_file.write("Run #"+str(run)+"\n\n")
-        total_dev_percent,makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',verbose=False)
-        print("Performance on Test by best individual on train",total_dev_percent,makespan)
-        log_file.write(str(best_individual)+" : \n  best train   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(makespan)+"       \n\n")
+        total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',verbose=False)
+        print("Performance on Test by best individual on train",total_dev_percent,total_makespan)
+        log_file.write(str(best_individual)+" : \n  best train   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
 
         min_deviation=100000
         perfs={}
@@ -171,9 +171,9 @@ if __name__ == "__main__":
 
         total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
         all_aggregate.append(total_dev_percent)
-        print("Performance on Test by best individual on validation",total_dev_percent,makespan)
+        print("Performance on Test by best individual on validation",total_dev_percent,total_makespan)
         log_file.write(str(best_individual)+" : \n  best validation   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
-        log_file.close()
+        log_file.close()    
        
 
         # # Generate and Store graph

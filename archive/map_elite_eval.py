@@ -131,9 +131,9 @@ def parallelised_evaluation(ind):
 
 
 
-path="./logs/map_elites/set_0/data_and_charts/"
+path="./logs/map_elites/set_2/data_and_charts/"
 
-for run in range(25,31):
+for run in range(0,1):
 
     file=open(path+'grid_'+str(run),"rb")
     grid=pickle.load(file)
