@@ -49,3 +49,13 @@ def normalised(arr,norm=0):
     else:
         newarr=[i/norm for i in arr]
     return newarr
+def latex(*argv):
+    args=[]
+    for arg in argv:
+        args.append(arg)
+    for arg in args:
+
+        print(arg,end='')
+        if(arg!=args[-1]):
+            print(" & ",end='')
+    print("\\\\")

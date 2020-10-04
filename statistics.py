@@ -2,7 +2,7 @@ import time
 from os import listdir
 import sys
 import pickle
-def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_precomputed=True):
+def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_precomputed=True,custom_set={},verbose=True):
     """
         Prints the percentage deviation and makespan for all priority rules and instance types specified
         Parameters:
@@ -13,14 +13,19 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
     start=time.time()
     ans={'j30':{},'j60':{},'j90':{},'j120':{},'RG300':{},'RG30/set1':{},'RG30/set2':{},'RG30/set3':{},'RG30/set4':{},'RG30/set5':{}}
     for typ in types:
-        all_files=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
+        
+        if typ in custom_set:
+            all_files=custom_set[typ]
+        else :
+            all_files=["./"+typ+'/'+i for i in listdir('./'+typ) if i!='param.txt']
+        
         for rule in priority_rules:
             total_dev=0;
             total_makespan=0
             count=0
             for i in all_files:
                 
-                if(1):
+                try:
                     x=instance(i,use_precomputed=use_precomputed)
                     if(mode=='parallel'):
                         y=x.parallel_sgs(option=option,priority_rule=rule)
@@ -28,19 +33,23 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
                         y=x.serial_sgs(option=option,priority_rule=rule)
                     else:
                         print("Invalid mode")
-                # except Exception as e:
-                #     print("Encountered error while reading",i)
-                #     print(e)
-                #     continue
+                except Exception as e:
+                    print("Encountered error while reading",i)
+                    print(e)
+                    continue
                 count+=1
                 total_dev+=y[0]
                 total_makespan+=y[1]
-                print(i,y,(100*total_dev)/count,"                        ",end='\r')
-                sys.stdout.flush()
-            print()
+                if verbose:
+                    print(i,y,(100*total_dev)/count,"                        ",end='\r')
+                    sys.stdout.flush()
             total_dev_percent=(100*total_dev)/len(all_files)
-            print(typ,rule,total_dev_percent,total_makespan)
+            if(verbose):
+                print()
+                print(typ,rule,total_dev_percent,total_makespan)
             ans[typ][rule]=[total_dev_percent,total_makespan]
+    if not verbose:
+        return total_dev_percent,total_makespan
     print(ans)
     print("% Deviation")
     print('     ',end='')
@@ -62,7 +71,12 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
         for j in types:
             print(ans[j][i][1],end='  ')
         print()
-
+    for i in priority_rules:
+        print(i,end=' & ')
+        for j in types:
+            print("%.2f"%ans[j][i][0],end=' & ')
+            print(ans[j][i][1],end='')
+        print(" \\\\")
     file=open('results','wb')
     pickle.dump(ans,file)
     file.close()

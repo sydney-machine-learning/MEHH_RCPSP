@@ -1,0 +1,248 @@
+Run #0
+
+add(LF, neg(mul(sub(min(sub(div(ES, LF), neg(LS)), LF), min(AvgRReq, AvgRReq)), div(LS, neg(add(LS, LF)))))) : 
+  best train   RG300         1000               25          0.8           0.2         1004.92        309125       
+
+add(LF, neg(mul(sub(min(sub(div(ES, LF), neg(LS)), LF), min(AvgRReq, AvgRReq)), div(LS, neg(add(LS, LF)))))) : 
+  best validation   RG300         1000               25          0.8           0.2         1004.92        309125       
+
+Run #1
+
+add(add(LF, add(neg(TSC), LF)), min(LS, div(div(div(mul(RR, sub(LF, AvgRReq)), RR), RR), AvgRReq))) : 
+  best train   RG300         1001               25          0.8           0.2         1007.75        309890       
+
+add(add(LF, add(neg(TSC), LF)), min(LS, div(div(div(mul(RR, sub(LF, AvgRReq)), RR), RR), AvgRReq))) : 
+  best validation   RG300         1001               25          0.8           0.2         1007.75        309890       
+
+Run #2
+
+add(min(min(LF, sub(div(MaxRReq, TSC), min(sub(div(MaxRReq, TSC), min(MinRReq, RR)), sub(max(MinRReq, MaxRReq), mul(TSC, LS))))), sub(div(sub(div(LS, TSC), min(MinRReq, RR)), LS), LS)), mul(add(LS, neg(AvgRReq)), add(MinRReq, min(LS, EF)))) : 
+  best train   RG300         1002               25          0.8           0.2         1007.96        309946       
+
+add(min(LF, sub(div(min(MinRReq, RR), MinRReq), min(MinRReq, div(min(min(LS, EF), EF), LS)))), mul(sub(LF, AvgRReq), add(add(LS, add(MinRReq, min(min(LS, EF), EF))), AvgRReq))) : 
+  best validation   RG300         1002               25          0.8           0.2         1004.83        309007       
+
+Run #3
+
+add(add(min(sub(div(neg(AvgRReq), AvgRReq), add(TSC, AvgRReq)), mul(neg(neg(max(TSC, EF))), div(neg(neg(EF)), div(sub(LS, MinRReq), min(RR, LF))))), LF), max(max(max(add(neg(min(EF, LF)), mul(mul(EF, MaxRReq), min(TPC, MinRReq))), min(AvgRReq, min(EF, MinRReq))), LF), min(ES, RR))) : 
+  best train   RG300         1003               25          0.8           0.2         1004.46        308834       
+
+add(add(min(sub(div(neg(AvgRReq), AvgRReq), add(TSC, AvgRReq)), mul(neg(neg(max(TSC, EF))), div(EF, div(sub(LS, MinRReq), EF)))), LF), max(max(max(add(neg(min(EF, LS)), mul(mul(EF, MaxRReq), min(TPC, MinRReq))), min(AvgRReq, min(EF, MinRReq))), LF), min(ES, RR))) : 
+  best validation   RG300         1003               25          0.8           0.2         1004.24        308781       
+
+Run #4
+
+add(add(LF, add(LF, sub(sub(LF, TSC), div(AvgRReq, LF)))), sub(LS, max(TSC, mul(sub(add(max(TPC, MaxRReq), RR), add(MinRReq, add(MinRReq, LF))), add(neg(TSC), max(TPC, MaxRReq)))))) : 
+  best train   RG300         1004               25          0.8           0.2         1004.99        309233       
+
+add(add(LF, add(LF, sub(sub(LF, TSC), div(AvgRReq, LF)))), sub(LS, max(TSC, mul(sub(add(MaxRReq, RR), add(MinRReq, LF)), add(neg(TSC), max(TPC, MaxRReq)))))) : 
+  best validation   RG300         1004               25          0.8           0.2         1004.27        308968       
+
+Run #5
+
+neg(add(min(neg(mul(mul(ES, RR), sub(LS, MaxRReq))), mul(LF, sub(add(mul(LF, RR), sub(ES, LS)), max(mul(TPC, TSC), mul(EF, TSC))))), sub(add(TSC, sub(AvgRReq, LF)), LF))) : 
+  best train   RG300         1005               25          0.8           0.2         1003.63        308665       
+
+neg(add(min(neg(mul(mul(ES, LS), sub(LS, MaxRReq))), sub(add(mul(LF, RR), sub(ES, LS)), max(mul(TPC, TSC), mul(mul(ES, LS), sub(LS, MaxRReq))))), sub(add(TSC, sub(AvgRReq, LF)), LF))) : 
+  best validation   RG300         1005               25          0.8           0.2         1003.93        308846       
+
+Run #6
+
+sub(LF, sub(AvgRReq, sub(mul(sub(LS, TSC), LF), neg(LF)))) : 
+  best train   RG300         1006               25          0.8           0.2         1003.72        308690       
+
+sub(LF, sub(AvgRReq, sub(mul(sub(LS, TSC), LF), neg(LF)))) : 
+  best validation   RG300         1006               25          0.8           0.2         1003.72        308690       
+
+Run #7
+
+add(max(LF, mul(LS, sub(add(ES, AvgRReq), mul(TSC, TSC)))), add(sub(sub(mul(LF, LS), min(add(TSC, TSC), mul(MinRReq, neg(TPC)))), AvgRReq), LF)) : 
+  best train   RG300         1007               25          0.8           0.2         1006.77        309680       
+
+add(max(add(min(div(mul(add(EF, TSC), div(TPC, RR)), sub(add(ES, TSC), LF)), add(neg(add(TSC, EF)), add(neg(MaxRReq), max(RR, AvgRReq)))), LF), LF), add(sub(sub(mul(LF, LS), min(add(TSC, TSC), mul(MinRReq, neg(TPC)))), AvgRReq), LF)) : 
+  best validation   RG300         1007               25          0.8           0.2         1004.46        309001       
+
+Run #8
+
+sub(add(sub(add(add(sub(LF, AvgRReq), max(LS, MaxRReq)), LF), MaxRReq), LF), mul(neg(LS), mul(ES, LS))) : 
+  best train   RG300         1008               25          0.8           0.2         1004.09        308884       
+
+sub(add(sub(add(add(sub(LF, AvgRReq), max(LS, MaxRReq)), LF), MaxRReq), LF), mul(neg(LS), mul(ES, LS))) : 
+  best validation   RG300         1008               25          0.8           0.2         1004.09        308884       
+
+Run #9
+
+min(mul(LF, mul(LF, max(sub(LF, mul(LF, LS)), max(sub(LF, AvgRReq), LS)))), sub(LF, AvgRReq)) : 
+  best train   RG300         1009               25          0.8           0.2         1006.12        309774       
+
+min(mul(LF, mul(LF, max(max(sub(LF, mul(LF, LS)), LS), max(sub(LF, AvgRReq), AvgRReq)))), sub(LF, AvgRReq)) : 
+  best validation   RG300         1009               25          0.8           0.2         1006.99        309963       
+
+Run #10
+
+sub(sub(sub(LS, neg(LF)), neg(LF)), max(max(neg(LF), add(neg(neg(add(TSC, AvgRReq))), mul(min(div(ES, TPC), div(ES, TPC)), min(sub(AvgRReq, LF), LF)))), TSC)) : 
+  best train   RG300         1010               25          0.8           0.2         1009.0        310107       
+
+sub(sub(sub(LS, neg(sub(sub(LS, neg(LF)), neg(LF)))), neg(LF)), max(max(neg(LF), add(neg(neg(add(TSC, AvgRReq))), mul(min(RR, div(ES, TPC)), min(sub(AvgRReq, LF), sub(AvgRReq, EF))))), TSC)) : 
+  best validation   RG300         1010               25          0.8           0.2         1008.13        309955       
+
+Run #11
+
+sub(add(LS, LF), min(min(sub(min(mul(AvgRReq, add(AvgRReq, ES)), add(neg(TPC), max(LF, TPC))), sub(LF, sub(TSC, LS))), LS), mul(AvgRReq, add(AvgRReq, ES)))) : 
+  best train   RG300         1011               25          0.8           0.2         1009.25        310454       
+
+sub(add(LS, LF), min(min(sub(min(mul(AvgRReq, add(AvgRReq, ES)), add(div(MaxRReq, MinRReq), max(LF, TPC))), sub(LF, sub(TSC, LS))), LS), mul(AvgRReq, add(TPC, sub(TSC, LS))))) : 
+  best validation   RG300         1011               25          0.8           0.2         1008.83        310208       
+
+Run #12
+
+sub(max(add(sub(MinRReq, TPC), min(mul(AvgRReq, MaxRReq), TSC)), add(max(LF, add(LS, LF)), LF)), max(mul(div(neg(min(mul(AvgRReq, MaxRReq), TSC)), neg(LF)), AvgRReq), add(sub(MinRReq, TPC), min(mul(AvgRReq, MaxRReq), TSC)))) : 
+  best train   RG300         1012               25          0.8           0.2         1008.59        310087       
+
+sub(max(LF, add(max(LF, add(LS, LF)), LF)), max(mul(div(neg(min(mul(AvgRReq, MaxRReq), TSC)), neg(LF)), AvgRReq), add(sub(MinRReq, TPC), min(mul(AvgRReq, MaxRReq), TSC)))) : 
+  best validation   RG300         1012               25          0.8           0.2         1008.5        310071       
+
+Run #13
+
+sub(sub(mul(LS, LF), add(TSC, max(max(sub(AvgRReq, LF), mul(mul(LF, TSC), AvgRReq)), mul(AvgRReq, AvgRReq)))), mul(mul(LF, TSC), neg(add(add(TSC, TSC), min(LF, div(AvgRReq, LF)))))) : 
+  best train   RG300         1013               25          0.8           0.2         1005.69        309344       
+
+sub(sub(mul(LS, LF), add(TSC, max(sub(add(AvgRReq, neg(LF)), LF), mul(AvgRReq, AvgRReq)))), mul(mul(LF, TSC), neg(add(add(TSC, TSC), min(LF, div(AvgRReq, LF)))))) : 
+  best validation   RG300         1013               25          0.8           0.2         1005.94        309427       
+
+Run #14
+
+mul(max(LS, add(mul(LS, neg(max(TSC, AvgRReq))), add(TSC, MinRReq))), min(sub(LF, div(max(MinRReq, TSC), div(LF, AvgRReq))), div(EF, AvgRReq))) : 
+  best train   RG300         1014               25          0.8           0.2         1008.02        309884       
+
+mul(max(LS, add(mul(LS, sub(sub(LS, EF), TPC)), add(TSC, MinRReq))), min(sub(LF, div(TSC, div(LF, AvgRReq))), min(sub(LF, div(TSC, div(LF, mul(LS, TSC)))), div(EF, AvgRReq)))) : 
+  best validation   RG300         1014               25          0.8           0.2         1008.12        309875       
+
+Run #15
+
+sub(add(add(LF, sub(neg(neg(EF)), sub(max(EF, AvgRReq), LF))), sub(sub(sub(MinRReq, AvgRReq), neg(LS)), MinRReq)), TSC) : 
+  best train   RG300         1015               25          0.8           0.2         1003.7        308665       
+
+sub(add(add(add(LF, sub(neg(neg(EF)), sub(max(EF, AvgRReq), LF))), sub(sub(MinRReq, AvgRReq), MinRReq)), LS), TSC) : 
+  best validation   RG300         1015               25          0.8           0.2         1003.72        308668       
+
+Run #16
+
+add(min(neg(mul(add(AvgRReq, TSC), mul(add(AvgRReq, add(TSC, MinRReq)), add(TSC, MinRReq)))), add(mul(add(mul(AvgRReq, LS), MinRReq), neg(add(TPC, LS))), div(TPC, AvgRReq))), max(max(MinRReq, mul(div(TSC, AvgRReq), sub(LS, EF))), add(LS, LF))) : 
+  best train   RG300         1016               25          0.8           0.2         1009.82        310374       
+
+add(min(neg(mul(add(AvgRReq, TSC), mul(add(AvgRReq, add(TSC, MinRReq)), add(TSC, MinRReq)))), add(mul(add(mul(AvgRReq, LS), min(LS, MinRReq)), neg(add(TPC, LS))), div(TPC, AvgRReq))), max(max(MinRReq, add(LS, mul(div(TSC, RR), sub(LS, EF)))), add(LS, LF))) : 
+  best validation   RG300         1016               25          0.8           0.2         1008.61        310036       
+
+Run #17
+
+mul(add(max(min(MinRReq, LF), LS), add(sub(LF, TSC), LS)), add(max(sub(mul(LF, max(LS, TPC)), sub(AvgRReq, LF)), sub(TSC, LF)), add(LF, LF))) : 
+  best train   RG300         1017               25          0.8           0.2         1010.33        310639       
+
+mul(add(max(max(min(MinRReq, add(LF, TPC)), LS), LS), add(sub(LF, TSC), LS)), add(max(sub(mul(LF, max(LS, TPC)), sub(AvgRReq, LF)), sub(AvgRReq, LF)), add(LF, LF))) : 
+  best validation   RG300         1017               25          0.8           0.2         1010.15        310597       
+
+Run #18
+
+add(mul(sub(add(RR, LS), min(min(add(RR, LS), LF), LF)), sub(LF, AvgRReq)), add(LF, add(LF, sub(add(LF, add(mul(LS, LF), LF)), AvgRReq)))) : 
+  best train   RG300         1018               25          0.8           0.2         1005.11        309204       
+
+add(mul(sub(add(RR, LS), min(add(LF, sub(LF, AvgRReq)), LF)), sub(LF, AvgRReq)), add(LF, add(LF, sub(add(LF, add(mul(LS, LF), LF)), AvgRReq)))) : 
+  best validation   RG300         1018               25          0.8           0.2         1004.8        309054       
+
+Run #19
+
+sub(add(add(LF, mul(max(add(neg(ES), div(MinRReq, LF)), neg(neg(ES))), sub(ES, EF))), LF), add(TSC, AvgRReq)) : 
+  best train   RG300         1019               25          0.8           0.2         1003.52        308675       
+
+sub(add(add(LF, mul(max(add(neg(ES), div(MinRReq, LF)), neg(neg(ES))), sub(ES, EF))), LF), add(TSC, AvgRReq)) : 
+  best validation   RG300         1019               25          0.8           0.2         1003.52        308675       
+
+Run #20
+
+neg(sub(sub(sub(AvgRReq, add(LF, LS)), neg(sub(sub(sub(AvgRReq, LF), neg(TSC)), LF))), min(max(sub(MaxRReq, LF), min(RR, RR)), min(max(min(max(LF, TPC), div(AvgRReq, EF)), TPC), div(AvgRReq, MaxRReq))))) : 
+  best train   RG300         1020               25          0.8           0.2         1005.41        309185       
+
+neg(sub(sub(sub(AvgRReq, add(LF, LS)), neg(sub(sub(sub(AvgRReq, LF), neg(TSC)), LF))), min(max(sub(MaxRReq, LF), min(RR, RR)), min(max(LF, TPC), div(LF, add(mul(MinRReq, MaxRReq), add(LS, MinRReq))))))) : 
+  best validation   RG300         1020               25          0.8           0.2         1003.49        308680       
+
+Run #21
+
+add(min(min(LS, add(add(sub(LF, AvgRReq), mul(TPC, sub(LF, TSC))), mul(mul(TPC, LF), LF))), add(add(sub(LF, AvgRReq), mul(TPC, add(sub(LF, AvgRReq), mul(TPC, TSC)))), mul(TPC, LS))), LF) : 
+  best train   RG300         1021               25          0.8           0.2         1007.32        309918       
+
+add(min(min(LS, add(add(sub(LF, AvgRReq), mul(TPC, sub(LF, TSC))), mul(mul(TPC, LF), max(sub(RR, AvgRReq), min(EF, RR))))), add(add(sub(LF, AvgRReq), mul(TPC, add(sub(LF, AvgRReq), mul(TPC, TSC)))), mul(TPC, LF))), LF) : 
+  best validation   RG300         1021               25          0.8           0.2         1007.01        309790       
+
+Run #22
+
+add(add(add(LS, LF), LF), sub(mul(neg(max(MaxRReq, TPC)), mul(MaxRReq, mul(MaxRReq, AvgRReq))), sub(TSC, min(mul(neg(MaxRReq), mul(MaxRReq, AvgRReq)), mul(neg(MaxRReq), mul(add(MinRReq, TSC), AvgRReq)))))) : 
+  best train   RG300         1022               25          0.8           0.2         1006.93        310035       
+
+add(add(add(LS, LF), LF), sub(mul(neg(MaxRReq), mul(max(MaxRReq, TPC), mul(MaxRReq, AvgRReq))), sub(TSC, min(max(add(MinRReq, TSC), max(MaxRReq, TPC)), mul(neg(MaxRReq), mul(MaxRReq, AvgRReq)))))) : 
+  best validation   RG300         1022               25          0.8           0.2         1007.15        310176       
+
+Run #23
+
+sub(min(add(min(AvgRReq, RR), min(min(AvgRReq, TSC), MinRReq)), EF), sub(AvgRReq, sub(add(LS, sub(add(LS, LF), sub(max(AvgRReq, TSC), sub(EF, ES)))), min(AvgRReq, TSC)))) : 
+  best train   RG300         1023               25          0.8           0.2         1003.06        308506       
+
+sub(min(LS, EF), sub(AvgRReq, sub(add(LS, sub(add(LS, LF), sub(max(AvgRReq, TSC), sub(EF, ES)))), min(AvgRReq, TSC)))) : 
+  best validation   RG300         1023               25          0.8           0.2         1002.93        308460       
+
+Run #24
+
+sub(add(sub(LF, AvgRReq), mul(max(add(LS, add(sub(LF, AvgRReq), mul(LS, LF))), EF), AvgRReq)), add(neg(add(LS, LF)), add(add(neg(add(LF, LF)), TSC), AvgRReq))) : 
+  best train   RG300         1024               25          0.8           0.2         1008.59        310009       
+
+sub(add(sub(LF, AvgRReq), mul(max(add(LS, add(sub(AvgRReq, AvgRReq), mul(LS, LF))), EF), AvgRReq)), add(neg(add(LS, LF)), add(add(neg(add(LF, LF)), TSC), AvgRReq))) : 
+  best validation   RG300         1024               25          0.8           0.2         1007.99        309848       
+
+Run #25
+
+add(add(LF, LF), sub(max(mul(max(LS, neg(TPC)), min(LF, max(neg(LF), add(ES, MaxRReq)))), sub(sub(RR, sub(max(TSC, LF), neg(TPC))), div(LS, LF))), AvgRReq)) : 
+  best train   RG300         1025               25          0.8           0.2         1004.98        309147       
+
+add(add(LF, LF), sub(max(mul(max(LS, neg(TPC)), min(LF, LF)), sub(sub(RR, sub(max(TSC, LF), neg(LS))), div(max(LS, LS), LF))), AvgRReq)) : 
+  best validation   RG300         1025               25          0.8           0.2         1004.73        309068       
+
+Run #26
+
+add(max(min(sub(RR, add(LS, TSC)), mul(neg(neg(MaxRReq)), AvgRReq)), max(LF, max(mul(div(TSC, RR), sub(RR, add(LS, TSC))), mul(neg(LF), add(LS, TSC))))), sub(sub(LS, add(neg(MaxRReq), MaxRReq)), max(mul(div(TSC, RR), min(RR, LS)), mul(AvgRReq, add(AvgRReq, TSC))))) : 
+  best train   RG300         1026               25          0.8           0.2         1006.29        309618       
+
+add(max(min(RR, LS), max(LF, max(mul(div(div(TSC, RR), RR), sub(RR, add(LS, TSC))), mul(neg(min(RR, LS)), add(LS, TSC))))), sub(sub(LS, add(neg(MaxRReq), MaxRReq)), max(mul(TSC, min(RR, LF)), mul(AvgRReq, add(AvgRReq, TSC))))) : 
+  best validation   RG300         1026               25          0.8           0.2         1005.71        309361       
+
+Run #27
+
+sub(sub(LF, add(TSC, AvgRReq)), mul(sub(LF, neg(add(LS, LF))), min(neg(add(LS, LF)), sub(AvgRReq, TSC)))) : 
+  best train   RG300         1027               25          0.8           0.2         1008.07        309903       
+
+sub(sub(LF, add(TSC, AvgRReq)), mul(sub(LF, neg(add(LS, LF))), min(neg(add(LS, LF)), sub(max(div(AvgRReq, TPC), mul(RR, TPC)), TSC)))) : 
+  best validation   RG300         1027               25          0.8           0.2         1008.06        309957       
+
+Run #28
+
+add(neg(sub(sub(div(min(neg(TSC), MinRReq), sub(ES, ES)), neg(mul(LF, mul(AvgRReq, TSC)))), neg(mul(AvgRReq, TSC)))), mul(LF, add(div(max(LF, div(LF, mul(AvgRReq, TSC))), sub(ES, ES)), LS))) : 
+  best train   RG300         1028               25          0.8           0.2         1007.91        309775       
+
+add(neg(sub(sub(div(min(neg(TSC), MinRReq), sub(ES, ES)), neg(mul(AvgRReq, TSC))), neg(mul(AvgRReq, TSC)))), mul(LF, add(div(max(LF, div(LF, mul(AvgRReq, TSC))), sub(ES, ES)), LS))) : 
+  best validation   RG300         1028               25          0.8           0.2         1008.25        309792       
+
+Run #29
+
+sub(mul(max(add(LF, LS), sub(sub(min(TPC, EF), min(EF, ES)), mul(add(neg(RR), TSC), max(MinRReq, RR)))), LF), mul(AvgRReq, sub(max(max(AvgRReq, TSC), min(LF, MinRReq)), mul(add(LF, LS), mul(MinRReq, TPC))))) : 
+  best train   RG300         1029               25          0.8           0.2         1005.78        309375       
+
+sub(mul(max(add(LF, LS), neg(sub(sub(AvgRReq, LS), sub(RR, AvgRReq)))), LF), mul(AvgRReq, sub(max(max(AvgRReq, TSC), min(LF, MinRReq)), mul(sub(TSC, sub(LF, TPC)), mul(MinRReq, TPC))))) : 
+  best validation   RG300         1029               25          0.8           0.2         1004.7        309026       
+
+Run #30
+
+add(LS, add(neg(mul(AvgRReq, add(sub(LS, TSC), div(TSC, LF)))), LF)) : 
+  best train   RG300         1030               25          0.8           0.2         1004.46        308962       
+
+add(LS, add(neg(mul(AvgRReq, add(sub(LS, TSC), div(TSC, LF)))), LF)) : 
+  best validation   RG300         1030               25          0.8           0.2         1004.46        308962       
+

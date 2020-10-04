@@ -6,8 +6,7 @@ from os import listdir
 import pickle
 import time
 import statistics
-from utils import read_param,add_lists,sub_lists, less_than, min_finish_time, find_index,normalised #Utility functions
-
+from utils import read_param,add_lists,sub_lists, less_than, min_finish_time, find_index,normalised,latex #Utility functions
 #Instance definition
 class instance(object):
     """
@@ -667,14 +666,35 @@ read_param('./j120/param.txt',params['j120'],60)
 
 series_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD']
 parallel_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD','IRSM','ACS','WCS']
-types=['j30','j60','j90','j120','RG300']
+types=['RG300']
 
 # series_priority_rules=['LST']
-types=['RG30/set1','RG30/set2','RG30/set3','RG30/set4','RG30/set5']
+
 
 # print(x)
 if __name__ == '__main__':
-    # statistics.get_stats(instance,series_priority_rules,types,'parallel','forward',use_precomputed=False)
-    pass
+    validation_set=[]
+    test_sets={}
+    for i in range(1,481):
+        if(i%10==1):
+            validation_set.append("./RG300/RG300_"+str(i)+".rcp")
+        else:
+            if((i-1)//10 not in test_sets):
+                test_sets[(i-1)//10]=["./RG300/RG300_"+str(i)+".rcp"]
+            else:
+                test_sets[(i-1)//10].append("./RG300/RG300_"+str(i)+".rcp")
+    file=open("resource_vals","rb")
+    resource_data=pickle.load(file)
+    file.close()
+    for i in test_sets:
+        rd=resource_data[i*10+1]
+        res=statistics.get_stats(instance,["MTS"],types,'parallel','forward',use_precomputed=False,custom_set={'RG300':test_sets[i]},verbose=False)
+        rs_avg=0
+        cnt=0
+        for j in test_sets[i]:
+            rs_avg+=resource_data[int(list(j.split('_'))[1][:-4])][2]
+            cnt+=1
+        rs_avg/=cnt
+        latex(rd[-1],rd[0],rd[1],str(round(rs_avg,2)),rd[3],str(round(res[0],2)),res[1])
     
 
