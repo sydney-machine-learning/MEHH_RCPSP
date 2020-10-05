@@ -835,4 +835,4 @@ Makespan (best on train): 311116
 Best individual on Validation..
 
 sub(sub(add(min(neg(MinRReq), neg(AvgRReq)), LF), neg(EF)), min(min(add(sub(sub(max(LF, TPC), neg(EF)), neg(add(MaxRReq, AvgRReq))), mul(neg(neg(EF)), div(mul(ES, RR), neg(ES)))), EF), sub(max(div(TPC, TPC), max(TSC, ES)), neg(LS))))
-               RG300         1031               25          0.8           0.2         1003.41        309072       
+               RG300         1031               25          0.8           0.2         1003.41        309072 
