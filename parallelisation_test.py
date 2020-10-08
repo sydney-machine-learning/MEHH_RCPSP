@@ -123,7 +123,7 @@ if __name__ == "__main__":
         startTime=time.time()
         
         for run in range(N_RUNS):
-            print("Run #"+str(run))
+            
             pool = multiprocessing.Pool(n_cpu)
             toolbox.register("map", pool.map)
             
