@@ -132,21 +132,29 @@ for i in hard_starts:
 
 hard_test=[i for i in hard_test_tmp if i not in validation_set]
 
-file=open("map_elites_data","rb")
-data=pickle.load(file)
-file.close()
 
 
-devs=[]
-makespans=[]
-for i in data:
-    devs.append(data[i]['dev'])
-    makespans.append(data[i]['unique'])
+ind="sub(add(LS,LF),LS)"
+expr=gp.PrimitiveTree("")
+expr=expr.from_string(ind,pset)
+print(expr.height)
+# [...] Execution of code that produce a tree expression
 
-print("All aggregates : ",makespans)
-makespans=np.array(makespans)
-print("Mean ",np.mean(makespans))
-print("Median", np.median(makespans))
-print("STD",np.std(makespans))
-print("MIN",np.min(makespans))
-print("MAX",np.max(makespans))
+# file=open("map_elites_data","rb")
+# data=pickle.load(file)
+# file.close()
+
+
+# devs=[]
+# makespans=[]
+# for i in data:
+#     devs.append(data[i]['dev'])
+#     makespans.append(data[i]['unique'])
+
+# print("All aggregates : ",makespans)
+# makespans=np.array(makespans)
+# print("Mean ",np.mean(makespans))
+# print("Median", np.median(makespans))
+# print("STD",np.std(makespans))
+# print("MIN",np.min(makespans))
+# print("MAX",np.max(makespans))
