@@ -1,7 +1,7 @@
 """ Convert Map elite log to a pickle file with all data"""
 import pickle
 import numpy as np
-file=open("./../logs/map_elites/set_2/map_elites_results_log.txt","r")
+file=open("./../logs/map_elites/set_3/map_elites_results_log.txt","r")
 lines=file.readlines()
 file.close()
 data={}
@@ -23,11 +23,11 @@ for i in range(len(lines)):
         
         run+=1
 print(data)
-file=open("./../map_elites_data_2","wb")
+file=open("./../map_elites_data_3","wb")
 pickle.dump(data,file)
 file.close()
 
-file=open("./../map_elites_data_2","rb")
+file=open("./../map_elites_data_3","rb")
 data_new=pickle.load(file)
 print(data_new)
 makespans=[]
