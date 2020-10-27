@@ -673,28 +673,15 @@ types=['RG300']
 
 # print(x)
 if __name__ == '__main__':
+    train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
     validation_set=[]
-    test_sets={}
-    for i in range(1,481):
-        if(i%10==1):
-            validation_set.append("./RG300/RG300_"+str(i)+".rcp")
-        else:
-            if((i-1)//10 not in test_sets):
-                test_sets[(i-1)//10]=["./RG300/RG300_"+str(i)+".rcp"]
-            else:
-                test_sets[(i-1)//10].append("./RG300/RG300_"+str(i)+".rcp")
-    file=open("resource_vals","rb")
-    resource_data=pickle.load(file)
-    file.close()
-    for i in test_sets:
-        rd=resource_data[i*10+1]
-        res=statistics.get_stats(instance,["MTS"],types,'parallel','forward',use_precomputed=False,custom_set={'RG300':test_sets[i]},verbose=False)
-        rs_avg=0
-        cnt=0
-        for j in test_sets[i]:
-            rs_avg+=resource_data[int(list(j.split('_'))[1][:-4])][2]
-            cnt+=1
-        rs_avg/=cnt
-        latex(rd[-1],rd[0],rd[1],str(round(rs_avg,2)),rd[3],str(round(res[0],2)),res[1])
+    for i in range(1,480,10):
+        validation_set.append("./RG300/RG300_"+str(i)+".rcp")
+    all_rg300=["./RG300/"+i for i in listdir('./RG300')]
+    test_set=[i for i in all_rg300 if i not in validation_set]
+    
+    
+    res=statistics.get_stats(instance,["WCS","ACS"],types,'parallel','forward',use_precomputed=False,custom_set={'RG300':test_set},verbose=True)
+        
     
 
