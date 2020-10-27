@@ -25,9 +25,6 @@ import time
 import matplotlib
 from multiprocessing import Pool
 from os import listdir
-import plotly.graph_objects as go
-
-
 matplotlib.use('TKAgg',warn=False, force=True)
 path="../logs/map_elites/set_0/"
 train_set=['../j30/'+i for i in listdir('../j30') if i!="param.txt"]
@@ -140,53 +137,32 @@ file=open('./../map_elites_data_0','rb')
 alld=pickle.load(file)
 file.close()
 # print(alld)
-
-domain=[[4,127],[0,30],[1.65,2.00]]
-fig,axs=plt.subplots(1,3,figsize=(15,3))
-
-for FNO in range(0,3):
-    x=[]
-    vals=[]
-    mins=[]
-    maxes=[]
-    low=[domain[FNO][0]]*31
-    high=[domain[FNO][1]]*31
-    feature_names=["Number of nodes", "Number of resource nodes","Slack"]
-    for i in range(31):
-        file=open(path+"final"+str(i)+".p","rb")
-        data=pickle.load(file)
-        file.close()
-        curmin=100000
-        curmax=-1
-
-        for j in data['container']:
-            curmin=min(curmin,j.features[FNO])
-            curmax=max(curmax,j.features[FNO])
-            
-            if(str(j)== alld[i]['ind']):
-                vals.append(j.features[FNO])
-        mins.append(curmin)
-        maxes.append(curmax)
-    axs[FNO].plot(vals,'k',label='best feature value')
-   
-    axs[FNO].plot(mins,label='grid minimum')
-    axs[FNO].plot(maxes,label='grid maximum')
-    axs[FNO].plot(low,'--',label='domain minimum')
-    axs[FNO].plot(high,'--',label='domain maximum')
-    axs[FNO].set(xlabel="Run #",ylabel=feature_names[FNO])
-
-    # plt.xlabel("")
-    # plt.ylabel("Feature values")
-plt.legend(bbox_to_anchor=(1.0, 0.9, 0.3, 0.1), loc='upper left')
-plt.suptitle("Plot of best feature values on test set")
-plt.savefig("./../imgs/feature_all"+".png", bbox_inches='tight')
-plt.show()
-# fig = go.Figure(data=[go.Candlestick(x=,
-#                        open=, high=high_data,
-#                        low=low_data, close=close_data)])
-
-
-
+for i in range(1):
+    file=open(path+"final"+str(i)+".p","rb")
+    data=pickle.load(file)
     
+    file.close()
+    # print(data['container'].fitness[(9,6,2)][0][0])
+    grid=np.zeros((10,100))
+    mask=np.zeros((10,100))
+    print(data['container'].fitness)
+    for j in data['container'].fitness:
+        print(j)    
+        
+        if(data['container'].fitness[j]):
+            print(j[0],j[1]+10*j[2],(data['container'].fitness)[j][0].values)
+            grid[j[0]][j[1]+10*j[2]]=float(data['container'].fitness[j][0].values[0])
+        else:
+            mask[j[0]][j[1]+10*j[2]]=1
+            grid[j[0]][j[1]+10*j[2]]=0
+    yticks=list(range(0,30,3))
+    with sns.axes_style("dark"):
+        f, ax = plt.subplots(figsize=(50, 5))
+        ax = sns.heatmap(grid, mask=mask,square=True,xticklabels=10,yticklabels=yticks)
+        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+    plt.xlabel("Number of RR nodes  -   slack ")
+    plt.ylabel("Number of nodes")
+    plt.title("Performance heat map")
+    plt.show()
    
    

@@ -1,0 +1,8 @@
+Run #0
+
+add(LF, neg(mul(sub(min(sub(div(ES, LF), neg(LS)), LF), min(AvgRReq, AvgRReq)), div(LS, neg(add(LS, LF)))))) : 
+  best train   RG300         1000               25          0.8           0.2         1004.92        309125       
+
+add(LF, neg(mul(sub(min(sub(div(ES, LF), neg(LS)), LF), min(AvgRReq, AvgRReq)), div(LS, neg(add(LS, LF)))))) : 
+  best validation   RG300         1000               25          0.8           0.2         1004.92        309125       
+

@@ -98,7 +98,8 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 def get_unique(x):
-    return len(np.unique(x))
+    x=set(list(map(str,x)))
+    return len(x)
 if __name__ == "__main__":
     all_aggregate=[]
     
@@ -113,13 +114,14 @@ if __name__ == "__main__":
         toolbox.register("map", pool.map)
         
         # Statistics calculated by evaluating GP
-        stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
-        stats_size = tools.Statistics(len)
-        mstats = tools.MultiStatistics(fitness=stats_fit, size=stats_size)
-        mstats.register("avg", np.mean)
-        mstats.register("std", np.std)
-        mstats.register("min", np.min)
-        mstats.register("max", np.max)
+        stats_ind = tools.Statistics(lambda ind: ind)
+        # stats_size = tools.Statistics(len)
+        mstats = tools.MultiStatistics(ind=stats_ind)
+        # mstats.register("avg", np.mean)
+        # mstats.register("std", np.std)
+        # mstats.register("min", np.min)
+        # mstats.register("max", np.max)
+        mstats.register("unique",get_unique)
         # Update seed
         seed = 1000+run
         np.random.seed(seed)
@@ -174,7 +176,7 @@ if __name__ == "__main__":
         print("Performance on Test by best individual on validation",total_dev_percent,total_makespan)
         log_file.write(str(best_individual)+" : \n  best validation   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
         log_file.close()    
-       
+        
 
         # # Generate and Store graph
         # nodes, edges, labels = gp.graph(best_individual)

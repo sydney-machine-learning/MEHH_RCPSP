@@ -163,8 +163,8 @@ for FNO in range(0,3):
             curmin=min(curmin,j.features[FNO])
             curmax=max(curmax,j.features[FNO])
             
-            if(str(j)== alld[i]['ind']):
-                vals.append(j.features[FNO])
+            
+        vals.append(data['container'].best.features[FNO])
         mins.append(curmin)
         maxes.append(curmax)
     axs[FNO].plot(vals,'k',label='best feature value')
@@ -174,12 +174,16 @@ for FNO in range(0,3):
     axs[FNO].plot(low,'--',label='domain minimum')
     axs[FNO].plot(high,'--',label='domain maximum')
     axs[FNO].set(xlabel="Run #",ylabel=feature_names[FNO])
-
-    # plt.xlabel("")
-    # plt.ylabel("Feature values")
+    vals_np=np.array(vals)
+    print("Mean ",np.mean(vals_np))
+    print("Median", np.median(vals_np))
+    print("STD",np.std(vals_np))
+    print("MIN",np.min(vals_np))
+    print("MAX",np.max(vals_np))
+   
 plt.legend(bbox_to_anchor=(1.0, 0.9, 0.3, 0.1), loc='upper left')
-plt.suptitle("Plot of best feature values on test set")
-plt.savefig("./../imgs/feature_all"+".png", bbox_inches='tight')
+plt.suptitle("Plot of best feature values on train set")
+plt.savefig("./../imgs/feature_all_train"+".png", bbox_inches='tight')
 plt.show()
 # fig = go.Figure(data=[go.Candlestick(x=,
 #                        open=, high=high_data,
