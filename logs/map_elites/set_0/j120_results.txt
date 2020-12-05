@@ -1,0 +1,155 @@
+Run#0
+sub(sub(LS, AvgRReq), mul(div(sub(AvgRReq, MinRReq), mul(div(add(div(LS, TSC), mul(MinRReq, MinRReq)), mul(mul(RR, MinRReq), neg(MaxRReq))), mul(div(add(AvgRReq, LF), sub(MinRReq, LF)), mul(add(MinRReq, TSC), add(ES, RR))))), MinRReq))
+Aggregate% 43.40962952721156
+Makespan% 73249
+
+Run#1
+add(max(LF, LS), neg(max(AvgRReq, add(min(neg(EF), max(ES, EF)), add(mul(TSC, EF), sub(LS, EF))))))
+Aggregate% 43.41616202669931
+Makespan% 73254
+
+Run#2
+add(add(min(mul(LF, ES), mul(TSC, MinRReq)), add(max(sub(neg(RR), max(RR, MinRReq)), mul(TPC, MinRReq)), mul(sub(LF, AvgRReq), div(MinRReq, MinRReq)))), sub(mul(neg(MaxRReq), max(div(min(neg(LF), sub(MinRReq, MaxRReq)), min(min(TSC, TSC), min(RR, TSC))), AvgRReq)), min(add(ES, MaxRReq), neg(LS))))
+Aggregate% 42.91066743600111
+Makespan% 72974
+
+Run#3
+add(sub(add(mul(div(RR, RR), max(MaxRReq, MaxRReq)), neg(max(sub(mul(AvgRReq, MinRReq), neg(ES)), min(mul(RR, AvgRReq), min(EF, RR))))), add(max(mul(max(min(MinRReq, RR), add(MaxRReq, AvgRReq)), AvgRReq), add(mul(div(LS, LS), min(MaxRReq, RR)), sub(mul(MaxRReq, EF), max(TPC, EF)))), add(div(TSC, LF), max(MaxRReq, AvgRReq)))), neg(neg(sub(sub(min(LF, LS), mul(MinRReq, AvgRReq)), neg(add(ES, LF))))))
+Aggregate% 43.018754429861836
+Makespan% 73039
+
+Run#4
+max(min(mul(mul(LF, TSC), mul(TSC, AvgRReq)), min(add(div(max(add(AvgRReq, ES), div(TPC, RR)), min(div(ES, ES), div(MinRReq, LF))), div(mul(div(ES, TSC), min(LS, EF)), add(sub(EF, TSC), div(EF, LF)))), max(neg(div(div(MaxRReq, TPC), mul(AvgRReq, TPC))), neg(neg(neg(AvgRReq)))))), max(div(min(neg(mul(MaxRReq, EF)), add(sub(RR, MinRReq), mul(MinRReq, EF))), sub(neg(sub(div(TSC, LS), neg(LS))), LF)), max(neg(max(MaxRReq, RR)), add(LF, mul(mul(AvgRReq, MaxRReq), min(neg(MinRReq), div(RR, EF)))))))
+Aggregate% 43.80133436063965
+Makespan% 73428
+
+Run#5
+max(min(neg(add(neg(MinRReq), max(TSC, add(add(RR, RR), add(TPC, EF))))), mul(add(add(max(MaxRReq, MinRReq), min(AvgRReq, ES)), sub(min(div(MinRReq, LF), sub(RR, MaxRReq)), max(div(EF, MaxRReq), div(AvgRReq, LF)))), div(mul(add(AvgRReq, RR), mul(AvgRReq, AvgRReq)), div(sub(ES, AvgRReq), mul(LS, LF))))), sub(mul(sub(mul(neg(LS), mul(AvgRReq, RR)), min(min(sub(MaxRReq, LS), add(LF, LS)), max(EF, TSC))), LF), neg(LF)))
+Aggregate% 43.16879261599818
+Makespan% 73120
+
+Run#6
+sub(max(div(mul(neg(sub(MinRReq, MaxRReq)), neg(mul(LS, MaxRReq))), div(sub(min(mul(RR, LF), neg(ES)), div(neg(RR), mul(AvgRReq, MaxRReq))), neg(mul(RR, RR)))), LF), mul(max(min(RR, div(max(neg(AvgRReq), mul(RR, RR)), mul(mul(EF, AvgRReq), sub(RR, MinRReq)))), div(TSC, LF)), mul(sub(sub(add(MinRReq, MaxRReq), min(MinRReq, LF)), min(sub(LS, MaxRReq), add(TSC, TSC))), AvgRReq)))
+Aggregate% 43.14934248120977
+Makespan% 73105
+
+Run#7
+max(min(min(max(div(min(MaxRReq, LF), div(MaxRReq, TPC)), div(min(RR, MaxRReq), neg(LF))), div(sub(TPC, ES), min(AvgRReq, mul(neg(EF), min(ES, MaxRReq))))), max(sub(min(neg(min(EF, AvgRReq)), sub(max(MinRReq, MaxRReq), add(LF, TSC))), mul(mul(mul(RR, LS), div(RR, TSC)), mul(max(EF, TSC), max(MaxRReq, RR)))), div(mul(sub(add(LS, RR), min(TPC, TPC)), add(mul(LS, ES), sub(MaxRReq, RR))), sub(div(min(ES, EF), max(RR, LS)), min(mul(LF, AvgRReq), sub(LF, TSC)))))), sub(LF, AvgRReq))
+Aggregate% 43.321143434827526
+Makespan% 73202
+
+Run#8
+sub(add(add(neg(AvgRReq), neg(TSC)), add(LS, LF)), max(neg(max(LF, neg(max(add(TSC, TPC), max(TPC, TPC))))), sub(neg(min(add(LS, MaxRReq), neg(AvgRReq))), add(EF, LF))))
+Aggregate% 42.85344654837919
+Makespan% 72951
+
+Run#9
+sub(sub(LS, neg(LF)), max(min(max(sub(add(MinRReq, TSC), mul(MaxRReq, AvgRReq)), max(sub(TPC, EF), add(MaxRReq, AvgRReq))), min(add(div(add(RR, ES), min(LF, TSC)), div(sub(EF, EF), neg(ES))), mul(sub(add(AvgRReq, AvgRReq), mul(LF, TSC)), div(min(TSC, LS), max(LS, LS))))), max(mul(max(min(sub(AvgRReq, LS), div(LF, LF)), div(neg(TSC), min(ES, RR))), add(min(max(RR, TPC), neg(AvgRReq)), add(mul(EF, RR), neg(AvgRReq)))), div(min(max(div(MinRReq, TPC), div(EF, RR)), neg(neg(RR))), max(mul(neg(LF), add(LS, MinRReq)), sub(min(AvgRReq, RR), add(RR, AvgRReq)))))))
+Aggregate% 43.18801612321039
+Makespan% 73126
+
+Run#10
+sub(add(LS, LF), min(mul(mul(mul(add(mul(LS, MaxRReq), mul(RR, TSC)), sub(max(MaxRReq, TPC), sub(ES, ES))), AvgRReq), add(max(max(neg(EF), add(MaxRReq, LF)), mul(mul(TSC, TSC), sub(ES, AvgRReq))), max(sub(MaxRReq, LS), neg(ES)))), add(neg(neg(div(MaxRReq, LS))), neg(max(TSC, AvgRReq)))))
+Aggregate% 43.47514264937355
+Makespan% 73265
+
+Run#11
+add(max(neg(max(add(mul(ES, LF), max(MaxRReq, LS)), neg(add(MaxRReq, TSC)))), mul(max(TSC, div(max(min(MaxRReq, LS), neg(TPC)), sub(min(RR, EF), mul(TSC, ES)))), neg(AvgRReq))), max(min(add(max(add(TSC, MinRReq), max(LS, TPC)), max(mul(TPC, LS), max(RR, TSC))), neg(div(mul(ES, EF), mul(MaxRReq, LF)))), add(LS, add(mul(LF, LF), neg(neg(add(LF, LS)))))))
+Aggregate% 42.78371397792903
+Makespan% 72921
+
+Run#12
+sub(sub(mul(LS, LF), add(add(min(TPC, TSC), neg(sub(LS, AvgRReq))), TSC)), mul(mul(ES, div(min(min(add(MinRReq, RR), mul(AvgRReq, AvgRReq)), MinRReq), max(MaxRReq, LS))), mul(div(TSC, add(neg(sub(RR, RR)), neg(max(LF, MinRReq)))), sub(MaxRReq, MinRReq))))
+Aggregate% 43.212402695066814
+Makespan% 73136
+
+Run#13
+max(sub(max(LF, div(div(MinRReq, RR), div(add(div(MaxRReq, AvgRReq), add(ES, TSC)), div(max(AvgRReq, ES), div(TPC, EF))))), add(mul(add(max(MaxRReq, TPC), min(TSC, AvgRReq)), AvgRReq), neg(LF))), mul(max(min(MinRReq, min(add(LS, LF), neg(LF))), add(sub(LF, EF), max(mul(neg(MinRReq), sub(EF, AvgRReq)), LF))), add(div(neg(div(mul(EF, LF), div(EF, LS))), min(div(max(LS, MinRReq), min(LS, MinRReq)), mul(div(TPC, RR), min(MaxRReq, MaxRReq)))), div(mul(add(mul(AvgRReq, AvgRReq), mul(LF, LS)), div(neg(RR), add(MaxRReq, EF))), div(min(min(TSC, LS), max(LF, AvgRReq)), div(div(MinRReq, AvgRReq), div(MaxRReq, LF)))))))
+Aggregate% 43.17582100629456
+Makespan% 73101
+
+Run#14
+add(sub(neg(sub(sub(AvgRReq, EF), neg(max(MaxRReq, MaxRReq)))), sub(max(EF, TSC), LF)), max(LS, TPC))
+Aggregate% 43.17578900430027
+Makespan% 73135
+
+Run#15
+add(max(neg(add(MinRReq, TPC)), sub(sub(LF, max(max(AvgRReq, MinRReq), min(MaxRReq, MinRReq))), neg(LS))), div(LF, mul(mul(RR, RR), sub(MinRReq, MinRReq))))
+Aggregate% 42.81481560099187
+Makespan% 72939
+
+Run#16
+min(sub(max(LS, max(add(neg(div(RR, TSC)), neg(neg(AvgRReq))), add(LF, LS))), AvgRReq), add(sub(add(mul(mul(mul(EF, AvgRReq), sub(LF, RR)), neg(LS)), min(sub(LS, TSC), min(TPC, MinRReq))), neg(mul(add(ES, EF), div(LF, TPC)))), add(min(sub(min(min(MaxRReq, AvgRReq), max(LF, AvgRReq)), add(add(TSC, LS), neg(RR))), min(mul(sub(LS, ES), min(AvgRReq, MinRReq)), div(mul(TPC, LF), add(ES, ES)))), max(min(sub(mul(AvgRReq, MinRReq), max(MinRReq, AvgRReq)), add(div(MaxRReq, RR), min(EF, MinRReq))), mul(max(add(LF, RR), add(LS, MinRReq)), mul(mul(RR, ES), min(MinRReq, AvgRReq)))))))
+Aggregate% 42.863661765155655
+Makespan% 72970
+
+Run#17
+min(add(min(div(sub(div(add(LS, TSC), max(RR, LF)), add(sub(EF, TPC), add(ES, EF))), div(min(div(TPC, LS), add(LF, MaxRReq)), min(div(RR, ES), sub(LS, TSC)))), add(mul(add(ES, EF), max(TPC, LF)), add(div(MaxRReq, ES), mul(min(TPC, MinRReq), sub(TSC, TSC))))), sub(div(add(neg(max(LS, ES)), div(neg(RR), max(TSC, TSC))), mul(add(neg(AvgRReq), neg(ES)), div(add(TPC, MaxRReq), sub(AvgRReq, AvgRReq)))), mul(div(add(mul(ES, EF), neg(AvgRReq)), mul(min(LF, LS), max(ES, MinRReq))), add(add(neg(LS), add(TPC, TSC)), mul(neg(RR), max(LS, AvgRReq)))))), sub(sub(LF, AvgRReq), sub(max(TSC, AvgRReq), min(TPC, AvgRReq))))
+Aggregate% 43.87361483187318
+Makespan% 73475
+
+Run#18
+max(sub(LF, mul(add(MaxRReq, TSC), mul(mul(AvgRReq, MaxRReq), max(AvgRReq, AvgRReq)))), neg(min(sub(min(LF, EF), sub(LF, mul(add(RR, RR), max(MaxRReq, RR)))), sub(sub(min(AvgRReq, AvgRReq), max(LF, ES)), min(add(LF, AvgRReq), min(LS, LS))))))
+Aggregate% 43.069879939028176
+Makespan% 73060
+
+Run#19
+add(max(LS, neg(sub(TSC, LF))), neg(max(AvgRReq, TSC)))
+Aggregate% 43.61587400371012
+Makespan% 73353
+
+Run#20
+mul(add(neg(min(sub(ES, EF), mul(sub(EF, TSC), max(LF, ES)))), max(LS, TSC)), add(sub(LS, AvgRReq), min(neg(TSC), mul(MaxRReq, TPC))))
+Aggregate% 42.70180074126899
+Makespan% 72873
+
+Run#21
+max(mul(add(neg(AvgRReq), mul(max(add(sub(MinRReq, MaxRReq), max(TSC, MinRReq)), max(LS, TSC)), MinRReq)), max(mul(add(neg(MaxRReq), max(RR, MaxRReq)), max(sub(sub(MaxRReq, RR), min(LF, RR)), div(min(TSC, MinRReq), add(RR, LS)))), max(max(min(AvgRReq, MinRReq), max(TSC, ES)), neg(min(RR, MinRReq))))), add(min(min(mul(mul(AvgRReq, RR), mul(TPC, ES)), neg(mul(LS, AvgRReq))), AvgRReq), LF))
+Aggregate% 43.47626044903049
+Makespan% 73262
+
+Run#22
+sub(min(LF, div(min(neg(mul(RR, MinRReq)), AvgRReq), sub(MinRReq, MinRReq))), sub(AvgRReq, LS))
+Aggregate% 42.834435625805135
+Makespan% 72949
+
+Run#23
+max(neg(add(min(min(RR, ES), neg(MaxRReq)), max(neg(LS), add(TSC, MaxRReq)))), add(sub(LF, AvgRReq), mul(min(mul(mul(min(LF, LF), add(AvgRReq, LS)), LF), div(MinRReq, RR)), min(add(LS, RR), min(LF, MaxRReq)))))
+Aggregate% 43.34370386774083
+Makespan% 73212
+
+Run#24
+add(sub(LF, AvgRReq), max(min(sub(max(neg(div(MinRReq, RR)), min(max(TSC, LS), max(AvgRReq, RR))), div(sub(max(AvgRReq, EF), add(MinRReq, ES)), sub(div(MinRReq, LF), min(MaxRReq, ES)))), min(add(max(mul(AvgRReq, RR), min(TPC, RR)), sub(add(MinRReq, MinRReq), max(MinRReq, MaxRReq))), min(neg(max(TSC, MinRReq)), max(max(AvgRReq, MinRReq), max(RR, RR))))), LS))
+Aggregate% 42.838505629875144
+Makespan% 72951
+
+Run#25
+sub(add(min(max(neg(ES), max(EF, LS)), sub(LF, LF)), LF), max(AvgRReq, min(sub(sub(MaxRReq, EF), min(TPC, TSC)), div(mul(ES, LS), min(TPC, ES)))))
+Aggregate% 43.39538128395076
+Makespan% 73244
+
+Run#26
+sub(sub(LF, TSC), mul(mul(mul(add(sub(sub(LS, MaxRReq), max(AvgRReq, LF)), min(mul(RR, TPC), min(MaxRReq, MaxRReq))), max(TSC, MaxRReq)), min(div(min(neg(MinRReq), neg(AvgRReq)), MaxRReq), mul(MinRReq, MinRReq))), min(add(TPC, RR), add(RR, AvgRReq))))
+Aggregate% 43.31781103902362
+Makespan% 73188
+
+Run#27
+sub(add(add(sub(mul(AvgRReq, EF), div(AvgRReq, LF)), mul(sub(TPC, TPC), div(TPC, LF))), neg(sub(TSC, LF))), min(AvgRReq, min(neg(TSC), mul(ES, TPC))))
+Aggregate% 43.470765667555185
+Makespan% 73252
+
+Run#28
+sub(mul(LS, LF), mul(max(AvgRReq, AvgRReq), mul(LF, TSC)))
+Aggregate% 43.627154917568475
+Makespan% 73348
+
+Run#29
+min(add(neg(add(div(TSC, LF), sub(add(neg(LF), max(MaxRReq, TSC)), LS))), min(max(MinRReq, MaxRReq), neg(AvgRReq))), max(min(div(MaxRReq, AvgRReq), max(TSC, LS)), add(min(AvgRReq, LS), sub(TSC, ES))))
+Aggregate% 43.01376265059967
+Makespan% 73025
+
+Run#30
+add(sub(min(add(add(EF, ES), neg(max(sub(TPC, EF), neg(TSC)))), sub(LS, AvgRReq)), mul(neg(MaxRReq), min(mul(min(ES, LS), min(MinRReq, TPC)), EF))), max(max(max(min(min(max(EF, LS), div(EF, RR)), add(max(AvgRReq, MaxRReq), max(TPC, TPC))), sub(mul(neg(EF), min(ES, LF)), add(div(TSC, LS), div(TSC, EF)))), min(sub(AvgRReq, TPC), neg(TPC))), max(min(sub(min(add(LS, LF), neg(ES)), mul(neg(AvgRReq), add(ES, TPC))), min(mul(ES, MaxRReq), min(MaxRReq, ES))), LF)))
+Aggregate% 42.95276790246887
+Makespan% 73009
+

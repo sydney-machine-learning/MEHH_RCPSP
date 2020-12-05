@@ -14,12 +14,31 @@ import operator
 import math
 import time 
 import multiprocessing
-import os
+
+train_set=[]
+sets={'j60':{'val':[],'test':[]},'j90':{'val':[],'test':[]},'j120':{'val':[],'test':[]}}
+for i in range(1,49):
+    sets['j60']['val'].append("./j60/j60"+str(i)+"_1.sm")
+    sets['j90']['val'].append("./j90/j90"+str(i)+"_1.sm")
+    for j in range(2,11):
+        sets['j60']['test'].append("./j60/j60"+str(i)+"_"+str(j)+".sm")
+        sets['j90']['test'].append("./j90/j90"+str(i)+"_"+str(j)+".sm")
+for i in range(1,61): 
+    sets['j120']['val'].append("./j120/j120"+str(i)+"_1.sm")
+    for j in range(2,11):
+        sets['j120']['test'].append("./j120/j120"+str(i)+"_"+str(j)+".sm")
+
+def div(left, right): # Safe division to avoid ZeroDivisionError
+    try:
+        return left / right
+    except ZeroDivisionError:
+        return 1
 
 
-N_RUNS=1
+# Parameters for GP
+N_RUNS=31
 POP_SIZE=1024
-NUM_GENERATIONS=5 # Number of generation to evolve
+NUM_GENERATIONS=25 # Number of generation to evolve
 MATING_PROB=0.8 # Probability of mating two individuals
 MUTATION_PROB=0.2 # Probability of introducing mutation
 SELECTION_POOL_SIZE=7 # Number of individuals for tournament
@@ -29,24 +48,6 @@ MU=1024 # The number of individuals to select for the next generation.
 LAMBDA=1024 # The number of children to produce at each generation.
 GEN_MIN_HEIGHT=2
 GEN_MAX_HEIGHT=5
-
-#Generate the training set
-
-train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
-validation_set=[]
-for i in range(1,480,10):
-    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
-all_rg300=["./RG300/"+i for i in listdir('./RG300')]
-test_set=[i for i in all_rg300 if i not in validation_set]
- 
-
-
-def div(left, right): # Safe division to avoid ZeroDivisionError
-    try:
-        return left / right
-    except ZeroDivisionError:
-        return 1
-
 # Generate the primitive set which contains all operators
 pset = gp.PrimitiveSet("MAIN",10)
 pset.addPrimitive(operator.add, 2)
@@ -111,52 +112,70 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 
-if __name__ == "__main__":
-    cpuCount=os.cpu_count()
-    times=[]
-    
-    for n_cpu in range(1,5):
+path="./logs/gp/set_0/data_and_charts/"
+
+for typ in sets:
+    validation_set=sets[typ]['val']
+    test_set=sets[typ]['test']
+    all_aggregate=[]
+    all_aggregate_makespan=[]
+    for run in range(N_RUNS):
+        min_deviation=100000
 
 
 
-        startTime=time.time()
-        
-        for run in range(N_RUNS):
-            
-            pool = multiprocessing.Pool(n_cpu)
-            toolbox.register("map", pool.map)
-            
-            # Statistics calculated by evaluating GP
-            stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
-            stats_size = tools.Statistics(len)
-            mstats = tools.MultiStatistics(fitness=stats_fit, size=stats_size)
-            mstats.register("avg", np.mean)
-            mstats.register("std", np.std)
-            mstats.register("min", np.min)
-            mstats.register("max", np.max)
-
-            # Update seed
-            seed = 1000+run
-            np.random.seed(seed)
-            random.seed(seed)
-
-            # Initialise population and run algo
-            pop = toolbox.population(n=POP_SIZE)
-            hof = tools.HallOfFame(HOF_SIZE)
-            """
-                1. eaSimple - At each gen both crossover and mutation are applied on population with probability 0.9 and 0.1,
-                            and the population is replaced by the offspring
-                >>> 2. eaMuPlusLambda - At each gen either crossover or mutation is applied with probability 0.9 and 0.1,
-                                    and x number of children are produced and the new population is formed by, 
-                                    choosing y children from n+x(previous population+offspring)
-                3. eaMuCommaLambda - Same as above except the new population is formed from only the x offspring by choosing y of them 
-            """
-            pop, log = algorithms.eaMuPlusLambda(pop, toolbox,MU,LAMBDA, MATING_PROB, MUTATION_PROB, NUM_GENERATIONS, stats=mstats,halloffame=hof, verbose=False)
-
-        timeTaken=time.time()-startTime
-        print(n_cpu," & ",round(timeTaken)," \\\\")
-        times.append(timeTaken)
-        file=open("./analysis/parallel_test.txt","a+")
-        file.write(str(n_cpu)+" & " + str(round(timeTaken)) + " \\\\" +" \n")
+        file=open(path+'evolved_pop_'+str(run),'rb')
+        pop=pickle.load(file)
         file.close()
-    print(times)
+        best_individual=pop[0]
+        perfs={}
+        fin=0
+        for ind in pop:
+            if str(ind) not in perfs:
+
+                total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+                
+            
+                if total_dev_percent<min_deviation:
+                    min_deviation=total_dev_percent
+                    best_individual=ind
+                perfs[str(ind)]=total_dev_percent
+            fin+=1
+            
+
+    
+
+        total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+        print("Aggregate % ",total_dev_percent)
+        print("Makespan ",total_makespan )
+        all_aggregate.append(total_dev_percent)
+        all_aggregate_makespan.append(total_makespan)
+        file=open(path+"../"+typ+"_results.txt","a")
+        file.write("Run#"+str(run)+"  "+str(len(perfs))+" unique individuals in population"+"\n")
+        file.write(str(best_individual)+"\n")
+        file.write("Aggregate% "+str(total_dev_percent)+"\n")
+        file.write("Makespan% "+str(total_makespan)+"\n\n")
+
+        file.close()
+    print("All aggregates : ",all_aggregate_makespan)
+    all_aggregate_makespan=np.array(all_aggregate_makespan)
+    print("Mean ",np.mean(all_aggregate_makespan))
+    print("Median", np.median(all_aggregate_makespan))
+    print("STD",np.std(all_aggregate_makespan))
+    print("MIN",np.min(all_aggregate_makespan))
+    print("MAX",np.max(all_aggregate_makespan))
+
+    print("All aggregates : ",all_aggregate)
+    all_aggregate=np.array(all_aggregate)
+    print("Mean ",np.mean(all_aggregate))
+    print("Median", np.median(all_aggregate))
+    print("STD",np.std(all_aggregate))
+    print("MIN",np.min(all_aggregate))
+    print("MAX",np.max(all_aggregate))
+
+    file=open(path+"../"+typ+'_final.txt',"a")
+    data= "All aggregates : "+str(all_aggregate)+"\nMean  "+str(np.mean(all_aggregate))+"\nMedian  "+str(np.median(all_aggregate))+"\nSTD  "+str(np.std(all_aggregate))+"\nMIN  "+str(np.min(all_aggregate))+"\nMAX  "+str(np.max(all_aggregate))
+    data2= "All aggregates makespans: "+str(all_aggregate_makespan)+"\nMean  "+str(np.mean(all_aggregate_makespan))+"\nMedian  "+str(np.median(all_aggregate_makespan))+"\nSTD  "+str(np.std(all_aggregate_makespan))+"\nMIN  "+str(np.min(all_aggregate_makespan))+"\nMAX  "+str(np.max(all_aggregate_makespan))
+    file.write(data)
+    file.write(data2)
+    file.close()

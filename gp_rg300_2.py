@@ -176,7 +176,7 @@ if __name__ == "__main__":
         print("Performance on Test by best individual on validation",total_dev_percent,total_makespan)
         log_file.write(str(best_individual)+" : \n  best validation   "+"RG300"+"         "+str(seed)+"               "+str(NUM_GENERATIONS)+"          "+str(MATING_PROB)+"           "+str(MUTATION_PROB)+"         "+str(round(total_dev_percent,2))+"        "+str(total_makespan)+"       \n\n")
         log_file.close()    
-        
+         
 
         # # Generate and Store graph
         # nodes, edges, labels = gp.graph(best_individual)

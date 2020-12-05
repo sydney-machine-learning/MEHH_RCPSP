@@ -1,6 +1,7 @@
 import pickle
 import matplotlib as mpl
 mpl.use('Agg')
+import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
 import networkx as nx
@@ -21,10 +22,12 @@ import warnings
 import scipy
 
 import time
-
+import matplotlib
+from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,AutoMinorLocator)
 from multiprocessing import Pool
 from os import listdir
-path="../logs/map_elites/set_2/"
+matplotlib.use('TKAgg',warn=False, force=True)
+path="../logs/map_elites/set_1/"
 train_set=['../j30/'+i for i in listdir('../j30') if i!="param.txt"]
 validation_set=[]
 for i in range(1,480,10):
@@ -38,7 +41,7 @@ def div(left, right): # Safe division to avoid ZeroDivisionError
         return 1
 n_runs=31
 nb_features = 3                            # The number of features to take into account in the container
-nb_bins = [10,10,10]
+nb_bins = [15,15,15]
 features_domain = [(4, 127),(0,30),(1.65,2.00)]      # The domain (min/max values) of the features
 fitness_domain = [(0., 1.0)]               # The domain (min/max values) of the fitness
 init_batch_size = 1024                     # The number of evaluations of the initial batch ('batch' = population)
@@ -131,25 +134,57 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 # Decorators to limit size of operator tree
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
-percents=[]
-uniqs=[]
-for i in range(31):
-    file=open(path+"final"+str(i)+".p","rb")
-    data=pickle.load(file)
-    
-    file.close()
-    print(data['nb_bins'])
-    print(i,len(data['container']),len(data['container'])/(data['nb_bins'][0]**3) * 100 )
-    uniqs.append(len(data['container']))
-    percents.append(len(data['container'])/(data['nb_bins'][0]**3) * 100 )
-percents=np.array(percents)
-# percents.sort()
-print(percents)
-print(np.median(percents))
 
-print("Uniqs : ",uniqs)
-print("Mean ",np.mean(uniqs))
-print("Median", np.median(uniqs))
-print("STD",np.std(uniqs))
-print("MIN",np.min(uniqs))
-print("MAX",np.max(uniqs))
+
+i=18
+sz=15
+file=open(path+"final"+str(i)+".p","rb")
+data=pickle.load(file)
+
+file.close()
+# print(data['container'].fitness[(9,6,2)][0][0])
+grid=np.zeros((sz,sz*sz))
+mask=np.zeros((sz,sz*sz))
+print(data['container'].fitness)
+for j in data['container'].fitness:
+    print(j)    
+    
+    if(data['container'].fitness[j]):
+        print(j[0],j[1]+sz*j[2],(data['container'].fitness)[j][0].values)
+        grid[j[0]][j[1]+sz*j[2]]=float(data['container'].fitness[j][0].values[0])
+    else:
+        mask[j[0]][j[1]+sz*j[2]]=1
+        grid[j[0]][j[1]+sz*j[2]]=0
+yticks=list(range(0,30,3))
+
+
+with sns.axes_style("white"):
+    # sns.set(rc={ 'axes.facecolor':'black'})
+    cmap = sns.cm.rocket
+    f, ax = plt.subplots(figsize=(20, 2))
+    ax = sns.heatmap(grid, mask=mask,square=True,cmap=cmap)
+    ax.invert_yaxis()
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+    xt=range(0,sz*sz,sz)
+    xlis=range(0,sz*sz,sz)
+    yt=range(sz)
+    ylis=range(4,127,13)
+    plt.xlabel("Slack",fontsize=12)
+    plt.ylabel("Number of nodes")
+    # ax.xaxis.set_major_locator(plt.MultipleLocator(1))
+    # ax.xaxis.set_minor_locator(plt.MultipleLocator(1))
+    # ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func))
+    # ax.xaxis.set_major_formatter(plt.NullFormatter())
+    # ax.xaxis.set_minor_formatter(plt.FuncFormatter(format_func2))
+    plt.setp(ax.xaxis.get_minorticklabels(), rotation=90)
+    ax.tick_params(axis ='both', which ='both', length = 10)
+    plt.tick_params(axis='x', which='minor', labelsize=12)
+    plt.tick_params(axis='x', which='minor', labelsize=10)
+    # plt.yticks(yt,ylis)
+    plt.xticks([],[])
+    plt.yticks([],[])
+    plt.title("Performance heat map",fontsize=16)
+    plt.savefig("../imgs/performancegrid_15.png",bbox_inches='tight')
+    plt.show()
+
+

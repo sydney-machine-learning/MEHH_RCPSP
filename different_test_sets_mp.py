@@ -1,4 +1,3 @@
-import pickle
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -14,28 +13,38 @@ from qdpy.base import *
 from deap import base,creator,tools,algorithms,gp
 import statistics
 import operator
+import instance
 import os
 import numpy as np
 import random
 import warnings
 import scipy
-
+import instance
 import time
-
+from utils import sub_lists
 from multiprocessing import Pool
 from os import listdir
-path="../logs/map_elites/set_2/"
-train_set=['../j30/'+i for i in listdir('../j30') if i!="param.txt"]
-validation_set=[]
-for i in range(1,480,10):
-    validation_set.append("../RG300/RG300_"+str(i)+".rcp")
-all_rg300=["../RG300/"+i for i in listdir('../RG300')]
-test_set=[i for i in all_rg300 if i not in validation_set]
+
+train_set=[]
+sets={'j60':{'val':[],'test':[]},'j90':{'val':[],'test':[]},'j120':{'val':[],'test':[]}}
+for i in range(1,49):
+    sets['j60']['val'].append("./j60/j60"+str(i)+"_1.sm")
+    sets['j90']['val'].append("./j90/j90"+str(i)+"_1.sm")
+    for j in range(2,11):
+        sets['j60']['test'].append("./j60/j60"+str(i)+"_"+str(j)+".sm")
+        sets['j90']['test'].append("./j90/j90"+str(i)+"_"+str(j)+".sm")
+for i in range(1,61): 
+    sets['j120']['val'].append("./j120/j120"+str(i)+"_1.sm")
+    for j in range(2,11):
+        sets['j120']['test'].append("./j120/j120"+str(i)+"_"+str(j)+".sm")
+
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:
         return left / right
     except ZeroDivisionError:
         return 1
+
+
 n_runs=31
 nb_features = 3                            # The number of features to take into account in the container
 nb_bins = [10,10,10]
@@ -54,14 +63,13 @@ SELECTION_POOL_SIZE=7 # Number of individuals for tournament
 HEIGHT_LIMIT = 7 # Height Limit for tree
 GEN_MIN_HEIGHT=2
 GEN_MAX_HEIGHT=5
-"""Eval mode
-0:  Evaluate only best individual on train set
-1: Evaluate best individual on validation set
-2: Evaluate all individuals on grid
-"""
-eval_mode=[0,1]
+def div(left, right): # Safe division to avoid ZeroDivisionError
+    try:
+        return left / right
+    except ZeroDivisionError:
+        return 1
 
-occupied=0 # Set number for storing results
+
 # Generate the primitive set which contains all operators
 pset = gp.PrimitiveSet("MAIN",10)
 pset.addPrimitive(operator.add, 2)
@@ -95,7 +103,6 @@ def evalSymbReg(individual,train_set):
     hard_cases_sum=0
     hard_cases_count=0
     serial_cases_sum=0
-    total_slack=0
     for i in range(len(train_set)):
         file=train_set[i]
         inst=instance.instance(file,use_precomputed=True)
@@ -104,14 +111,13 @@ def evalSymbReg(individual,train_set):
             priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j])
         frac,makespan=inst.parallel_sgs(option='forward',priority_rule='',priorities=priorities)
         sumv+=frac
-        total_slack+=inst.slack/inst.n_jobs
-    
-    # str_ind=str(individual)
-    # prec_count=str_ind.count("ES")+str_ind.count("EF")+str_ind.count("LS")+str_ind.count("LF")+str_ind.count("TPC")+str_ind.count("TSC")
-    total_slack/=len(train_set)
+        frac2,makespan2=inst.serial_sgs(option='forward',priority_rule='',priorities=priorities)
+        if(inst.rs==0.2 and inst.rf==1.0):
+            hard_cases_count+=1
+            hard_cases_sum+=frac
+        serial_cases_sum+=frac2
     fitness=[sumv/len(train_set)]
-    features = [len(individual),str(individual).count("RR"),total_slack]
-    # print(individual)
+    features = [len(individual),hard_cases_sum/hard_cases_count,serial_cases_sum/len(train_set)]
     return [fitness, features]
 
 
@@ -131,25 +137,64 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 # Decorators to limit size of operator tree
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
-percents=[]
-uniqs=[]
-for i in range(31):
-    file=open(path+"final"+str(i)+".p","rb")
-    data=pickle.load(file)
-    
-    file.close()
-    print(data['nb_bins'])
-    print(i,len(data['container']),len(data['container'])/(data['nb_bins'][0]**3) * 100 )
-    uniqs.append(len(data['container']))
-    percents.append(len(data['container'])/(data['nb_bins'][0]**3) * 100 )
-percents=np.array(percents)
-# percents.sort()
-print(percents)
-print(np.median(percents))
 
-print("Uniqs : ",uniqs)
-print("Mean ",np.mean(uniqs))
-print("Median", np.median(uniqs))
-print("STD",np.std(uniqs))
-print("MIN",np.min(uniqs))
-print("MAX",np.max(uniqs))
+for setno in range(1,4):
+    path="./logs/map_elites/set_"+str(setno)+"/data_and_charts/"
+
+    for typ in sets:
+        validation_set=sets[typ]['val']
+        test_set=sets[typ]['test']
+        all_aggregate=[]
+        all_aggregate_makespan=[]
+        for run in range(n_runs):
+            file=open(path+'grid_'+str(run),"rb")
+            grid=pickle.load(file)
+            min_deviation=100000
+
+            best_individual=grid.best
+            fin=0    
+            for ind in grid:
+                
+                fin+=1
+                total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+                
+                if total_dev_percent<min_deviation:
+                    min_deviation=total_dev_percent
+                    best_individual=ind
+
+        
+
+            total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
+            print("Aggregate % ",total_dev_percent)
+            print("Makespan ",total_makespan )
+            all_aggregate.append(total_dev_percent)
+            all_aggregate_makespan.append(total_makespan)
+            file=open(path+"../"+typ+"_results.txt","a")
+            file.write("Run#"+str(run)+"\n")
+            file.write(str(best_individual)+"\n")
+            file.write("Aggregate% "+str(total_dev_percent)+"\n")
+            file.write("Makespan% "+str(total_makespan)+"\n\n")
+
+            file.close()
+        print("All aggregates : ",all_aggregate_makespan)
+        all_aggregate_makespan=np.array(all_aggregate_makespan)
+        print("Mean ",np.mean(all_aggregate_makespan))
+        print("Median", np.median(all_aggregate_makespan))
+        print("STD",np.std(all_aggregate_makespan))
+        print("MIN",np.min(all_aggregate_makespan))
+        print("MAX",np.max(all_aggregate_makespan))
+
+        print("All aggregates : ",all_aggregate)
+        all_aggregate=np.array(all_aggregate)
+        print("Mean ",np.mean(all_aggregate))
+        print("Median", np.median(all_aggregate))
+        print("STD",np.std(all_aggregate))
+        print("MIN",np.min(all_aggregate))
+        print("MAX",np.max(all_aggregate))
+
+        file=open(path+"../"+typ+'_final.txt',"a")
+        data= "All aggregates : "+str(all_aggregate.tolist())+"\nMean  "+str(np.mean(all_aggregate))+"\nMedian  "+str(np.median(all_aggregate))+"\nSTD  "+str(np.std(all_aggregate))+"\nMIN  "+str(np.min(all_aggregate))+"\nMAX  "+str(np.max(all_aggregate))
+        data2= "All aggregates makespans: "+str(all_aggregate_makespan.tolist())+"\nMean  "+str(np.mean(all_aggregate_makespan))+"\nMedian  "+str(np.median(all_aggregate_makespan))+"\nSTD  "+str(np.std(all_aggregate_makespan))+"\nMIN  "+str(np.min(all_aggregate_makespan))+"\nMAX  "+str(np.max(all_aggregate_makespan))
+        file.write(data)
+        file.write(data2)
+        file.close()

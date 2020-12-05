@@ -1,7 +1,12 @@
 import pickle
 from base_code import *
 import matplotlib.pyplot as plt
-
+file=open("../logs/gp/set_1/training_logs/training_log_0.txt","r")
+lines=file.readlines()
+file.close()
+div_gp=[]
+for i in range(3,len(lines)):
+    div_gp.append(100*int(list(lines[i].strip().split())[-1])/1024.0)
 data=[]
 medians=[1,18,4,19]
 divs=[]
@@ -17,19 +22,20 @@ for i in range(4):
         line=logs[i]
         div_tmp.append((100.0*int(list(list(line.split())[1].split('/'))[0]))/float(list(list(line.split())[1].split('/'))[1]))
     divs.append(div_tmp)
+divs.append(div_gp)
 x=list(range(0,26))
 
 
-plt.plot(x,divs[3],'o-',label='MpEt-M_125')
 
+plt.plot(x,divs[4],'s-',label='GP')
 plt.plot(x,divs[0],'^-',label='MpEt-M_1000')
 
 plt.plot(x,divs[1],'*-',label='MpEt-M_3375')
 plt.plot(x,divs[2],'d-',label='MpEt-M_8000')
-
+plt.plot(x,divs[3],'o-',label='MpEt-M_125')
 plt.xlabel('# Generations')
-plt.ylabel("Coverage %")
-plt.title("Plot of % Coverage vs # generations")
+plt.ylabel("% Unique individuals")
+plt.title("Plot of % Unique individuals vs # generations")
 
 plt.legend()
 plt.savefig('../imgs/coverage_plot_mp_elites.png')

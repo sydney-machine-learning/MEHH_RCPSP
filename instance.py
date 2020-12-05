@@ -6,7 +6,7 @@ from os import listdir
 import pickle
 import time
 import statistics
-from utils import read_param,add_lists,sub_lists, less_than, min_finish_time, find_index,normalised,latex #Utility functions
+from utils import *
 #Instance definition
 class instance(object):
     """
