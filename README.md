@@ -19,6 +19,11 @@ The `logs` folder contains all the results after running both GP and MAP-Elites 
 The `precomputes` folder acts as cache for speeding up certain calculations
 
 
+### Diversity plot
+This plot shows the loss of diversity faced in GP and how MAP-Elites maintains and increases the diversity over multiple generations
+
+![diversity](imgs/coverage_plot_mp_elites.png?raw=true "Diverity plot")
+
 For queries on implementation/dataset contact : 
 
 Kousik Rajesh 
