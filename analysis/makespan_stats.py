@@ -49,3 +49,4 @@ for i in newdivs:
     else:
         print(round(np.std(i),2),end='')
 print("\\\\")
+

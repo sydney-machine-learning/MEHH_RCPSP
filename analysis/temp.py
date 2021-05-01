@@ -1,50 +1,160 @@
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
+import sys
+import networkx as nx
+import pygraphviz as pgv
+from qdpy.algorithms.deap import *
+from qdpy.containers import *
+from qdpy.benchmarks import *
+from qdpy.plots import *
+from qdpy.base import *
+
+from deap import base,creator,tools,algorithms,gp
+import statistics
+import operator
+import instance
+import os
 import numpy as np
-aggs_set0="""1003.71230743 1003.39109618 1002.86603658 1003.09716119 1006.3435667
-1004.13311453 1003.61236341 1003.02168422 1003.25317709 1002.97665097
-1003.35043242 1003.78788923 1001.72002578 1002.96967068 1003.37527361
-1005.10584612 1003.16226849 1002.73498981 1003.84699051 1004.67325986
-1004.3526509  1003.38015413 1003.48282668 1002.96967068 1004.18485586
-1004.0202895  1003.712091   1002.76696866 1003.26242537 1005.29542878
-1003.40668588"""
+import random
+import warnings
+import scipy
+import instance
+import time
+from utils import sub_lists
+from multiprocessing import Pool
+from os import listdir
+#Generate the training set
 
-aggs_set1="""1002.99905983 1004.05967982 1003.83819571 1007.34264928 1002.29757375
-1005.69218523 1004.19115723 1003.22406167 1002.66559229 1002.96967068
-1005.48628867 1003.91302371 1004.40808747 1002.26703258 1003.52851059
-1001.62149606 1002.3397849  1002.10428731 1003.22041311 1002.44582739
-1004.55396863 1002.70804265 1004.28579581 1004.25977921 1002.36062163
-1003.22960953 1001.94492839 1002.64186796 1004.18485586 1003.0370076
-1001.92064129"""
-aggs_set2="""1004.18485586 1003.33130033 1002.57638556 1003.42420134 1003.4140062
-1002.83065876 1003.14021919 1003.52932678 1004.63586511 1003.78585923
-1003.01685113 1004.3180602  1003.23164801 1003.82673649 1001.86874741
-1004.11954418 1004.18485586 1003.69400868 1003.84144229 1003.13392229
-1003.15747958 1002.96967068 1003.40782176 1004.62488331 1004.18485586
-1001.49506856 1002.57746499 1004.18485586 1001.47464244 1004.10398702
-1003.24894903"""
+gp_runs=[23,0,17] # Run number of min median max
+map_elites=[12,1,4] # Run number of min median max
 
-aggs_set3="""1003.56737975 1003.19267592 1003.01874497 1002.96967068 1006.3908015
-1003.35291106 1003.23828969 1003.75884096 1002.96967068 1003.42710239
-1003.91301894 1003.39279462 1002.96967068 1003.34173037 1002.35916092
-1003.83035239 1003.3557296  1004.05081993 1002.89615293 1003.41881306
-1004.85863524 1006.90726177 1003.2191138  1003.46696599 1004.05071243
-1002.86837095 1002.99125401 1006.47923184 1009.24841529 1006.42240959
-1003.99783804"""
-aggs_set0=list(map(float,list(aggs_set0.split())))
-aggs_set0_np=np.array(aggs_set0)
 
-aggs_set1=list(map(float,list(aggs_set1.split())))
-aggs_set1_np=np.array(aggs_set1)
+# Parameters
 
-aggs_set2=list(map(float,list(aggs_set2.split())))
-aggs_set2_np=np.array(aggs_set2)
+from params_map_elites import *
 
-aggs_set3=list(map(float,list(aggs_set3.split())))
-aggs_set3_np=np.array(aggs_set3)
 
-aggs=[aggs_set0,aggs_set1,aggs_set2,aggs_set3]
-for i in range(4):
-    print("set_"+str(i))
-    print("Min index",aggs[i].index(np.min(aggs[i])))
-    print("Median index",aggs[i].index(np.median(aggs[i])))
-    
-    print("Max index",aggs[i].index(np.max(aggs[i])))
+def div(left, right): # Safe division to avoid ZeroDivisionError
+    try:
+        return left / right
+    except ZeroDivisionError:
+        return 1
+
+
+# Generate the primitive set which contains all operators
+pset = gp.PrimitiveSet("MAIN",10)
+pset.addPrimitive(operator.add, 2)
+pset.addPrimitive(operator.sub, 2)
+pset.addPrimitive(operator.mul, 2)
+pset.addPrimitive(div, 2)
+pset.addPrimitive(operator.neg, 1)
+pset.addPrimitive(max, 2)
+pset.addPrimitive(min, 2)
+#Rename all arguments
+pset.renameArguments(ARG0="ES")
+pset.renameArguments(ARG1="EF")
+pset.renameArguments(ARG2="LS")
+pset.renameArguments(ARG3="LF")
+pset.renameArguments(ARG4="TPC")
+pset.renameArguments(ARG5="TSC")
+pset.renameArguments(ARG6="RR")
+pset.renameArguments(ARG7="AvgRReq")
+pset.renameArguments(ARG8="MaxRReq")
+pset.renameArguments(ARG9="MinRReq")
+
+
+
+creator.create("FitnessMin", base.Fitness, weights=(-1.0,)) # Define the Fitness type(minimisation) 
+# weights=(-1,) indicates that there is 1 fitness value which has to be minimised
+creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin) # Define Individual type (PrimitiveTree)
+def evalSymbReg(individual,train_set):
+
+    func = toolbox.compile(expr=individual) # Transform the tree expression in a callable function
+    sumv=0 # Evaluate the individual on each file and train set and return the normalised sum of deviation values
+    hard_cases_sum=0
+    hard_cases_count=0
+    serial_cases_sum=0
+    for i in range(len(train_set)):
+        file=train_set[i]
+        inst=instance.instance(file,use_precomputed=True)
+        priorities=[0]*(inst.n_jobs+1)
+        for j in range(1,inst.n_jobs+1):
+            priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j])
+        frac,makespan=inst.parallel_sgs(option='forward',priority_rule='',priorities=priorities)
+        sumv+=frac
+        frac2,makespan2=inst.serial_sgs(option='forward',priority_rule='',priorities=priorities)
+        if(inst.rs==0.2 and inst.rf==1.0):
+            hard_cases_count+=1
+            hard_cases_sum+=frac
+        serial_cases_sum+=frac2
+    fitness=[sumv/len(train_set)]
+    features = [len(individual),hard_cases_sum/hard_cases_count,serial_cases_sum/len(train_set)]
+    return [fitness, features]
+
+
+
+# Toolbox defines all gp functions such as mate,mutate,evaluate
+toolbox = base.Toolbox()
+toolbox.register("expr", gp.genHalfAndHalf, pset=pset, min_=GEN_MIN_HEIGHT, max_=GEN_MAX_HEIGHT)
+toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
+toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+toolbox.register("compile", gp.compile, pset=pset)
+toolbox.register("evaluate", evalSymbReg,train_set=train_set)
+toolbox.register("select", tools.selTournament, tournsize=SELECTION_POOL_SIZE)
+toolbox.register("mate", gp.cxOnePoint)
+toolbox.register("expr_mut", gp.genFull, min_=GEN_MIN_HEIGHT, max_=GEN_MAX_HEIGHT)
+toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
+
+# Decorators to limit size of operator tree
+toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
+toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))   
+
+
+
+import pickle
+import numpy as np
+from os import listdir
+
+train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
+validation_set=[]
+for i in range(1,480,10):
+    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
+all_rg300=["./RG300/"+i for i in listdir('./RG300')]
+test_set=[i for i in all_rg300 if i not in validation_set]
+
+
+hard_starts=[101,141,261,301,421,461]
+hard_test_tmp=[]
+for i in hard_starts:
+    for j in range(i,i+20):
+        hard_test_tmp.append("./RG300/RG300_"+str(j)+".rcp")
+
+hard_test=[i for i in hard_test_tmp if i not in validation_set]
+
+
+
+ind="sub(add(LS,LF),LS)"
+expr=gp.PrimitiveTree("")
+expr=expr.from_string(ind,pset)
+print(expr.height)
+# [...] Execution of code that produce a tree expression
+
+# file=open("map_elites_data","rb")
+# data=pickle.load(file)
+# file.close()
+
+
+# devs=[]
+# makespans=[]
+# for i in data:
+#     devs.append(data[i]['dev'])
+#     makespans.append(data[i]['unique'])
+
+# print("All aggregates : ",makespans)
+# makespans=np.array(makespans)
+# print("Mean ",np.mean(makespans))
+# print("Median", np.median(makespans))
+# print("STD",np.std(makespans))
+# print("MIN",np.min(makespans))
+# print("MAX",np.max(makespans))

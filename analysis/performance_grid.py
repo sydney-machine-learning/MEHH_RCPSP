@@ -151,54 +151,107 @@ def format_func2(value, tick_number):
         return  ""
     elif(tick_number%2!=0):
         return str(((tick_number-1))%10/10)
+# for i in range(1):
+#     file=open(path+"final"+str(i)+".p","rb")
+#     data=pickle.load(file)
+    
+#     file.close()
+#     # print(data['container'].fitness[(9,6,2)][0][0])
+#     grid=np.zeros((10,100))
+#     mask=np.zeros((10,100))
+#     print(data['container'].fitness)
+#     for j in data['container'].fitness:
+        
+        
+#         if(data['container'].fitness[j]):
+            
+#             grid[j[0]][j[1]+10*j[2]]=float(data['container'].fitness[j][0].values[0])
+#         else:
+#             mask[j[0]][j[1]+10*j[2]]=1
+#             grid[j[0]][j[1]+10*j[2]]=0
+#     yticks=list(range(0,30,3))
+    
+
+#     with sns.axes_style("white"):
+#         # sns.set(rc={ 'axes.facecolor':'black'})
+#         cmap = sns.cm.rocket
+#         f, ax = plt.subplots(figsize=(20,2))
+#         ax = sns.heatmap(grid, mask=mask,square=True,cmap=cmap)
+#         ax.invert_yaxis()
+#         ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+#         xt=range(0,100,10)
+#         xlis=range(0,100,10)
+#         yt=range(10)
+#         ylis=range(4,127,13)
+#         plt.xlabel("Slack",fontsize=12)
+#         plt.ylabel("Number of nodes")
+#         # ax.xaxis.set_major_locator(plt.MultipleLocator(1))
+#         # ax.xaxis.set_minor_locator(plt.MultipleLocator(1))
+#         # ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func))
+#         # ax.xaxis.set_major_formatter(plt.NullFormatter())
+#         # ax.xaxis.set_minor_formatter(plt.FuncFormatter(format_func2))
+#         plt.setp(ax.xaxis.get_minorticklabels(), rotation=90)
+#         ax.tick_params(axis ='both', which ='both', length = 10)
+#         plt.tick_params(axis='x', which='minor', labelsize=12)
+#         plt.tick_params(axis='x', which='minor', labelsize=10)
+#         # plt.yticks(yt,ylis)
+#         plt.xticks([],[])
+#         plt.yticks([],[])
+#         plt.title("Performance heat map",fontsize=16)
+#         plt.savefig("../imgs/performancegrid_10.png",bbox_inches='tight')
+#         plt.show()
+   
+   
 for i in range(1):
     file=open(path+"final"+str(i)+".p","rb")
     data=pickle.load(file)
     
     file.close()
-    # print(data['container'].fitness[(9,6,2)][0][0])
-    grid=np.zeros((10,100))
-    mask=np.zeros((10,100))
+    
+    gridsize  = 10
+    grid=np.zeros((gridsize,gridsize))
+    mask=np.zeros((gridsize,gridsize))
     print(data['container'].fitness)
-    for j in data['container'].fitness:
-        print(j)    
-        
-        if(data['container'].fitness[j]):
-            print(j[0],j[1]+10*j[2],(data['container'].fitness)[j][0].values)
-            grid[j[0]][j[1]+10*j[2]]=float(data['container'].fitness[j][0].values[0])
-        else:
-            mask[j[0]][j[1]+10*j[2]]=1
-            grid[j[0]][j[1]+10*j[2]]=0
-    yticks=list(range(0,30,3))
+    
+    
+    for i in range(gridsize):
+        for j in range(gridsize):
+            acc = 0
+            count = 0
+            for k in range(gridsize):
+                if(data['container'].fitness[(k,i,j)]):
+                    acc+=data['container'].fitness[(k,i,j)][0].values[0]
+                    count+=1
+            if(count==0):
+                mask[i][j]=1
+            else:
+                grid[i][j] = acc/count
     
 
     with sns.axes_style("white"):
         # sns.set(rc={ 'axes.facecolor':'black'})
         cmap = sns.cm.rocket
-        f, ax = plt.subplots(figsize=(20,2))
-        ax = sns.heatmap(grid, mask=mask,square=True,cmap=cmap)
+        f, ax = plt.subplots(figsize=(5,5))
+        ax = sns.heatmap(grid,mask=mask,square=True,cmap=cmap,cbar_kws={'label': 'Training Fitness'})
+        ax.figure.axes[-1].yaxis.label.set_size(14)
+        w = ax.get_xticks()
+        h = ax.get_yticks()
         ax.invert_yaxis()
-        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-        xt=range(0,100,10)
-        xlis=range(0,100,10)
-        yt=range(10)
-        ylis=range(4,127,13)
-        plt.xlabel("Slack",fontsize=12)
-        plt.ylabel("Number of nodes")
-        # ax.xaxis.set_major_locator(plt.MultipleLocator(1))
-        # ax.xaxis.set_minor_locator(plt.MultipleLocator(1))
-        # ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func))
-        # ax.xaxis.set_major_formatter(plt.NullFormatter())
-        # ax.xaxis.set_minor_formatter(plt.FuncFormatter(format_func2))
-        plt.setp(ax.xaxis.get_minorticklabels(), rotation=90)
-        ax.tick_params(axis ='both', which ='both', length = 10)
-        plt.tick_params(axis='x', which='minor', labelsize=12)
-        plt.tick_params(axis='x', which='minor', labelsize=10)
-        # plt.yticks(yt,ylis)
         plt.xticks([],[])
         plt.yticks([],[])
-        plt.title("Performance heat map",fontsize=16)
-        plt.savefig("../imgs/performancegrid_10.png",bbox_inches='tight')
+        plt.xlabel("Number of Resource Nodes",fontsize=14)
+        plt.ylabel("Slack",fontsize=14)
+
+        print(w)
+        print(h)
+    
+        ax.hlines(0,w[-1]+0.5,w[:0], linestyle='solid', linewidth=4, color="black")
+        ax.vlines(0,h[-1]+0.5,h[:0], linestyle='solid', linewidth=4, color="black")
+        ax.hlines(w[-1]+0.5,w[-1]+0.5,w[:0], linestyle='solid', linewidth=4, color="black")
+        ax.vlines(h[-1]+0.5,h[-1]+0.5,h[:0], linestyle='solid', linewidth=4, color="black")
+    
+        
+        ax.arrow(0,0,8,0,fc='k',ec='k',clip_on=False,head_width = 0.6,width=0.1)
+        ax.arrow(0,0,0,8,fc='k',ec='k',clip_on=False,head_width = 0.6,width=0.1)
+        plt.savefig("../imgs/performancegrid_1_2.png",bbox_inches='tight')
         plt.show()
-   
-   

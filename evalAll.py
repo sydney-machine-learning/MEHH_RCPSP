@@ -1,5 +1,5 @@
 import matplotlib as mpl
-mpl.use('Agg')
+# mpl.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import networkx as nx
@@ -24,17 +24,31 @@ import time
 from utils import sub_lists
 from multiprocessing import Pool
 from os import listdir
-#Generate the training set
+n_runs=31
+nb_features = 3                            # The number of features to take into account in the container
+nb_bins = [10,10,10]
+features_domain = [(4, 127),(0,30),(1.65,2.00)]      # The domain (min/max values) of the features
+fitness_domain = [(0., 1.0)]               # The domain (min/max values) of the fitness
+init_batch_size = 1024                     # The number of evaluations of the initial batch ('batch' = population)
+batch_size = 1024                           # The number of evaluations in each subsequent batch
+nb_iterations = 25                       # The number of iterations (i.e. times where a new batch is evaluated)
+cxpb = 0.8
+mutation_pb = 0.2                        # The probability of mutating each value of a genome
+max_items_per_bin = 1                      # The number of items in each bin of the grid
+verbose = True                             
+show_warnings = True                      # Display warning and error messages. Set to True if you want to check if some individuals were out-of-bounds
 
-gp_runs=[23,0,17] # Run number of min median max
-map_elites=[12,1,4] # Run number of min median max
+SELECTION_POOL_SIZE=7 # Number of individuals for tournament
+HEIGHT_LIMIT = 7 # Height Limit for tree
+GEN_MIN_HEIGHT=2
+GEN_MAX_HEIGHT=5
 
-
-# Parameters
-
-from params_map_elites import *
-
-
+train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
+validation_set=[]
+for i in range(1,480,10):
+    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
+all_rg300=["./RG300/"+i for i in listdir('./RG300')]
+test_set=[i for i in all_rg300 if i not in validation_set]
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:
         return left / right
@@ -75,6 +89,7 @@ def evalSymbReg(individual,train_set):
     hard_cases_sum=0
     hard_cases_count=0
     serial_cases_sum=0
+    total_slack=0
     for i in range(len(train_set)):
         file=train_set[i]
         inst=instance.instance(file,use_precomputed=True)
@@ -83,13 +98,14 @@ def evalSymbReg(individual,train_set):
             priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j])
         frac,makespan=inst.parallel_sgs(option='forward',priority_rule='',priorities=priorities)
         sumv+=frac
-        frac2,makespan2=inst.serial_sgs(option='forward',priority_rule='',priorities=priorities)
-        if(inst.rs==0.2 and inst.rf==1.0):
-            hard_cases_count+=1
-            hard_cases_sum+=frac
-        serial_cases_sum+=frac2
+        total_slack+=inst.slack/inst.n_jobs
+    
+    # str_ind=str(individual)
+    # prec_count=str_ind.count("ES")+str_ind.count("EF")+str_ind.count("LS")+str_ind.count("LF")+str_ind.count("TPC")+str_ind.count("TSC")
+    total_slack/=len(train_set)
     fitness=[sumv/len(train_set)]
-    features = [len(individual),hard_cases_sum/hard_cases_count,serial_cases_sum/len(train_set)]
+    features = [len(individual),str(individual).count("RR"),total_slack]
+    # print(individual)
     return [fitness, features]
 
 
@@ -108,53 +124,26 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 
 # Decorators to limit size of operator tree
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
-toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))   
+toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 
-
-
-import pickle
-import numpy as np
-from os import listdir
-
-train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
-validation_set=[]
-for i in range(1,480,10):
-    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
-all_rg300=["./RG300/"+i for i in listdir('./RG300')]
-test_set=[i for i in all_rg300 if i not in validation_set]
-
-
-hard_starts=[101,141,261,301,421,461]
-hard_test_tmp=[]
-for i in hard_starts:
-    for j in range(i,i+20):
-        hard_test_tmp.append("./RG300/RG300_"+str(j)+".rcp")
-
-hard_test=[i for i in hard_test_tmp if i not in validation_set]
-
-
-
-ind="sub(add(LS,LF),LS)"
-expr=gp.PrimitiveTree("")
-expr=expr.from_string(ind,pset)
-print(expr.height)
-# [...] Execution of code that produce a tree expression
-
-# file=open("map_elites_data","rb")
-# data=pickle.load(file)
-# file.close()
-
-
-# devs=[]
-# makespans=[]
-# for i in data:
-#     devs.append(data[i]['dev'])
-#     makespans.append(data[i]['unique'])
-
-# print("All aggregates : ",makespans)
-# makespans=np.array(makespans)
-# print("Mean ",np.mean(makespans))
-# print("Median", np.median(makespans))
-# print("STD",np.std(makespans))
-# print("MIN",np.min(makespans))
-# print("MAX",np.max(makespans))
+def count(ind):
+    count = 0
+    count+=ind.count("RR")
+    count+=ind.count("TSC")
+    count+=ind.count("TPC")
+    count+=ind.count("ES")
+    count+=ind.count("EF")
+    count+=ind.count("LS")
+    count+=ind.count("LF")
+    return count 
+file = open("./map_elites_data_0","rb")
+data = pickle.load(file)
+file.close()
+print(data)
+x = []
+y= []
+for i in range(31):
+    x.append(count(data[i]['ind']))
+    y.append(data[i]['dev'])
+plt.scatter(x,y)
+plt.show()

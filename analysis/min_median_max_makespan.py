@@ -19,16 +19,16 @@ for i in range(len(divs)):
     medians.append(np.median(newdivs[i]))
 x=[125,1000,3375,8000]
 
-plt.plot(x,mins,'o-',label='Min')
+plt.plot(x,mins,'o-',label='Best')
 
 plt.plot(x,medians,'^-',label='Median')
 
-plt.plot(x,maxes,'*-',label='Max')
+plt.plot(x,maxes,'*-',label='Worst')
 
 
 plt.xlabel('Grid sizes')
 plt.ylabel("Makespan")
-plt.title("Plot of Makespan vs Grid size")
+# plt.title("Plot of Makespan vs Grid size")
 plt.xticks(x,x)
 plt.legend()
 plt.savefig('../imgs/min_median_max_makespan.png')

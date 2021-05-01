@@ -664,11 +664,12 @@ read_param('./j120/param.txt',params['j120'],60)
 
 
 
-series_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD']
-parallel_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD','IRSM','ACS','WCS']
+
+# series_priority_rules=['EST','EFT','LST','LFT','SPT','FIFO','MTS','RAND','GRPW','GRD','IRSM','ACS','WCS']
 types=['RG300']
 
-# series_priority_rules=['LST']
+series_priority_rules=['ACS','WCS']
+
 
 
 # print(x)
@@ -679,9 +680,15 @@ if __name__ == '__main__':
         validation_set.append("./RG300/RG300_"+str(i)+".rcp")
     all_rg300=["./RG300/"+i for i in listdir('./RG300')]
     test_set=[i for i in all_rg300 if i not in validation_set]
+    hard_starts=[101,141,261,301,421,461]
+    hard_test_tmp=[]
+    for i in hard_starts:
+        for j in range(i,i+20):
+            hard_test_tmp.append("./RG300/RG300_"+str(j)+".rcp")
+
+    hard_test=[i for i in hard_test_tmp if i not in validation_set]
     
-    
-    res=statistics.get_stats(instance,["WCS","ACS"],types,'parallel','forward',use_precomputed=False,custom_set={'RG300':test_set},verbose=True)
+    res=statistics.get_stats(instance,series_priority_rules,types,'parallel','forward',use_precomputed=False,custom_set={'RG300':hard_test},verbose=True)
         
     
 

@@ -55,27 +55,38 @@ def get_stats(instance,priority_rules,types,mode='serial',option='forward',use_p
     print('     ',end='')
     for i in types:
         print(i,end='    ')
+        if(i!=types[-1]):
+            print(' & ',end='')
     print()
     for i in priority_rules:
-        print(i,end='  ')
+        print(i,end=' & ')
         for j in types:
             print("%.2f"%ans[j][i][0],end='  ')
-        print()
+            if(j!=types[-1]):
+                print(' & ',end='')
+        print(" \\\\")
     print("Makespan")
     print('       ',end='')
     for i in types:
         print(i,end='     ')
+        if(i!=types[-1]):
+            print(' & ',end='')
     print()
     for i in priority_rules:
-        print(i,end='  ')
+        print(i,end=' & ')
         for j in types:
             print(ans[j][i][1],end='  ')
-        print()
+            if(j!=types[-1]):
+                    print(' & ',end='')
+            print(" \\\\")
+    print()
     for i in priority_rules:
         print(i,end=' & ')
         for j in types:
             print("%.2f"%ans[j][i][0],end=' & ')
             print(ans[j][i][1],end='')
+            if(j!=types[-1]):
+                print(' & ',end='')
         print(" \\\\")
     file=open('results','wb')
     pickle.dump(ans,file)
@@ -156,4 +167,5 @@ def evaluate_custom_set(eval_set,instance,priority_func,mode='parallel',option='
     
     total_dev_percent=(100*total_dev)/count
     return (total_dev_percent,total_makespan,total_dev,count)
+
 

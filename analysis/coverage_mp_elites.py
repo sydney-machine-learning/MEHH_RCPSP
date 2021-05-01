@@ -27,15 +27,16 @@ x=list(range(0,26))
 
 
 
-plt.plot(x,divs[4],'s-',label='GP')
-plt.plot(x,divs[0],'^-',label='MpEt-M_1000')
+plt.plot(x,divs[4],'s-',label='GPHH')
+plt.plot(x,divs[3],'o-',label='$MEHH_{125}$')
+plt.plot(x,divs[0],'^-',label='$MEHH_{1000}$')
 
-plt.plot(x,divs[1],'*-',label='MpEt-M_3375')
-plt.plot(x,divs[2],'d-',label='MpEt-M_8000')
-plt.plot(x,divs[3],'o-',label='MpEt-M_125')
+plt.plot(x,divs[1],'*-',label='$MEHH_{3375}$')
+plt.plot(x,divs[2],'d-',label='$MEHH_{8000}$')
+
 plt.xlabel('# Generations')
 plt.ylabel("% Unique individuals")
-plt.title("Plot of % Unique individuals vs # generations")
+# plt.title("Plot of % Unique individuals vs # Generations")
 
 plt.legend()
 plt.savefig('../imgs/coverage_plot_mp_elites.png')

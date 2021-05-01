@@ -43,7 +43,7 @@ newdivs=[]
 for i in range(len(divs)):
     newdivs.append(list(map(float,list(divs[i].split()))))
 sns.boxplot(data=newdivs).set(xlabel="Algorithm",ylabel="Percentage Deviation")
-plt.xticks(list(range(5)),["GP","MpEt_125","MpEt_1000","MpEt_3375","MpEt_8000"])
-plt.title(("Boxplots of % deviation for different algorithms"))
+plt.xticks(list(range(5)),["GPHH","$MEHH_{125}$","$MEHH_{1000}$","$MEHH_{3375}$","$MEHH_{8000}$"])
+# plt.title(("Boxplots of % deviation for different algorithms"))
 plt.savefig('../imgs/boxplot.png')
 plt.show()
