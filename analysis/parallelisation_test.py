@@ -17,7 +17,7 @@ import multiprocessing
 import os
 
 
-N_RUNS=31
+N_RUNS=1
 POP_SIZE=1024
 NUM_GENERATIONS=5 # Number of generation to evolve
 MATING_PROB=0.8 # Probability of mating two individuals
@@ -114,14 +114,15 @@ toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max
 if __name__ == "__main__":
     cpuCount=os.cpu_count()
     times=[]
-    for n_cpu in range(1,cpuCount+1):
+    
+    for n_cpu in range(1,5):
 
 
 
         startTime=time.time()
         
         for run in range(N_RUNS):
-            print("Run #"+str(run))
+            
             pool = multiprocessing.Pool(n_cpu)
             toolbox.register("map", pool.map)
             
@@ -150,9 +151,12 @@ if __name__ == "__main__":
                                     choosing y children from n+x(previous population+offspring)
                 3. eaMuCommaLambda - Same as above except the new population is formed from only the x offspring by choosing y of them 
             """
-            pop, log = algorithms.eaMuPlusLambda(pop, toolbox,MU,LAMBDA, MATING_PROB, MUTATION_PROB, NUM_GENERATIONS, stats=mstats,halloffame=hof, verbose=True)
+            pop, log = algorithms.eaMuPlusLambda(pop, toolbox,MU,LAMBDA, MATING_PROB, MUTATION_PROB, NUM_GENERATIONS, stats=mstats,halloffame=hof, verbose=False)
 
         timeTaken=time.time()-startTime
-        print(n_cpu," & ",round(timeTaken)," \\")
+        print(n_cpu," & ",round(timeTaken)," \\\\")
         times.append(timeTaken)
+        file=open("./analysis/parallel_test.txt","a+")
+        file.write(str(n_cpu)+" & " + str(round(timeTaken)) + " \\\\" +" \n")
+        file.close()
     print(times)

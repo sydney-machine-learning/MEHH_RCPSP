@@ -24,7 +24,7 @@ import time
 
 from multiprocessing import Pool
 from os import listdir
-path="../logs/map_elites/set_3/"
+path="../logs/map_elites/set_2/"
 train_set=['../j30/'+i for i in listdir('../j30') if i!="param.txt"]
 validation_set=[]
 for i in range(1,480,10):
@@ -132,6 +132,7 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 percents=[]
+uniqs=[]
 for i in range(31):
     file=open(path+"final"+str(i)+".p","rb")
     data=pickle.load(file)
@@ -139,8 +140,16 @@ for i in range(31):
     file.close()
     print(data['nb_bins'])
     print(i,len(data['container']),len(data['container'])/(data['nb_bins'][0]**3) * 100 )
+    uniqs.append(len(data['container']))
     percents.append(len(data['container'])/(data['nb_bins'][0]**3) * 100 )
 percents=np.array(percents)
 # percents.sort()
 print(percents)
 print(np.median(percents))
+
+print("Uniqs : ",uniqs)
+print("Mean ",np.mean(uniqs))
+print("Median", np.median(uniqs))
+print("STD",np.std(uniqs))
+print("MIN",np.min(uniqs))
+print("MAX",np.max(uniqs))

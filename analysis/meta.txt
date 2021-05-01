@@ -1,0 +1,26 @@
+GP
+
+gp_runs=[23,0,17] # Run number of min median max
+
+
+
+map elites
+set_0
+Min index 12
+Median index 1
+Max index 4
+
+set_1
+Min index 15
+Median index 18
+Max index 3
+
+set_2
+Min index 28
+Median index 4
+Max index 8
+
+set_3
+Min index 14
+Median index 19
+Max index 28

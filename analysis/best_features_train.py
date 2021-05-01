@@ -143,52 +143,21 @@ file.close()
 
 domain=[[4,127],[0,30],[1.65,2.00]]
 fig,axs=plt.subplots(1,3,figsize=(15,3))
-
-for FNO in range(0,3):
-    x=[]
+vals = []
+median_indices = [1,18,4,19]
+for setNo in range(0,4):
     vals=[]
-    mins=[]
-    maxes=[]
-    low=[domain[FNO][0]]*31
-    high=[domain[FNO][1]]*31
     feature_names=["Number of nodes", "Number of resource nodes","Slack"]
-    for i in range(31):
-        file=open(path+"final"+str(i)+".p","rb")
-        data=pickle.load(file)
-        file.close()
-        curmin=100000
-        curmax=-1
+    
+    
+    file=open(path+"final"+str(median_indices[setNo])+".p","rb")
+    data=pickle.load(file)
+    file.close()
+    
 
-        for j in data['container']:
-            curmin=min(curmin,j.features[FNO])
-            curmax=max(curmax,j.features[FNO])
-            
-            
-        vals.append(data['container'].best.features[FNO])
-        mins.append(curmin)
-        maxes.append(curmax)
-    axs[FNO].plot(vals,'k',label='best feature value')
-   
-    axs[FNO].plot(mins,label='grid minimum')
-    axs[FNO].plot(maxes,label='grid maximum')
-    axs[FNO].plot(low,'--',label='domain minimum')
-    axs[FNO].plot(high,'--',label='domain maximum')
-    axs[FNO].set(xlabel="Run #",ylabel=feature_names[FNO])
-    vals_np=np.array(vals)
-    print("Mean ",np.mean(vals_np))
-    print("Median", np.median(vals_np))
-    print("STD",np.std(vals_np))
-    print("MIN",np.min(vals_np))
-    print("MAX",np.max(vals_np))
-   
-plt.legend(bbox_to_anchor=(1.0, 0.9, 0.3, 0.1), loc='upper left')
-plt.suptitle("Plot of best feature values on train set")
-plt.savefig("./../imgs/feature_all_train"+".png", bbox_inches='tight')
-plt.show()
-# fig = go.Figure(data=[go.Candlestick(x=,
-#                        open=, high=high_data,
-#                        low=low_data, close=close_data)])
+    vals = data['container'].best.features
 
+    print(vals[0]," & ",vals[1],' & ',round(vals[2],2),'\\\\')
 
 
     

@@ -1,0 +1,155 @@
+Run#0  4 unique individuals in population
+add(LF, neg(mul(sub(min(sub(div(ES, LF), neg(LS)), LF), min(AvgRReq, AvgRReq)), div(LS, neg(add(LS, LF))))))
+Aggregate% 42.99393462914891
+Makespan% 73036
+
+Run#1  3 unique individuals in population
+add(add(LF, add(neg(TSC), LF)), min(LS, div(div(div(mul(RR, sub(LF, AvgRReq)), RR), RR), AvgRReq)))
+Aggregate% 43.71871288212437
+Makespan% 73392
+
+Run#2  38 unique individuals in population
+add(min(LF, sub(div(min(MinRReq, RR), MinRReq), min(MinRReq, RR))), mul(sub(LF, AvgRReq), add(add(LS, add(MinRReq, min(min(LS, EF), EF))), AvgRReq)))
+Aggregate% 43.758966942131295
+Makespan% 73414
+
+Run#3  78 unique individuals in population
+add(add(min(sub(div(neg(AvgRReq), AvgRReq), add(TSC, AvgRReq)), mul(neg(neg(max(TSC, EF))), div(neg(neg(EF)), div(sub(LS, MinRReq), AvgRReq)))), LF), max(max(max(add(neg(min(EF, LS)), mul(mul(EF, MaxRReq), min(TPC, MinRReq))), min(AvgRReq, min(EF, MinRReq))), LF), min(ES, RR)))
+Aggregate% 43.09494529936299
+Makespan% 73068
+
+Run#4  9 unique individuals in population
+add(add(LF, add(LF, sub(sub(LF, TSC), div(AvgRReq, LF)))), sub(LS, max(TSC, mul(sub(sub(add(LF, RR), add(MinRReq, LF)), add(MinRReq, neg(TSC))), add(neg(TSC), max(MaxRReq, MaxRReq))))))
+Aggregate% 43.01380752734308
+Makespan% 73045
+
+Run#5  16 unique individuals in population
+neg(add(min(neg(mul(mul(ES, LS), sub(LS, MaxRReq))), sub(add(mul(LF, RR), sub(ES, LS)), max(mul(mul(ES, LS), sub(LS, MaxRReq)), mul(EF, TSC)))), sub(add(TSC, sub(AvgRReq, LF)), LF)))
+Aggregate% 43.27991100066281
+Makespan% 73177
+
+Run#6  4 unique individuals in population
+sub(LF, sub(AvgRReq, sub(mul(AvgRReq, LF), neg(LF))))
+Aggregate% 43.54765571461822
+Makespan% 73290
+
+Run#7  64 unique individuals in population
+add(max(LF, mul(LS, sub(add(ES, AvgRReq), TSC))), add(sub(sub(mul(LF, LS), min(add(TSC, TSC), mul(MinRReq, neg(TPC)))), AvgRReq), LF))
+Aggregate% 42.969724083858
+Makespan% 73012
+
+Run#8  3 unique individuals in population
+sub(add(sub(add(add(sub(LF, AvgRReq), max(LS, MaxRReq)), LF), MaxRReq), LF), mul(neg(LS), mul(ES, LS)))
+Aggregate% 43.388806338041256
+Makespan% 73220
+
+Run#9  14 unique individuals in population
+min(mul(LF, mul(LF, max(max(sub(LF, mul(LF, LS)), LS), sub(LF, AvgRReq)))), sub(LF, AvgRReq))
+Aggregate% 43.81284248642153
+Makespan% 73441
+
+Run#10  35 unique individuals in population
+sub(sub(sub(LS, neg(sub(sub(LS, neg(LF)), neg(LF)))), neg(LF)), max(max(neg(LF), add(neg(neg(add(TSC, AvgRReq))), mul(min(RR, div(ES, TPC)), min(sub(AvgRReq, LF), sub(AvgRReq, EF))))), TSC))
+Aggregate% 43.60235129598313
+Makespan% 73336
+
+Run#11  72 unique individuals in population
+sub(add(LS, LF), min(min(sub(min(mul(AvgRReq, add(AvgRReq, ES)), add(div(MaxRReq, MinRReq), max(LF, TPC))), sub(LF, sub(TSC, LS))), LS), mul(AvgRReq, add(AvgRReq, sub(TSC, LS)))))
+Aggregate% 43.365721047631176
+Makespan% 73198
+
+Run#12  39 unique individuals in population
+sub(max(LF, add(max(LF, add(LS, LF)), LF)), max(mul(div(neg(min(mul(AvgRReq, MaxRReq), TSC)), neg(LF)), AvgRReq), add(sub(MinRReq, TPC), sub(MinRReq, TPC))))
+Aggregate% 43.40645617757556
+Makespan% 73237
+
+Run#13  23 unique individuals in population
+sub(sub(mul(LS, LF), add(TSC, max(max(sub(AvgRReq, LF), mul(mul(LF, TSC), AvgRReq)), mul(AvgRReq, AvgRReq)))), mul(mul(LF, TSC), neg(add(add(TSC, TSC), min(LF, div(AvgRReq, LF))))))
+Aggregate% 43.106755234841586
+Makespan% 73080
+
+Run#14  21 unique individuals in population
+mul(max(LS, add(mul(LS, sub(sub(LS, EF), max(MinRReq, TSC))), add(TSC, MinRReq))), min(sub(LF, div(TSC, div(LF, AvgRReq))), div(EF, AvgRReq)))
+Aggregate% 43.252970270821486
+Makespan% 73157
+
+Run#15  9 unique individuals in population
+sub(add(add(LF, sub(neg(neg(EF)), sub(max(EF, AvgRReq), LF))), sub(sub(sub(MinRReq, AvgRReq), neg(LS)), MinRReq)), TSC)
+Aggregate% 42.85274095094302
+Makespan% 72950
+
+Run#16  113 unique individuals in population
+add(min(neg(mul(add(AvgRReq, TSC), mul(add(AvgRReq, add(TSC, MinRReq)), add(TSC, MinRReq)))), add(mul(add(mul(AvgRReq, LS), MinRReq), neg(add(TPC, LS))), div(TPC, AvgRReq))), max(max(MinRReq, mul(div(TSC, AvgRReq), sub(LS, EF))), add(LS, LF)))
+Aggregate% 43.26397479982382
+Makespan% 73155
+
+Run#17  40 unique individuals in population
+mul(add(max(min(MinRReq, LF), LS), add(sub(LF, TSC), LS)), add(max(sub(mul(LF, max(LS, TPC)), sub(AvgRReq, LF)), sub(TSC, LF)), add(LF, LF)))
+Aggregate% 43.33147115955048
+Makespan% 73190
+
+Run#18  39 unique individuals in population
+add(mul(sub(add(RR, LS), min(add(LF, add(LF, LS)), LF)), sub(LF, AvgRReq)), add(LF, add(LF, sub(add(LF, add(mul(LS, LF), LF)), AvgRReq))))
+Aggregate% 43.34861851508308
+Makespan% 73208
+
+Run#19  3 unique individuals in population
+sub(add(add(LF, mul(max(add(neg(ES), div(MinRReq, LF)), neg(neg(ES))), sub(ES, EF))), LF), add(TSC, AvgRReq))
+Aggregate% 42.832940112325964
+Makespan% 72941
+
+Run#20  63 unique individuals in population
+neg(sub(sub(sub(AvgRReq, add(LF, LS)), neg(sub(sub(sub(AvgRReq, LF), neg(TSC)), LF))), min(max(div(AvgRReq, LF), min(RR, RR)), min(max(min(max(LF, TPC), div(AvgRReq, EF)), TPC), div(AvgRReq, LF)))))
+Aggregate% 43.47818490381004
+Makespan% 73273
+
+Run#21  8 unique individuals in population
+add(min(min(LS, add(add(sub(LF, AvgRReq), mul(TPC, sub(LF, TSC))), mul(mul(TPC, LF), LF))), add(add(sub(LF, AvgRReq), mul(TPC, add(sub(LS, AvgRReq), mul(TPC, TSC)))), mul(TPC, LF))), LF)
+Aggregate% 42.883660948706584
+Makespan% 72969
+
+Run#22  74 unique individuals in population
+add(add(add(LS, LF), LF), sub(mul(mul(MaxRReq, AvgRReq), mul(MaxRReq, mul(MaxRReq, AvgRReq))), sub(TSC, min(max(add(MinRReq, TSC), max(MaxRReq, TPC)), mul(neg(MaxRReq), mul(max(MaxRReq, TPC), AvgRReq))))))
+Aggregate% 43.465645195011284
+Makespan% 73274
+
+Run#23  18 unique individuals in population
+sub(AvgRReq, sub(AvgRReq, sub(add(LS, sub(add(LS, LF), sub(max(AvgRReq, TSC), sub(EF, ES)))), min(AvgRReq, TSC))))
+Aggregate% 43.041201037951474
+Makespan% 73051
+
+Run#24  10 unique individuals in population
+sub(add(sub(LF, AvgRReq), mul(max(add(LS, add(sub(LF, AvgRReq), LS)), EF), AvgRReq)), add(neg(add(LS, LF)), add(add(neg(add(LF, LF)), TSC), AvgRReq)))
+Aggregate% 43.41144140897032
+Makespan% 73233
+
+Run#25  32 unique individuals in population
+add(add(LF, LF), sub(max(mul(max(LS, TPC), min(LF, LF)), sub(sub(RR, sub(max(TSC, LF), neg(LF))), div(LS, max(TSC, LF)))), AvgRReq))
+Aggregate% 42.86837308596568
+Makespan% 72956
+
+Run#26  60 unique individuals in population
+add(max(min(RR, LS), max(LF, max(mul(div(div(TSC, RR), RR), sub(RR, add(LS, TSC))), mul(neg(min(RR, LS)), add(LS, TSC))))), sub(sub(LS, add(neg(MaxRReq), MaxRReq)), max(mul(TSC, min(RR, LF)), mul(AvgRReq, add(AvgRReq, TSC)))))
+Aggregate% 43.139927216134296
+Makespan% 73090
+
+Run#27  12 unique individuals in population
+sub(sub(LF, add(TSC, AvgRReq)), mul(sub(LF, neg(add(LS, LF))), min(neg(add(LS, LF)), sub(AvgRReq, TSC))))
+Aggregate% 43.41948040867925
+Makespan% 73242
+
+Run#28  133 unique individuals in population
+add(neg(sub(sub(div(min(neg(TSC), MinRReq), sub(ES, ES)), neg(mul(AvgRReq, TSC))), neg(mul(AvgRReq, TSC)))), mul(LF, add(div(max(LF, div(LF, mul(AvgRReq, TSC))), sub(ES, ES)), LS)))
+Aggregate% 43.22842538737745
+Makespan% 73137
+
+Run#29  114 unique individuals in population
+sub(mul(max(add(LF, LS), neg(sub(EF, sub(RR, AvgRReq)))), LF), mul(AvgRReq, sub(max(max(AvgRReq, TSC), min(LF, MinRReq)), mul(sub(LF, TPC), mul(MinRReq, TPC)))))
+Aggregate% 43.38358309965177
+Makespan% 73222
+
+Run#30  2 unique individuals in population
+add(LS, add(neg(mul(AvgRReq, add(sub(LS, TSC), div(TSC, LF)))), LF))
+Aggregate% 42.994264405142935
+Makespan% 73015
+
