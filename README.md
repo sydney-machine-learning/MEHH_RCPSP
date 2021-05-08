@@ -88,10 +88,12 @@ The tree shown is an operator tree which is used to compute the priority values 
 
 
 ```
-For queries on implementation/dataset contact : 
+
 MAP-Elites Hyper Heuristic for RCPSP
 Shelvin Chand, Kousik Rajesh, Rohitash Chandra
 Paper under review
+
+For queries on implementation/dataset contact : 
 Kousik Rajesh 
 kousik18@iitg.ac.in
 ```
