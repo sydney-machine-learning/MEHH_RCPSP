@@ -12,7 +12,7 @@ The [gp_rg300](./gp_rg300.py) file implements the classic genetic programming ba
 
 The [map_elites_rg300](./map_elites_rg300.py) file contains the implementation of MAP-Elites for RCPSP again parallelised across multiple cores.
 
-An example evolved tree ![tree](gp_trees/25.9_run_0.png?raw=true "GP tree")
+An example evolved tree ![tree](imgs/gp_trees/25.9_run_0.png?raw=true "GP tree")
 
 The `analysis` folder contains all the scripts used to analse, plot, generate results
 The `logs` folder contains all the results after running both GP and MAP-Elites for 31 runs and 25 generations each
