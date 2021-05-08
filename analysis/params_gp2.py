@@ -16,6 +16,6 @@ GEN_MIN_HEIGHT=2
 GEN_MAX_HEIGHT=5
 
 occupied=1 # Set number for storing results
-filename="./gp_rg300_2.py"
+filename="./gp_2.py"
 with open(filename) as infile:
     exec(infile.read())

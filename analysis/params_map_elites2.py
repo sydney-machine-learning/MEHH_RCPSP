@@ -1,7 +1,7 @@
 import os
 n_runs=31
 nb_features = 3                            # The number of features to take into account in the container
-nb_bins = [20,20,20]
+nb_bins = [15,15,15]
 features_domain = [(4, 127),(0,30),(1.65,2.00)]      # The domain (min/max values) of the features
 fitness_domain = [(0., 1.0)]               # The domain (min/max values) of the fitness
 init_batch_size = 1024                     # The number of evaluations of the initial batch ('batch' = population)
@@ -24,7 +24,7 @@ GEN_MAX_HEIGHT=5
 """
 eval_mode=[0,1]
 
-occupied=2 # Set number for storing results
-filename="./map_elites_rg300.py"
+occupied=1 # Set number for storing results
+filename="./map_elites.py.py"
 with open(filename) as infile:
     exec(infile.read())

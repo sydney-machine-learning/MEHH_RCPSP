@@ -18,15 +18,15 @@ import multiprocessing
 train_set=[]
 sets={'j60':{'val':[],'test':[]},'j90':{'val':[],'test':[]},'j120':{'val':[],'test':[]}}
 for i in range(1,49):
-    sets['j60']['val'].append("./j60/j60"+str(i)+"_1.sm")
-    sets['j90']['val'].append("./j90/j90"+str(i)+"_1.sm")
+    sets['j60']['val'].append("./datasets/j60/datasets/j60"+str(i)+"_1.sm")
+    sets['j90']['val'].append("./datasets/j90/datasets/j90"+str(i)+"_1.sm")
     for j in range(2,11):
-        sets['j60']['test'].append("./j60/j60"+str(i)+"_"+str(j)+".sm")
-        sets['j90']['test'].append("./j90/j90"+str(i)+"_"+str(j)+".sm")
+        sets['j60']['test'].append("./datasets/j60/datasets/j60"+str(i)+"_"+str(j)+".sm")
+        sets['j90']['test'].append("./datasets/j90/datasets/j90"+str(i)+"_"+str(j)+".sm")
 for i in range(1,61): 
-    sets['j120']['val'].append("./j120/j120"+str(i)+"_1.sm")
+    sets['j120']['val'].append("./datasets/j120/datasets/j120"+str(i)+"_1.sm")
     for j in range(2,11):
-        sets['j120']['test'].append("./j120/j120"+str(i)+"_"+str(j)+".sm")
+        sets['j120']['test'].append("./datasets/j120/datasets/j120"+str(i)+"_"+str(j)+".sm")
 
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:

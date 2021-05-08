@@ -28,11 +28,11 @@ from os import listdir
 
 validation_set=[]
 for i in range(1,480,10):
-    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
+    validation_set.append("./datasets/RG300/datasets/RG300_"+str(i)+".rcp")
 print(len(validation_set))
 
 test_set=[]
-all_rg300=["./RG300/"+i for i in listdir('./RG300')]
+all_rg300=["./datasets/RG300/"+i for i in listdir('./datasets/RG300')]
 test_set+=[i for i in all_rg300 if i not in validation_set]
 print(len(test_set))
 # Parameters
