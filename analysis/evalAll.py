@@ -1,5 +1,5 @@
 import matplotlib as mpl
-mpl.use('Agg')
+# mpl.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import networkx as nx
@@ -24,25 +24,31 @@ import time
 from utils import sub_lists
 from multiprocessing import Pool
 from os import listdir
-#Generate the training set
+n_runs=31
+nb_features = 3                            # The number of features to take into account in the container
+nb_bins = [10,10,10]
+features_domain = [(4, 127),(0,30),(1.65,2.00)]      # The domain (min/max values) of the features
+fitness_domain = [(0., 1.0)]               # The domain (min/max values) of the fitness
+init_batch_size = 1024                     # The number of evaluations of the initial batch ('batch' = population)
+batch_size = 1024                           # The number of evaluations in each subsequent batch
+nb_iterations = 25                       # The number of iterations (i.e. times where a new batch is evaluated)
+cxpb = 0.8
+mutation_pb = 0.2                        # The probability of mutating each value of a genome
+max_items_per_bin = 1                      # The number of items in each bin of the grid
+verbose = True                             
+show_warnings = True                      # Display warning and error messages. Set to True if you want to check if some individuals were out-of-bounds
 
+SELECTION_POOL_SIZE=7 # Number of individuals for tournament
+HEIGHT_LIMIT = 7 # Height Limit for tree
+GEN_MIN_HEIGHT=2
+GEN_MAX_HEIGHT=5
+
+train_set=['./datasets/j30/'+i for i in listdir('./datasets/j30') if i!="param.txt"]
 validation_set=[]
 for i in range(1,480,10):
-    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
-print(len(validation_set))
-
-test_set=[]
-all_rg300=["./RG300/"+i for i in listdir('./RG300')]
-test_set+=[i for i in all_rg300 if i not in validation_set]
-print(len(test_set))
-# Parameters
-from params_map_elites import *
-
-
-# Update seed
-
-
-
+    validation_set.append("./datasets/RG300/datasets/RG300_"+str(i)+".rcp")
+all_rg300=["./datasets/RG300/"+i for i in listdir('./datasets/RG300')]
+test_set=[i for i in all_rg300 if i not in validation_set]
 def div(left, right): # Safe division to avoid ZeroDivisionError
     try:
         return left / right
@@ -83,6 +89,7 @@ def evalSymbReg(individual,train_set):
     hard_cases_sum=0
     hard_cases_count=0
     serial_cases_sum=0
+    total_slack=0
     for i in range(len(train_set)):
         file=train_set[i]
         inst=instance.instance(file,use_precomputed=True)
@@ -91,13 +98,14 @@ def evalSymbReg(individual,train_set):
             priorities[j]=func(inst.earliest_start_times[j],inst.earliest_finish_times[j],inst.latest_start_times[j],inst.latest_finish_times[j],inst.mtp[j],inst.mts[j],inst.rr[j],inst.avg_rreq[j],inst.max_rreq[j],inst.min_rreq[j])
         frac,makespan=inst.parallel_sgs(option='forward',priority_rule='',priorities=priorities)
         sumv+=frac
-        frac2,makespan2=inst.serial_sgs(option='forward',priority_rule='',priorities=priorities)
-        if(inst.rs==0.2 and inst.rf==1.0):
-            hard_cases_count+=1
-            hard_cases_sum+=frac
-        serial_cases_sum+=frac2
+        total_slack+=inst.slack/inst.n_jobs
+    
+    # str_ind=str(individual)
+    # prec_count=str_ind.count("ES")+str_ind.count("EF")+str_ind.count("LS")+str_ind.count("LF")+str_ind.count("TPC")+str_ind.count("TSC")
+    total_slack/=len(train_set)
     fitness=[sumv/len(train_set)]
-    features = [len(individual),hard_cases_sum/hard_cases_count,serial_cases_sum/len(train_set)]
+    features = [len(individual),str(individual).count("RR"),total_slack]
+    # print(individual)
     return [fitness, features]
 
 
@@ -118,50 +126,24 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=pset)
 toolbox.decorate("mate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=HEIGHT_LIMIT))
 
-def parallelised_evaluation(ind):
-    global min_deviation,best_individual
-    
-    
-    total_dev_percent_ind,total_makespan_ind,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
-    if total_dev_percent_ind<min_deviation:
-        print(min_deviation)
-        min_deviation=total_dev_percent_ind
-        print("changing")
-        best_individual=ind
-
-
-
-path="./logs/map_elites/set_2/data_and_charts/"
-
-for run in range(0,1):
-
-    file=open(path+'grid_'+str(run),"rb")
-    grid=pickle.load(file)
-    min_deviation=100000
-
-    best_individual=grid.best
-    fin=0    
-    for ind in grid:
-        
-        fin+=1
-        total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(validation_set,instance.instance,toolbox.compile(expr=ind),mode='parallel',option='forward',use_precomputed=True,verbose=False)
-        print(fin,"/",len(grid),total_dev_percent,total_makespan)
-        if total_dev_percent<min_deviation:
-            min_deviation=total_dev_percent
-            best_individual=ind
-
-    print(best_individual)
-    file=open(path+"best_func_"+str(run),"wb")
-    pickle.dump(best_individual,file)
-    file.close()
-
-    total_dev_percent,total_makespan,total_dev,count=statistics.evaluate_custom_set(test_set,instance.instance,toolbox.compile(expr=best_individual),mode='parallel',option='forward',use_precomputed=True,verbose=False)
-    print("Aggregate % ",total_dev_percent)
-    print("Makespan ",total_makespan )
-    file=open(path+"new_results.txt","a")
-    file.write("Run#"+str(run)+"\n")
-    file.write(str(best_individual)+"\n")
-    file.write("Aggregate% "+str(total_dev_percent)+"\n")
-    file.write("Makespan% "+str(total_makespan)+"\n\n")
-
-    file.close()
+def count(ind):
+    count = 0
+    count+=ind.count("RR")
+    count+=ind.count("TSC")
+    count+=ind.count("TPC")
+    count+=ind.count("ES")
+    count+=ind.count("EF")
+    count+=ind.count("LS")
+    count+=ind.count("LF")
+    return count 
+file = open("./map_elites_data_0","rb")
+data = pickle.load(file)
+file.close()
+print(data)
+x = []
+y= []
+for i in range(31):
+    x.append(count(data[i]['ind']))
+    y.append(data[i]['dev'])
+plt.scatter(x,y)
+plt.show()

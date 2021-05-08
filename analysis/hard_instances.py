@@ -15,18 +15,18 @@ import math
 import time 
 import multiprocessing
 
-train_set=['./j30/'+i for i in listdir('./j30') if i!="param.txt"]
+train_set=['./datasets/j30/'+i for i in listdir('./datasets/j30') if i!="param.txt"]
 validation_set=[]
 for i in range(1,480,10):
-    validation_set.append("./RG300/RG300_"+str(i)+".rcp")
-all_rg300=["./RG300/"+i for i in listdir('./RG300')]
+    validation_set.append("./datasets/RG300/datasets/RG300_"+str(i)+".rcp")
+all_rg300=["./datasets/RG300/"+i for i in listdir('./datasets/RG300')]
 test_set=[i for i in all_rg300 if i not in validation_set]
 
 hard_starts=[101,141,261,301,421,461]
 hard_test_tmp=[]
 for i in hard_starts:
     for j in range(i,i+20):
-        hard_test_tmp.append("./RG300/RG300_"+str(j)+".rcp")
+        hard_test_tmp.append("./datasets/RG300/datasets/RG300_"+str(j)+".rcp")
 
 hard_test=[i for i in hard_test_tmp if i not in validation_set]
 
