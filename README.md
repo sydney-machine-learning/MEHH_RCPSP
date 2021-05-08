@@ -60,24 +60,29 @@ The `logs` folder contains all the results after running both GP and MAP-Elites 
 The `precomputes` folder acts as cache for speeding up certain calculations
 
 
-### Results
-Comparison of **diversity** of GPHH and MEHH
-
+# Results
+### Comparison of **diversity** of GPHH and MEHH
+As shown in the below figure MAP-Elites shows strong improvement in diversity over generations while GP loses its diversity due to not maintaining a unique features wise map of individuals.
 ![diversity](imgs/coverage_plot_mp_elites.png?raw=true "Diverity plot")
 
-Comparison of **performance** of GPHH and MEHH
+### Comparison of **performance** of GPHH and MEHH
+MEHH also shows performance improvements on the test set composed of `RG399` instances, while also having a lower standard deviation than GPHH. This is useful since it is more likely to get a good solution on the first run itself when using MEHH while GPHH in the worst case could give a poorly performing solution
 ![boxplot](imgs/boxplot.png?raw=true "Boxplot")
 
-Comparison of **complexities**  of GPHH, MEHH and priority rules
+### Comparison of **complexities**  of GPHH, MEHH and priority rules
+MEHH evolves more complex rules than GPHH, however the complexity is compensated with the performance improvement shown by it.
 ![complexity plot](imgs/complexity_plot.png?raw=true "Complexity plot")
 
-Comparison of **improvement** over GPHH for different archive sizes of MEHH
+### Comparison of **improvement** of MEHH over GPHH for different instance sizes
+This plot shows that MEHH shows significant improvements in performance over GPHH when the instance size becomes larger, MEHH is able to generalise to larger instances without showing a hit in performance 
 ![Improvement](imgs/gp_vs_map_elites.png?raw=true "Improvement plot")
  
-**Performance grid** for archive size _1000_ 
+### **Performance grid** for archive size _1000_ 
+The performance grid is displayed as a heatmap. The 3D performance grid has been flattened to 2D and eah dimension indicates a feature. The heatmap is made on the fitness value or _percentage deviation_ from lowerbound, hence lower the deviation value better the individual's performance.
 ![Performance grid](imgs/performancegrid.png?raw=true "performance grid")
 
-Example of an **evolved priority rule**
+### Example of an **evolved priority rule**
+The tree shown is an operator tree which is used to compute the priority values for each activity in the instance
 ![tree](imgs/gp_trees/25.9_run_0.png?raw=true)
 
 
